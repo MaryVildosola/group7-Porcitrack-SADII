@@ -5,7 +5,7 @@
 <style>
 /* Custom Layout Styles for exact Farm Admin match */
 .farm-content {
-    padding: 32px;
+    padding: 16px 32px 32px 32px;
     max-width: 1400px;
     margin: 0 auto;
 }

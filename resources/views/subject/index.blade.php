@@ -5,7 +5,7 @@
 <style>
 /* Custom Analytics Layout */
 .analytics-container {
-    padding: 32px;
+    padding: 16px 32px 32px 32px;
     max-width: 1400px;
     margin: 0 auto;
 }
@@ -180,4 +180,35 @@
                 <span class="flex items-center gap-2"><div style="width:12px; height:2px; background:#22c55e;"></div> Actual Cost</span>
                 <span class="flex items-center gap-2"><div style="width:12px; height:2px; border-bottom:2px dashed #94a3b8;"></div> Budget</span>
             </div>
-    
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="chart-card">
+            <h3 class="chart-title">Cost Breakdown</h3>
+            <p class="chart-subtitle">Monthly expense distribution</p>
+            <div class="bar-chart-container">
+                <div class="bar-wrapper">
+                    <div class="bar" style="height: 85%;"></div>
+                    <span class="bar-label">Feed</span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="bar" style="height: 45%;"></div>
+                    <span class="bar-label">Labor</span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="bar" style="height: 35%;"></div>
+                    <span class="bar-label">Veterinary</span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="bar" style="height: 20%;"></div>
+                    <span class="bar-label">Utilities</span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="bar" style="height: 15%;"></div>
+                    <span class="bar-label">Maint.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

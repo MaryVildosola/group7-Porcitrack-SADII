@@ -5,7 +5,7 @@
 <style>
 /* Custom Styles for Pens & Pigs Dashboard */
 .pens-pigs-container {
-    padding: 32px;
+    padding: 16px 32px 32px 32px;
     max-width: 1400px;
     margin: 0 auto;
 }
@@ -193,4 +193,211 @@
                             <span class="stat-label">Progress</span>
                             <span class="stat-value">65%</span>
                         </div>
-      
+                    </div>
+                </div>
+                <i class="bx bx-chevron-right pen-chevron"></i>
+            </div>
+
+            <!-- Pen B1 -->
+            <div class="pen-card">
+                <div class="pen-info">
+                    <div class="pen-name-row">
+                        <span class="pen-name">Pen B1</span>
+                        <span class="badge-poor">Poor</span>
+                    </div>
+                    <div class="pen-stats-row">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Pigs</span>
+                            <span class="stat-value">47</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Sick Pigs</span>
+                            <span class="stat-value danger">5</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Weight</span>
+                            <span class="stat-value">58 kg</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Progress</span>
+                            <span class="stat-value">53%</span>
+                        </div>
+                    </div>
+                </div>
+                <i class="bx bx-chevron-right pen-chevron"></i>
+            </div>
+
+            <!-- Pen B2 -->
+            <div class="pen-card">
+                <div class="pen-info">
+                    <div class="pen-name-row">
+                        <span class="pen-name">Pen B2</span>
+                        <span class="badge-good">Good</span>
+                    </div>
+                    <div class="pen-stats-row">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Pigs</span>
+                            <span class="stat-value">52</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Sick Pigs</span>
+                            <span class="stat-value danger">2</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Weight</span>
+                            <span class="stat-value">68 kg</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Progress</span>
+                            <span class="stat-value">62%</span>
+                        </div>
+                    </div>
+                </div>
+                <i class="bx bx-chevron-right pen-chevron"></i>
+            </div>
+
+            <!-- Pen C1 -->
+            <div class="pen-card">
+                <div class="pen-info">
+                    <div class="pen-name-row">
+                        <span class="pen-name">Pen C1</span>
+                        <span class="badge-excellent">Excellent</span>
+                    </div>
+                    <div class="pen-stats-row">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Pigs</span>
+                            <span class="stat-value">45</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Sick Pigs</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Weight</span>
+                            <span class="stat-value">85 kg</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Progress</span>
+                            <span class="stat-value">77%</span>
+                        </div>
+                    </div>
+                </div>
+                <i class="bx bx-chevron-right pen-chevron"></i>
+            </div>
+
+            <!-- Pen C2 -->
+            <div class="pen-card">
+                <div class="pen-info">
+                    <div class="pen-name-row">
+                        <span class="pen-name">Pen C2</span>
+                        <span class="badge-good">Good</span>
+                    </div>
+                    <div class="pen-stats-row">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Pigs</span>
+                            <span class="stat-value">50</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Sick Pigs</span>
+                            <span class="stat-value danger">1</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Weight</span>
+                            <span class="stat-value">78 kg</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Progress</span>
+                            <span class="stat-value">71%</span>
+                        </div>
+                    </div>
+                </div>
+                <i class="bx bx-chevron-right pen-chevron"></i>
+            </div>
+        </div>
+
+        <!-- Details Column -->
+        <div class="details-column">
+            <div class="details-panel">
+                <div class="details-header">
+                    <h2 class="details-title">Pen A1 Details</h2>
+                    <p class="page-subtitle">Section A</p>
+                </div>
+
+                <!-- Health Status -->
+                <div class="details-section">
+                    <div class="section-label">
+                        <i class="bx bx-error-alt"></i> Health Status
+                    </div>
+                    <div class="health-grid">
+                        <div class="health-card healthy">
+                            <div class="health-label">Healthy</div>
+                            <div class="health-value">45</div>
+                        </div>
+                        <div class="health-card sick">
+                            <div class="health-label">Sick</div>
+                            <div class="health-value">3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weight Progress -->
+                <div class="details-section">
+                    <div class="section-label">
+                        <i class="bx bx-line-chart"></i> Weight Progress
+                    </div>
+                    <div class="flex justify-between text-xs mb-2">
+                        <span class="text-gray-500">Current Average</span>
+                        <span class="font-bold">65 kg</span>
+                    </div>
+                    <div class="flex justify-between text-xs mb-4">
+                        <span class="text-gray-500">Target Weight</span>
+                        <span class="font-bold">110 kg</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: 59%;"></div>
+                        </div>
+                        <div class="progress-meta">59% to target</div>
+                    </div>
+                </div>
+
+                <!-- Financial Overview -->
+                <div class="details-section">
+                    <div class="section-label">
+                        <i class="bx bx-dollar"></i> Financial Overview
+                    </div>
+                    <div class="financial-row">
+                        <span class="financial-label">Batch Cost</span>
+                        <span class="financial-value">₱625,000</span>
+                    </div>
+                    <div class="financial-row">
+                        <span class="financial-label">Feed Consumption/Day</span>
+                        <span class="financial-value">145 kg</span>
+                    </div>
+                    <div class="financial-row">
+                        <span class="financial-label">Profit Margin</span>
+                        <span class="financial-value success">22%</span>
+                    </div>
+                </div>
+
+                <!-- Batch Timeline -->
+                <div class="details-section">
+                    <div class="section-label">
+                        <i class="bx bx-time-five"></i> Batch Timeline
+                    </div>
+                    <div class="financial-row">
+                        <span class="financial-label">Start Date</span>
+                        <span class="financial-value">2025-12-01</span>
+                    </div>
+                    <div class="financial-row">
+                        <span class="financial-label">Est. Finish Date</span>
+                        <span class="financial-value">2026-03-15</span>
+                    </div>
+                </div>
+
+                <button class="btn-report">Generate Full Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

@@ -34,13 +34,18 @@
         
         /* Master Layout Fixes */
         .content {
-            padding-top: 2rem !important;
+            padding-top: 0 !important;
         }
         
         /* Sidebar Farm Admin Overrides */
         .app-sidebar, .main-sidebar {
             background-color: #0b1120 !important; /* Deep dark blue */
             border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        .main-sidebar {
+            top: 0 !important;
         }
         .sidebar-profile {
             padding: 24px 20px 20px;

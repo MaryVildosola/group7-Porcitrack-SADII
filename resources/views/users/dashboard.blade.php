@@ -1,261 +1,226 @@
 @extends('layouts.master')
 @section('contents')
-<div class="main-content app-content">
-    <div class="container-fluid">
+<style>
+/* Specific Overrides for Dashboard Layout */
+.dashboard-wrap {
+    padding: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.page-title { font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 4px; }
+.page-subtitle { color: #6b7280; font-size: 0.875rem; margin-bottom: 32px; }
 
-        <!-- Page Header -->
-        <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-            <div>
-                <h1 class="page-title fw-semibold fs-18 mb-0">Dashboard</h1>
-                <p class="fs-13 text-muted mb-0 mt-1">Real-time farm monitoring and insights</p>
+/* KPI Grid */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+}
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+}
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+.kpi-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+.kpi-value { font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 4px; }
+.kpi-meta { font-size: 0.75rem; color: #9ca3af; }
+.text-success { color: #22c55e !important; }
+.text-danger { color: #ef4444 !important; }
+.text-warning { color: #f59e0b !important; }
+
+/* Alerts section */
+.alerts-section { margin-bottom: 32px; }
+.section-title { font-size: 1.1rem; font-weight: 600; color: #111827; margin-bottom: 16px; }
+.farm-alert {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid transparent;
+}
+.farm-alert-danger { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
+.farm-alert-warning { background: #f1f5f9; border-color: #e2e8f0; color: #334155; }
+.alert-icon { font-size: 1.2rem; margin-top: 2px; }
+.alert-content h4 { font-size: 0.875rem; font-weight: 700; margin: 0 0 4px 0; }
+.alert-content p { font-size: 0.8rem; margin: 0 0 6px 0; opacity: 0.8; }
+.alert-time { font-size: 0.72rem; opacity: 0.6; }
+
+/* Charts section */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+.chart-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+}
+.chart-header { margin-bottom: 24px; }
+.chart-title { font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 4px; }
+.chart-subtitle { font-size: 0.85rem; color: #9ca3af; }
+
+/* Simulated Charts using SVGs from previous logic */
+</style>
+
+<div class="dashboard-wrap">
+    <div class="header-block">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Real-time farm monitoring and insights</p>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span>Total Feed<br>Cost Today</span>
+                <div class="kpi-icon" style="background:#f0fdf4; color:#16a34a;"><i class="bx bx-dollar-circle"></i></div>
+            </div>
+            <div class="kpi-value">₱21,000</div>
+            <div class="kpi-meta text-success">↑ +12% from yesterday</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span>Number of Sick<br>Pigs</span>
+                <div class="kpi-icon" style="background:#fef2f2; color:#dc2626;"><i class="bx bx-pulse"></i></div>
+            </div>
+            <div class="kpi-value">10</div>
+            <div class="kpi-meta">5% of total population</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span>Inventory<br>Status</span>
+                <div class="kpi-icon" style="background:#fffbeb; color:#d97706;"><i class="bx bx-package"></i></div>
+            </div>
+            <div class="kpi-value">3 Low</div>
+            <div class="kpi-meta text-warning">2 items need restocking</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-header">
+                <span>Average Weight<br>Gain</span>
+                <div class="kpi-icon" style="background:#f0fdf4; color:#16a34a;"><i class="bx bx-trending-up"></i></div>
+            </div>
+            <div class="kpi-value">0.8 kg</div>
+            <div class="kpi-meta">Per pig today</div>
+        </div>
+    </div>
+
+    <!-- Alerts Section -->
+    <div class="alerts-section">
+        <h3 class="section-title">High Priority Alerts</h3>
+        
+        <div class="farm-alert farm-alert-danger">
+            <i class="bx bx-error-alt alert-icon"></i>
+            <div class="alert-content">
+                <h4>Critical: Pen B1 Health Alert</h4>
+                <p>5 pigs showing symptoms. Veterinary consultation recommended.</p>
+                <div class="alert-time">10 minutes ago</div>
             </div>
         </div>
 
-        <!-- KPI Stats Row -->
-        <div class="row g-3 mb-4">
-
-            <!-- Total Feed Cost Today -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-12">
-                <div class="card porci-stat-card" style="border-radius: 16px; border: 1px solid #e5e7eb;">
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start justify-content-between mb-2">
-                            <p class="text-muted mb-0" style="font-size: 0.78rem; line-height: 1.3;">Total Feed<br>Cost Today</p>
-                            <div class="porci-stat-icon" style="background: #e8f5e9; border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#2e7d32"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
-                            </div>
-                        </div>
-                        <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: #111827;">₱21,000</h3>
-                        <p class="text-success mb-0 mt-1" style="font-size: 0.75rem;">
-                            <span>↑ +12% from yesterday</span>
-                        </p>
-                    </div>
-                </div>
+        <div class="farm-alert farm-alert-warning">
+            <i class="bx bx-info-circle alert-icon text-slate-400"></i>
+            <div class="alert-content">
+                <h4>Feed Stock Low: Grower Mix</h4>
+                <p>Only 2 days of supply remaining. Restock immediately.</p>
+                <div class="alert-time">2 hours ago</div>
             </div>
-
-            <!-- Number of Sick Pigs -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-12">
-                <div class="card porci-stat-card" style="border-radius: 16px; border: 1px solid #e5e7eb;">
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start justify-content-between mb-2">
-                            <p class="text-muted mb-0" style="font-size: 0.78rem; line-height: 1.3;">Number of Sick<br>Pigs</p>
-                            <div class="porci-stat-icon" style="background: #fce4ec; border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#c62828"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm0-4h-2V7h2v8z"/></svg>
-                            </div>
-                        </div>
-                        <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: #111827;">10</h3>
-                        <p class="text-muted mb-0 mt-1" style="font-size: 0.75rem;">5% of total population</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Inventory Status -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-12">
-                <div class="card porci-stat-card" style="border-radius: 16px; border: 1px solid #e5e7eb;">
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start justify-content-between mb-2">
-                            <p class="text-muted mb-0" style="font-size: 0.78rem; line-height: 1.3;">Inventory<br>Status</p>
-                            <div class="porci-stat-icon" style="background: #fff8e1; border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#f57f17"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.1 15.9 0 13.32 0c-1.41 0-2.77.62-3.66 1.68L8 3.5 6.34 1.68C5.45.62 4.09 0 2.68 0 .1 0-2 2.1-2 4.66c0 .46.11.9.18 1.34H-2v2h24V6zM2.68 2a2.66 2.66 0 012.19 2.13L8 6H2.68C1.45 6 .48 5.04.48 3.87.48 2.74 1.44 2 2.68 2zm8.66 2.13A2.66 2.66 0 0113.53 2l.01-.13a2.19 2.19 0 012.2 2.18C15.73 5.23 14.77 6 13.53 6H11.5zM4 8v12h2v-9h2v9h2V8H4zm10 0v3h-2v9h2v-9h2V8h-4z"/></svg>
-                            </div>
-                        </div>
-                        <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: #ef6c00;">3 Low</h3>
-                        <p class="text-muted mb-0 mt-1" style="font-size: 0.75rem;">2 items need restocking</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Average Weight Gain -->
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-12">
-                <div class="card porci-stat-card" style="border-radius: 16px; border: 1px solid #e5e7eb;">
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-start justify-content-between mb-2">
-                            <p class="text-muted mb-0" style="font-size: 0.78rem; line-height: 1.3;">Average Weight<br>Gain</p>
-                            <div class="porci-stat-icon" style="background: #e8f5e9; border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#2e7d32"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-                            </div>
-                        </div>
-                        <h3 class="fw-bold mb-0" style="font-size: 1.5rem; color: #111827;">0.8 kg</h3>
-                        <p class="text-muted mb-0 mt-1" style="font-size: 0.75rem;">Per pig today</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
-        <!-- End KPI Row -->
 
-        <!-- High Priority Alerts -->
-        <div class="mb-4">
-            <h5 class="fw-semibold mb-3" style="font-size: 1rem; color: #111827;">High Priority Alerts</h5>
-
-            <!-- Critical alert -->
-            <div class="porci-alert porci-alert-danger mb-2 p-3" style="background: #fff5f5; border-radius: 12px; border-left: 4px solid #e53935;">
-                <div class="d-flex align-items-start gap-2">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#e53935" style="flex-shrink:0; margin-top: 2px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                    <div>
-                        <p class="fw-semibold mb-0" style="font-size: 0.85rem; color: #c62828;">Critical: Pen B1 Health Alert</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.8rem;">5 pigs showing symptoms. Veterinary consultation recommended.</p>
-                        <p class="mb-0 text-success" style="font-size: 0.72rem; margin-top: 4px;">10 minutes ago</p>
-                    </div>
-                </div>
+        <div class="farm-alert farm-alert-warning">
+            <i class="bx bx-thermometer alert-icon text-slate-400"></i>
+            <div class="alert-content">
+                <h4>Temperature Alert: Pen A2</h4>
+                <p>Temperature dropped below optimal range (18°C).</p>
+                <div class="alert-time">3 hours ago</div>
             </div>
+        </div>
+    </div>
 
-            <!-- Warning alert -->
-            <div class="porci-alert porci-alert-warning mb-2 p-3" style="background: #f9fafb; border-radius: 12px; border-left: 4px solid #9e9e9e;">
-                <div class="d-flex align-items-start gap-2">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#616161" style="flex-shrink:0; margin-top: 2px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                    <div>
-                        <p class="fw-semibold mb-0" style="font-size: 0.85rem; color: #37474f;">Feed Stock Low: Grower Mix</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.8rem;">Only 2 days of supply remaining. Restock immediately.</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.72rem; margin-top: 4px;">2 hours ago</p>
-                    </div>
-                </div>
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Feed Cost Today</h3>
+                <p class="chart-subtitle">Cumulative feed expenses throughout the day</p>
             </div>
-
-            <!-- Info alert -->
-            <div class="porci-alert porci-alert-info p-3" style="background: #f9fafb; border-radius: 12px; border-left: 4px solid #9e9e9e;">
-                <div class="d-flex align-items-start gap-2">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#616161" style="flex-shrink:0; margin-top: 2px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                    <div>
-                        <p class="fw-semibold mb-0" style="font-size: 0.85rem; color: #37474f;">Temperature Alert: Pen A2</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.8rem;">Temperature dropped below optimal range (18°C).</p>
-                        <p class="mb-0 text-muted" style="font-size: 0.72rem; margin-top: 4px;">3 hours ago</p>
-                    </div>
+            <!-- Simulated Line Chart -->
+            <div style="height: 200px; width: 100%; position: relative;">
+                <svg viewBox="0 0 500 200" width="100%" height="100%">
+                    <line x1="0" y1="200" x2="500" y2="200" stroke="#f3f4f6" stroke-width="1"/>
+                    <line x1="0" y1="150" x2="500" y2="150" stroke="#f3f4f6" stroke-width="2" stroke-dasharray="2,2"/>
+                    <line x1="0" y1="100" x2="500" y2="100" stroke="#f3f4f6" stroke-width="2" stroke-dasharray="2,2"/>
+                    <line x1="0" y1="50" x2="500" y2="50" stroke="#f3f4f6" stroke-width="2" stroke-dasharray="2,2"/>
+                    <polyline fill="none" stroke="#22c55e" stroke-width="3" 
+                        points="0,150 70,130 140,110 210,85 280,65 350,45 420,35" />
+                    <circle cx="420" cy="35" r="4" fill="#22c55e"/>
+                </svg>
+                <div class="flex justify-between mt-2 text-[0.65rem] text-gray-400">
+                    <span>6 AM</span><span>9 AM</span><span>12 PM</span><span>3 PM</span><span>6 PM</span><span>Now</span>
                 </div>
             </div>
         </div>
-        <!-- End Alerts -->
 
-        <!-- Charts Row -->
-        <div class="row g-3">
-
-            <!-- Feed Cost Line Chart -->
-            <div class="col-xl-6 col-lg-12 col-12">
-                <div class="card" style="border-radius: 16px; border: 1px solid #e5e7eb;">
-                    <div class="card-body p-4">
-                        <h6 class="fw-semibold mb-1" style="font-size: 0.9rem; color: #111827;">Feed Cost Today</h6>
-                        <p class="text-muted mb-3" style="font-size: 0.78rem;">Cumulative feed expenses throughout the day</p>
-                        <canvas id="feedCostChart" height="180"></canvas>
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Pen Health Overview</h3>
+                <p class="chart-subtitle">Healthy vs sick pigs by pen</p>
+            </div>
+            <!-- Simulated Bar Chart -->
+            <div style="height: 200px; width: 100%; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 20px; border-bottom: 1px solid #f3f4f6;">
+                <div class="flex flex-col items-center gap-1 w-12">
+                    <div class="flex gap-1 items-end h-[150px]">
+                        <div class="bg-green-500 rounded-sm w-4 h-[80%]"></div>
+                        <div class="bg-red-500 rounded-sm w-4 h-[10%]"></div>
                     </div>
+                    <span class="text-[0.7rem] text-gray-500">A1</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 w-12">
+                    <div class="flex gap-1 items-end h-[150px]">
+                        <div class="bg-green-500 rounded-sm w-4 h-[85%]"></div>
+                        <div class="bg-red-500 rounded-sm w-4 h-[0%]"></div>
+                    </div>
+                    <span class="text-[0.7rem] text-gray-500">A2</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 w-12">
+                    <div class="flex gap-1 items-end h-[150px]">
+                        <div class="bg-green-500 rounded-sm w-4 h-[75%]"></div>
+                        <div class="bg-red-500 rounded-sm w-4 h-[15%]"></div>
+                    </div>
+                    <span class="text-[0.7rem] text-gray-500">B1</span>
+                </div>
+                <div class="flex flex-col items-center gap-1 w-12">
+                    <div class="flex gap-1 items-end h-[150px]">
+                        <div class="bg-green-500 rounded-sm w-4 h-[90%]"></div>
+                        <div class="bg-red-500 rounded-sm w-4 h-[5%]"></div>
+                    </div>
+                    <span class="text-[0.7rem] text-gray-500">B2</span>
                 </div>
             </div>
-
-            <!-- Pen Health Bar Chart -->
-            <div class="col-xl-6 col-lg-12 col-12">
-                <div class="card" style="border-radius: 16px; border: 1px solid #e5e7eb;">
-                    <div class="card-body p-4">
-                        <h6 class="fw-semibold mb-1" style="font-size: 0.9rem; color: #111827;">Pen Health Overview</h6>
-                        <p class="text-muted mb-3" style="font-size: 0.78rem;">Healthy vs sick pigs by pen</p>
-                        <canvas id="penHealthChart" height="180"></canvas>
-                    </div>
-                </div>
-            </div>
-
         </div>
-        <!-- End Charts -->
-
     </div>
 </div>
-
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-// Feed Cost Line Chart
-const feedCtx = document.getElementById('feedCostChart').getContext('2d');
-new Chart(feedCtx, {
-    type: 'line',
-    data: {
-        labels: ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM', 'Now'],
-        datasets: [{
-            label: 'Feed Cost (₱)',
-            data: [5500, 8500, 11000, 13500, 17000, 21000],
-            borderColor: '#4caf50',
-            backgroundColor: 'rgba(76,175,80,0.08)',
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: '#4caf50',
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            borderWidth: 2,
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: ctx => '₱' + ctx.parsed.y.toLocaleString()
-                }
-            }
-        },
-        scales: {
-            x: {
-                grid: { display: false },
-                ticks: { font: { size: 11 }, color: '#9ca3af' }
-            },
-            y: {
-                grid: { color: '#f3f4f6' },
-                ticks: { font: { size: 11 }, color: '#9ca3af' },
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Pen Health Bar Chart
-const penCtx = document.getElementById('penHealthChart').getContext('2d');
-new Chart(penCtx, {
-    type: 'bar',
-    data: {
-        labels: ['A1', 'A2', 'B1', 'B2'],
-        datasets: [
-            {
-                label: 'Healthy',
-                data: [44, 47, 42, 48],
-                backgroundColor: '#4caf50',
-                borderRadius: 4,
-                barThickness: 22,
-            },
-            {
-                label: 'Sick',
-                data: [3, 4, 5, 2],
-                backgroundColor: '#ef5350',
-                borderRadius: 4,
-                barThickness: 22,
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: { font: { size: 11 }, color: '#374151', boxWidth: 12 }
-            }
-        },
-        scales: {
-            x: {
-                grid: { display: false },
-                ticks: { font: { size: 11 }, color: '#9ca3af' }
-            },
-            y: {
-                grid: { color: '#f3f4f6' },
-                ticks: { font: { size: 11 }, color: '#9ca3af' },
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
-
-<style>
-.porci-stat-card {
-    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-    transition: transform 0.15s, box-shadow 0.15s;
-}
-.porci-stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-</style>
 @endsection
