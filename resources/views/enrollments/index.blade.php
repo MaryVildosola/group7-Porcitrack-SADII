@@ -259,4 +259,165 @@
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const restockBtns = document.querySelectorAll('.btn-restock');
+        
+        restockBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tr = this.closest('tr');
+                const nameTd = tr.querySelector('td:nth-child(1)');
+                const quantityTd = tr.querySelector('td:nth-child(3)');
+                const thresholdTd = tr.querySelector('td:nth-child(4)');
+                const statusSpan = tr.querySelector('td:nth-child(5) span');
+                const lastRestockTd = tr.querySelector('td:nth-child(6)');
+                const supplierTd = tr.querySelector('td:nth-child(7)');
+
+                const feedName = nameTd.innerText.trim();
+                const supplierName = supplierTd.innerText.trim();
+                const currentVal = parseInt(quantityTd.innerText.replace(/,/g, '').replace('kg', '').trim(), 10);
+                const thresholdVal = parseInt(thresholdTd.innerText.replace(/,/g, '').replace('kg', '').trim(), 10);
+
+                const pendingAmount = this.dataset.pendingAmount;
+
+                if (pendingAmount) {
+                    // STATE 2: RECEIVE DELIVERY
+                    const amount = parseInt(pendingAmount, 10);
+
+                    Swal.fire({
+                        title: 'Receive Delivery',
+                        html: `Did the supplier (<b>${supplierName}</b>) deliver the <b>${amount.toLocaleString()} kg</b> of ${feedName}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, Received',
+                        cancelButtonText: 'Not Yet',
+                        confirmButtonColor: '#22c55e',
+                        cancelButtonColor: '#6b7280'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const newStock = currentVal + amount;
+                            
+                            // Update stock quantity
+                            quantityTd.innerText = `${newStock.toLocaleString('en-US')} kg`;
+                            
+                            // Revert status badge based on new stock
+                            statusSpan.removeAttribute('style'); // Clear inline styles from ORDERED state
+                            if (newStock >= thresholdVal) {
+                                statusSpan.className = 'badge-ok';
+                                statusSpan.innerText = 'OK';
+                            } else {
+                                statusSpan.className = 'badge-low';
+                                statusSpan.innerText = 'LOW';
+                            }
+
+                            // Update last restocked date
+                            const today = new Date();
+                            const year = today.getFullYear();
+                            const month = String(today.getMonth() + 1).padStart(2, '0');
+                            const day = String(today.getDate()).padStart(2, '0');
+                            lastRestockTd.innerText = `${year}-${month}-${day}`;
+                            
+                            // Revert Button back to normal Restock state
+                            delete this.dataset.pendingAmount;
+                            this.innerHTML = '<i class="bx bx-refresh"></i> Restock';
+                            this.style.backgroundColor = ''; // Revert to CSS default
+                            
+                            Swal.fire({
+                                title: 'Inventory Updated!',
+                                text: `Successfully received and added ${amount.toLocaleString()} kg of ${feedName}.`,
+                                icon: 'success',
+                                confirmButtonColor: '#22c55e'
+                            });
+                            
+                            // Update KPI dashboard dynamically
+                            updateTotalStock(amount);
+                            updateLowStockCount();
+                        }
+                    });
+
+                } else {
+                    // STATE 1: SEND ORDER
+                    Swal.fire({
+                        title: 'Purchase Order',
+                        html: `
+                            <div style="text-align: left; margin-bottom: 15px; font-size: 0.95rem; color: #4b5563; background: #f3f4f6; padding: 12px; border-radius: 8px;">
+                                <p style="margin: 0 0 4px 0;"><b>Feed Type:</b> ${feedName}</p>
+                                <p style="margin: 0 0 4px 0;"><b>Supplier:</b> ${supplierName}</p>
+                                <p style="margin: 0 0 4px 0;"><b>Current Stock:</b> ${currentVal.toLocaleString()} kg</p>
+                                <p style="margin: 0;"><b>Min Threshold:</b> ${thresholdVal.toLocaleString()} kg</p>
+                            </div>
+                            <p style="text-align: left; margin-bottom: 8px; font-size: 0.95rem; font-weight: 500; color: #111827;">Enter order quantity (kg):</p>
+                        `,
+                        input: 'number',
+                        inputAttributes: {
+                            min: 1,
+                            step: 1,
+                            placeholder: 'e.g. 500'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="bx bx-paper-plane" style="vertical-align: middle; margin-right: 4px;"></i> Send Order',
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#3b82f6', // Blue for sending
+                        cancelButtonColor: '#ef4444',
+                        inputValidator: (value) => {
+                            if (!value || value <= 0) {
+                                return 'Please enter a valid amount greater than 0!'
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const amount = parseInt(result.value, 10);
+                            
+                            // Change button to Receive Delivery state
+                            this.dataset.pendingAmount = amount;
+                            this.innerHTML = `<i class="bx bx-package"></i> Receive (${amount}kg)`;
+                            this.style.backgroundColor = '#f59e0b'; // Orange/Warning color for pending
+                            
+                            // Update status badge to show Ordered
+                            statusSpan.className = 'badge-low'; // Use same base padding
+                            statusSpan.innerText = 'ORDERED';
+                            statusSpan.style.background = '#dbeafe'; // Blueish background
+                            statusSpan.style.color = '#2563eb';
+                            statusSpan.style.borderColor = '#bfdbfe';
+
+                            Swal.fire({
+                                title: 'Order Sent!',
+                                text: `Your order for ${amount.toLocaleString()} kg has been securely sent to ${supplierName}. Waiting for supplier delivery.`,
+                                icon: 'success',
+                                confirmButtonColor: '#3b82f6'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        function updateTotalStock(addedAmount) {
+            const kpiValues = document.querySelectorAll('.kpi-value');
+            if (kpiValues.length >= 3) {
+                const totalStockEl = kpiValues[2];
+                let currentTotal = parseInt(totalStockEl.innerText.replace(/,/g, '').replace('kg', '').trim(), 10);
+                if (!isNaN(currentTotal)) {
+                    totalStockEl.innerText = `${(currentTotal + addedAmount).toLocaleString('en-US')} kg`;
+                }
+            }
+        }
+
+        function updateLowStockCount() {
+            const kpiValues = document.querySelectorAll('.kpi-value');
+            if (kpiValues.length >= 2) {
+                let lowCount = 0;
+                document.querySelectorAll('.farm-table tbody tr').forEach(tr => {
+                    const statusSpan = tr.querySelector('td:nth-child(5) span');
+                    if (statusSpan && statusSpan.innerText === 'LOW') {
+                        lowCount++;
+                    }
+                });
+                kpiValues[1].innerText = lowCount;
+            }
+        }
+    });
+</script>
 @endsection
