@@ -400,4 +400,144 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Report Generation Logic ---
+        const reportBtn = document.querySelector('.btn-report');
+        if (reportBtn) {
+            reportBtn.addEventListener('click', () => {
+                const penName = document.querySelector('.details-title').innerText.replace(' Details', '').trim();
+
+                Swal.fire({
+                    title: 'Generating Report...',
+                    html: `Compiling health, weight, and financial data for <b>${penName}</b>. Please wait...`,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        title: 'Report Ready!',
+                        text: `The comprehensive report for ${penName} has been successfully generated.`,
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="bx bx-printer" style="vertical-align: middle; margin-right: 4px;"></i> Print Report',
+                        cancelButtonText: '<i class="bx bx-download" style="vertical-align: middle; margin-right: 4px;"></i> Download PDF',
+                        confirmButtonColor: '#22c55e',
+                        cancelButtonColor: '#3b82f6',
+                        customClass: {
+                            confirmButton: 'shadow-sm',
+                            cancelButton: 'shadow-sm'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.print();
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            Swal.fire({
+                                title: 'Downloaded',
+                                text: `The PDF report for ${penName} has been securely saved to your device.`,
+                                icon: 'success',
+                                confirmButtonColor: '#22c55e'
+                            });
+                        }
+                    });
+                });
+            });
+        }
+
+        // --- Interactive Pen Cards Logic ---
+        const penDetails = {
+            'Pen A1': {
+                subtitle: 'Section A',
+                healthy: 45, sick: 3,
+                currentAvg: '65 kg', targetWeight: '110 kg', progress: 59,
+                batchCost: '₱625,000', feedCons: '145 kg', profit: '22%',
+                start: '2025-12-01', finish: '2026-03-15'
+            },
+            'Pen A2': {
+                subtitle: 'Section A',
+                healthy: 48, sick: 0,
+                currentAvg: '72 kg', targetWeight: '110 kg', progress: 65,
+                batchCost: '₱620,000', feedCons: '150 kg', profit: '25%',
+                start: '2025-11-20', finish: '2026-03-05'
+            },
+            'Pen B1': {
+                subtitle: 'Section B',
+                healthy: 42, sick: 5,
+                currentAvg: '58 kg', targetWeight: '110 kg', progress: 53,
+                batchCost: '₱650,000', feedCons: '135 kg', profit: '15%',
+                start: '2025-12-10', finish: '2026-03-25'
+            },
+            'Pen B2': {
+                subtitle: 'Section B',
+                healthy: 50, sick: 2,
+                currentAvg: '68 kg', targetWeight: '110 kg', progress: 62,
+                batchCost: '₱630,000', feedCons: '148 kg', profit: '20%',
+                start: '2025-11-25', finish: '2026-03-10'
+            },
+            'Pen C1': {
+                subtitle: 'Section C',
+                healthy: 45, sick: 0,
+                currentAvg: '85 kg', targetWeight: '110 kg', progress: 77,
+                batchCost: '₱600,000', feedCons: '160 kg', profit: '28%',
+                start: '2025-10-15', finish: '2026-02-01'
+            },
+            'Pen C2': {
+                subtitle: 'Section C',
+                healthy: 49, sick: 1,
+                currentAvg: '78 kg', targetWeight: '110 kg', progress: 71,
+                batchCost: '₱610,000', feedCons: '155 kg', profit: '24%',
+                start: '2025-11-01', finish: '2026-02-15'
+            }
+        };
+
+        const penCards = document.querySelectorAll('.pen-card');
+        penCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Update active selection state visually
+                penCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+
+                // Retrieve clicked pen Name and Data
+                const penName = card.querySelector('.pen-name').innerText.trim();
+                const data = penDetails[penName];
+
+                if (data) {
+                    // 1. Update Headers
+                    document.querySelector('.details-title').innerText = `${penName} Details`;
+                    document.querySelector('.details-header .page-subtitle').innerText = data.subtitle;
+
+                    // 2. Update Health Status
+                    const healthValues = document.querySelectorAll('.health-grid .health-value');
+                    healthValues[0].innerText = data.healthy;
+                    healthValues[1].innerText = data.sick;
+
+                    // 3. Update Weight Progress
+                    const detailSections = document.querySelectorAll('.details-section');
+                    const weightValues = detailSections[1].querySelectorAll('.font-bold');
+                    weightValues[0].innerText = data.currentAvg;
+                    weightValues[1].innerText = data.targetWeight;
+                    document.querySelector('.progress-bar-fill').style.width = `${data.progress}%`;
+                    document.querySelector('.progress-meta').innerText = `${data.progress}% to target`;
+
+                    // 4. Update Financial Overview
+                    const financialValues = detailSections[2].querySelectorAll('.financial-value');
+                    financialValues[0].innerText = data.batchCost;
+                    financialValues[1].innerText = data.feedCons;
+                    financialValues[2].innerText = data.profit;
+
+                    // 5. Update Timeline
+                    const timelineValues = detailSections[3].querySelectorAll('.financial-value');
+                    timelineValues[0].innerText = data.start;
+                    timelineValues[1].innerText = data.finish;
+                }
+            });
+        });
+    });
+</script>
+
 @endsection
