@@ -537,6 +537,49 @@
                 }
             });
         });
+
+        // --- Alert Highlight Logic ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const highlightParam = urlParams.get('highlight');
+        
+        if (highlightParam) {
+            // Add a dynamic style for the flashing effect
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes flashRed {
+                    0%, 100% { background-color: #ffffff; border-color: #e5e7eb; box-shadow: none; }
+                    50% { background-color: #fee2e2; border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+                }
+                .highlight-flash {
+                    animation: flashRed 1s ease-in-out 3; /* flashes 3 times over 3 seconds */
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Find the pen card that matches the highlight parameter
+            penCards.forEach(card => {
+                const penName = card.querySelector('.pen-name').innerText.trim();
+                if (penName === highlightParam) {
+                    // Simulate a click to load its data into the details panel
+                    card.click();
+                    
+                    // Scroll to it
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Apply flash class
+                    card.classList.add('highlight-flash');
+                    
+                    // Clean up URL without reloading to avoid flashing again on refresh
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    // Remove class after animation finishes
+                    setTimeout(() => {
+                        card.classList.remove('highlight-flash');
+                    }, 3000);
+                }
+            });
+        }
+
     });
 </script>
 

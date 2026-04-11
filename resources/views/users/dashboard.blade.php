@@ -56,6 +56,12 @@
     border-radius: 12px;
     margin-bottom: 12px;
     border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.farm-alert:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .farm-alert-danger { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
 .farm-alert-warning { background: #f1f5f9; border-color: #e2e8f0; color: #334155; }
@@ -132,7 +138,7 @@
     <div class="alerts-section">
         <h3 class="section-title">High Priority Alerts</h3>
         
-        <div class="farm-alert farm-alert-danger">
+        <div class="farm-alert farm-alert-danger" onclick="window.location.href='{{ route('users.index') }}?highlight=Pen B1'">
             <i class="bx bx-error-alt alert-icon"></i>
             <div class="alert-content">
                 <h4>Critical: Pen B1 Health Alert</h4>
@@ -141,7 +147,7 @@
             </div>
         </div>
 
-        <div class="farm-alert farm-alert-warning">
+        <div class="farm-alert farm-alert-warning" onclick="window.location.href='{{ route('enrollments.index') }}?highlight=Grower Mix'">
             <i class="bx bx-info-circle alert-icon text-slate-400"></i>
             <div class="alert-content">
                 <h4>Feed Stock Low: Grower Mix</h4>
@@ -150,7 +156,7 @@
             </div>
         </div>
 
-        <div class="farm-alert farm-alert-warning">
+        <div class="farm-alert farm-alert-warning" onclick="window.location.href='{{ route('users.index') }}?highlight=Pen A2'">
             <i class="bx bx-thermometer alert-icon text-slate-400"></i>
             <div class="alert-content">
                 <h4>Temperature Alert: Pen A2</h4>

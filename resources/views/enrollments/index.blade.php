@@ -418,6 +418,47 @@
                 kpiValues[1].innerText = lowCount;
             }
         }
+
+        // --- Alert Highlight Logic ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const highlightParam = urlParams.get('highlight');
+        
+        if (highlightParam) {
+            // Add a dynamic style for the flashing effect
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes flashRedRow {
+                    0%, 100% { background-color: transparent; }
+                    50% { background-color: #fee2e2; }
+                }
+                .highlight-flash-row {
+                    animation: flashRedRow 1s ease-in-out 3;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Find the inventory row that matches the highlight parameter
+            const rows = document.querySelectorAll('.farm-table tbody tr');
+            rows.forEach(tr => {
+                const feedName = tr.querySelector('td:nth-child(1)').innerText.trim();
+                if (feedName === highlightParam) {
+                    
+                    // Scroll to it
+                    tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Apply flash class
+                    tr.classList.add('highlight-flash-row');
+                    
+                    // Clean up URL without reloading to avoid flashing again on refresh
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    // Remove class after animation finishes
+                    setTimeout(() => {
+                        tr.classList.remove('highlight-flash-row');
+                    }, 3000);
+                }
+            });
+        }
     });
 </script>
 @endsection
