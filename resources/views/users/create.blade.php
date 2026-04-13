@@ -117,6 +117,21 @@
                                 </div>
                             </div>
 
+                            <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
+                                <label for="role" class="form-label">
+                                    Account Role <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text !bg-light !text-defaulttextcolor">
+                                        <i class="ri-shield-user-line"></i>
+                                    </span>
+                                    <select class="form-control" id="role" name="role" required>
+                                        <option value="farm_worker" {{ old('role') == 'farm_worker' ? 'selected' : '' }}>Farm Worker</option>
+                                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Please select an account role.</div>
+                            </div>
 
 
                         </div>

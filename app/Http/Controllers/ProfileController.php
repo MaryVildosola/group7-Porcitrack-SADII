@@ -82,6 +82,7 @@ class ProfileController extends Controller
             'email'     => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password'  => ['required', 'string', 'min:8', 'confirmed'],
             'birthdate' => ['nullable', 'date'],
+            'role'      => ['required', 'string', 'in:admin,farm_worker'],
             'photo'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ]);
 
@@ -105,6 +106,7 @@ class ProfileController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'birthdate' => $validated['birthdate'] ?? null,
+            'role' => $validated['role'],
             'status' => $validated['status'] ?? 1,
             'photo' => $photoPath,
         ]);
@@ -138,6 +140,7 @@ class ProfileController extends Controller
             'email'     => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
             'password'  => ['sometimes', 'nullable', 'string', 'min:8', 'confirmed'],
             'birthdate' => ['nullable', 'date'],
+            'role'      => ['required', 'string', 'in:admin,farm_worker'],
             'status'    => ['required', 'boolean'],
             'photo'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ]);
@@ -145,6 +148,7 @@ class ProfileController extends Controller
         $user->name     = $validated['name'];
         $user->email    = $validated['email'];
         $user->birthdate = $validated['birthdate'] ?? null;
+        $user->role     = $validated['role'];
         $user->status   = $validated['status'];
 
         // Update password only if provided

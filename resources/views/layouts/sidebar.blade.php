@@ -40,8 +40,8 @@
             </li>
 
             <!-- Pens & Pigs -->
-            <li class="slide {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                <a href="{{ route('users.index') }}" class="side-menu__item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+            <li class="slide {{ request()->routeIs('pens.*') ? 'active' : '' }}">
+                <a href="{{ route('pens.index') }}" class="side-menu__item {{ request()->routeIs('pens.*') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM6.5 9C7.33 9 8 8.33 8 7.5S7.33 6 6.5 6 5 6.67 5 7.5 5.67 9 6.5 9zm2.5 6.5c0 .83-.67 1.5-1.5 1.5S6 16.33 6 15.5 6.67 14 7.5 14s1.5.67 1.5 1.5zm8.5-6.5c-.83 0-1.5-.67-1.5-1.5S16.67 6 17.5 6 19 6.67 19 7.5 18.33 9 17.5 9zM15 15.5c0 .83-.67 1.5-1.5 1.5S12 16.33 12 15.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5zm-3-3.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
                     </svg>
@@ -56,6 +56,16 @@
                         <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
                     </svg>
                     <span class="side-menu__label">Analytics</span>
+                </a>
+            </li>
+
+            <!-- User Management -->
+            <li class="slide {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                <a href="{{ route('users.index') }}" class="side-menu__item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span class="side-menu__label">User Management</span>
                 </a>
             </li>
         </ul>

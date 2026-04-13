@@ -138,7 +138,7 @@
     <div class="alerts-section">
         <h3 class="section-title">High Priority Alerts</h3>
         
-        <div class="farm-alert farm-alert-danger" onclick="window.location.href='{{ route('users.index') }}?highlight=Pen B1'">
+        <div class="farm-alert farm-alert-danger" onclick="window.location.href='{{ route('pens.index') }}?highlight=Pen B1'">
             <i class="bx bx-error-alt alert-icon"></i>
             <div class="alert-content">
                 <h4>Critical: Pen B1 Health Alert</h4>
@@ -156,7 +156,7 @@
             </div>
         </div>
 
-        <div class="farm-alert farm-alert-warning" onclick="window.location.href='{{ route('users.index') }}?highlight=Pen A2'">
+        <div class="farm-alert farm-alert-warning" onclick="window.location.href='{{ route('pens.index') }}?highlight=Pen A2'">
             <i class="bx bx-thermometer alert-icon text-slate-400"></i>
             <div class="alert-content">
                 <h4>Temperature Alert: Pen A2</h4>

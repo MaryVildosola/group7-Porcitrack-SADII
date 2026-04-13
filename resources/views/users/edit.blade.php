@@ -80,6 +80,15 @@
                                     value="{{ old('birthdate', $user->birthdate ? $user->birthdate->format('Y-m-d') : '') }}">
                             </div>
 
+                            {{-- Role --}}
+                            <div class="xl:col-span-6 col-span-12 mb-4">
+                                <label class="form-label">Account Role <span class="text-danger">*</span></label>
+                                <select name="role" class="form-control" required>
+                                    <option value="farm_worker" {{ old('role', $user->role) == 'farm_worker' ? 'selected' : '' }}>Farm Worker</option>
+                                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Administrator</option>
+                                </select>
+                            </div>
+
                             {{-- Status --}}
                             <div class="xl:col-span-6 col-span-12 mb-4">
                                 <label class="form-label">Status <span class="text-danger">*</span></label>
