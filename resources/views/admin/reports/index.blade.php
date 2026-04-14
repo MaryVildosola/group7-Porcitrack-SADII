@@ -34,6 +34,7 @@
                         <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Worker Name</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Status</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Submission Date</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Population</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Action</th>
                     </tr>
                 </thead>
@@ -58,6 +59,9 @@
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
                             {{ $report ? $report->created_at->format('M d, Y h:i A') : '---' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-bold text-gray-700">
+                            {{ $report ? $report->total_pigs : '---' }}
                         </td>
                         <td class="px-6 py-4">
                             @if($report)

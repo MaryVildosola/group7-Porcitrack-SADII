@@ -21,15 +21,15 @@
 
         <!-- Alert Filters -->
         <div class="flex flex-wrap gap-2 md:gap-4 mb-8">
-            <button
+            <button onclick="filterAlerts('Critical')"
                 class="px-4 md:px-6 py-2 md:py-3 bg-red-500/30 text-red-300 border border-red-400/40 rounded-xl font-medium hover:bg-red-500/40 transition text-xs md:text-sm shadow-md">
                 Critical
             </button>
-            <button
+            <button onclick="filterAlerts('Health')"
                 class="px-4 md:px-6 py-2 md:py-3 bg-white/10 text-white/70 border border-white/20 rounded-xl font-medium hover:bg-white/20 transition text-xs md:text-sm">
                 Health
             </button>
-            <button
+            <button onclick="filterAlerts('Maintenance')"
                 class="px-4 md:px-6 py-2 md:py-3 bg-white/10 text-white/70 border border-white/20 rounded-xl font-medium hover:bg-white/20 transition text-xs md:text-sm">
                 Maintenance
             </button>
@@ -64,7 +64,7 @@
                                 <span class="px-2.5 py-1 bg-red-500/20 text-red-300 rounded-lg text-[9px] md:text-[10px] font-bold border border-red-500/30 uppercase">High Urgency</span>
                             </div>
                         </div>
-                        <button
+                        <button onclick="takeAlertAction('Pig #42')"
                             class="w-full md:w-auto px-6 py-3 bg-red-500/20 text-red-300 border border-red-500/40 rounded-xl font-bold hover:bg-red-500/40 transition text-xs uppercase tracking-widest">
                             Take Action
                         </button>
@@ -86,4 +86,27 @@
         </div>
 
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function filterAlerts(type) {
+            Swal.fire({ title: 'Alert Filter', text: 'Displaying ' + type + ' alerts...', icon: 'info', timer: 1500, showConfirmButton: false, background: '#1a0a0a', color: '#fff' });
+        }
+        function takeAlertAction(target) {
+            Swal.fire({
+                title: 'Emergency Response',
+                text: 'Deploy health protocol for ' + target + '?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#333',
+                confirmButtonText: 'Yes, Deploy Now',
+                background: '#1a0a0a',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Protocol Active', text: 'HQ has been notified. Med-kit deployed.', icon: 'success', background: '#1a0a0a', color: '#fff' });
+                }
+            });
+        }
+    </script>
 @endsection

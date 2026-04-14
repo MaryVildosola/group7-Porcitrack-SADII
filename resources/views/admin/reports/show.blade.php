@@ -32,10 +32,30 @@
             </div>
         </div>
 
+        <!-- Stats Overview -->
+        <div class="px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-gray-100">
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Population</p>
+                <p class="font-bold text-gray-800">{{ $report->total_pigs }} Pigs</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Mortality/Sick</p>
+                <p class="font-bold text-red-500">{{ $report->sick_pigs }} Pigs</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Avg. Weight</p>
+                <p class="font-bold text-gray-800">{{ $report->avg_weight }} kg</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Feed Used</p>
+                <p class="font-bold text-gray-800">{{ $report->feed_consumed }} kg</p>
+            </div>
+        </div>
+
         <!-- Report Content -->
         <div class="p-8">
             <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Detailed Report Log</h3>
-            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 min-h-[300px] leading-relaxed text-gray-700 whitespace-pre-line text-lg italic">
+            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 min-h-[150px] leading-relaxed text-gray-700 whitespace-pre-line text-lg italic">
                 "{{ $report->details }}"
             </div>
         </div>

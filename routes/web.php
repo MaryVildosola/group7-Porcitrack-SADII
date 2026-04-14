@@ -66,6 +66,9 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
     // Weekly Reports
     Route::get('/worker/weekly-reports', [ReportController::class, 'workerIndex'])->name('worker.reports');
     Route::post('/worker/weekly-reports/store', [ReportController::class, 'store'])->name('worker.reports.store');
+
+    // PWA Offline Sync
+    Route::post('/worker/sync-logs', [App\Http\Controllers\Worker\SyncController::class, 'sync'])->name('worker.sync');
 });
 
 // --- ADMIN ZONE (Protected by Auth and Admin Role) ---

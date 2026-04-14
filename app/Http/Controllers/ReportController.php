@@ -41,7 +41,18 @@ class ReportController extends Controller
             ->where('week_start_date', $thisWeek)
             ->first();
 
-        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek'));
+        // Mock Analytics Data for the Worker
+        $analytics = [
+            'total_pigs' => 452,
+            'sick_pigs' => 3,
+            'avg_weight' => 68.5,
+            'feed_stock' => 78,
+            'tasks_done' => 12,
+            'tasks_pending' => 4,
+            'weekly_progress' => [65, 78, 72, 85, 80, 90, 88] // for chart
+        ];
+
+        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics'));
     }
 
     // Worker Action: Store weekly report
@@ -49,6 +60,10 @@ class ReportController extends Controller
     {
         $request->validate([
             'details' => 'required|string|min:10',
+            'total_pigs' => 'required|integer',
+            'sick_pigs' => 'required|integer',
+            'avg_weight' => 'required|numeric',
+            'feed_consumed' => 'required|numeric',
         ]);
 
         $thisWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
@@ -59,6 +74,10 @@ class ReportController extends Controller
                 'week_start_date' => $thisWeek,
             ],
             [
+                'total_pigs' => $request->total_pigs,
+                'sick_pigs' => $request->sick_pigs,
+                'avg_weight' => $request->avg_weight,
+                'feed_consumed' => $request->feed_consumed,
                 'details' => $request->details,
                 'status' => 'submitted'
             ]
