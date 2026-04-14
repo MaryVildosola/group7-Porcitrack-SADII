@@ -46,6 +46,18 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
     Route::get('/worker/dashboard', function () {
         return view('worker.dashboard'); // High-fidelity mobile worker dashboard
     })->name('worker.dashboard');
+
+    Route::get('/worker/tasks', function () {
+        return view('worker.task'); // Worker tasks page
+    })->name('worker.tasks');
+
+    Route::get('/worker/alerts', function () {
+        return view('worker.alerts'); // Worker alerts page
+    })->name('worker.alerts');
+
+    Route::get('/worker/activity-log', function () {
+        return view('worker.activityLog'); // Worker activity log page
+    })->name('worker.activity-log');
 });
 
 // --- SHARED ZONE (All Authenticated Users) ---
