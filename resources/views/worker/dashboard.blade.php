@@ -1,312 +1,296 @@
 @extends('layouts.worker')
 
 @section('content')
-    <div class="flex h-screen w-screen bg-gradient-to-br from-[#1a472a] via-[#0f2818] to-[#050a08]">
+    <div class="p-6 md:p-12 max-w-full">
 
-        <!-- Sidebar Navigation -->
-        <aside class="w-72 bg-white/5 backdrop-blur-md border-r border-white/10 flex flex-col shrink-0">
-            <div class="p-6 border-b border-white/10">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-12 h-12 rounded-lg bg-gradient-to-br from-[#428246] to-[#2d5a2f] flex items-center justify-center">
-                        <i class='bx bx-pig text-xl text-white font-bold'></i>
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8 md:mb-10">
+            <div>
+                <p class="text-sm md:text-base font-medium text-white/70 mb-1 md:mb-2">Welcome Back,</p>
+                <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight">{{ Auth::user()->name }}</h1>
+            </div>
+            
+            <!-- Sync Status Button -->
+            <div id="syncStatus" class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 self-start md:self-center cursor-pointer hover:bg-white/20 transition" onclick="syncData()">
+                <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
+                <span class="text-white text-xs md:text-sm font-bold uppercase tracking-widest">Online / Synced</span>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
+            <!-- Active Tasks -->
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer" onclick="window.location='{{ route('worker.tasks') }}'">
+                <div class="flex flex-col relative z-20">
+                    <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Active Tasks</span>
+                    <span class="text-4xl font-bold text-white">08</span>
+                </div>
+                <i class='bx bx-list-check absolute bottom-[-10px] right-[-10px] md:bottom-[-20px] md:right-[-20px] text-6xl md:text-8xl text-white/10 group-hover:scale-110 transition duration-500'></i>
+            </div>
+
+            <!-- Animals to Monitor -->
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer">
+                <div class="flex flex-col relative z-20">
+                    <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Animals</span>
+                    <span class="text-4xl font-bold text-white">452</span>
+                </div>
+                <i class='bx bxs-dog absolute bottom-[-10px] right-[-10px] md:bottom-[-20px] md:right-[-20px] text-6xl md:text-8xl text-white/10 group-hover:scale-110 transition duration-500'></i>
+            </div>
+
+            <!-- Alerts -->
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer border-l-4 border-red-500/50" onclick="window.location='{{ route('worker.alerts') }}'">
+                <div class="flex flex-col relative z-20">
+                    <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Alerts</span>
+                    <span class="text-4xl font-bold text-red-400">03</span>
+                </div>
+                <i class='bx bxs-bell absolute bottom-[-10px] right-[-10px] md:bottom-[-20px] md:right-[-20px] text-6xl md:text-8xl text-red-500/10 group-hover:scale-110 transition duration-500'></i>
+            </div>
+
+            <!-- Feed Status -->
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer">
+                <div class="flex flex-col relative z-20">
+                    <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Feed Stock</span>
+                    <span class="text-4xl font-bold text-green-400">78%</span>
+                </div>
+                <i class='bx bxs-bowl-rice absolute bottom-[-10px] right-[-10px] md:bottom-[-20px] md:right-[-20px] text-6xl md:text-8xl text-green-500/10 group-hover:scale-110 transition duration-500'></i>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="flex flex-col md:flex-row gap-4 mb-10">
+            <button onclick="startQRScanner()" class="flex-1 glass-panel p-6 rounded-3xl flex items-center justify-center gap-4 hover:bg-green-500/20 transition group border border-green-500/20 shadow-lg shadow-green-500/5">
+                <div class="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition">
+                    <i class='bx bx-qr-scan text-2xl text-green-400'></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-white font-bold text-lg">Scan QR Code</p>
+                    <p class="text-white/40 text-xs uppercase tracking-wider font-semibold">Immediate Monitoring</p>
+                </div>
+            </button>
+            <button onclick="showTaskModal()" class="flex-1 glass-panel p-6 rounded-3xl flex items-center justify-center gap-4 hover:bg-blue-500/20 transition group border border-blue-500/20 shadow-lg shadow-blue-500/5">
+                <div class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition">
+                    <i class='bx bx-plus text-2xl text-blue-400'></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-white font-bold text-lg">Create Task</p>
+                    <p class="text-white/40 text-xs uppercase tracking-wider font-semibold">Log Activity</p>
+                </div>
+            </button>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="space-y-6">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-xl md:text-2xl font-bold text-white">Recent Activity</h2>
+                <a href="{{ route('worker.activity-log') }}" class="text-xs text-white/40 hover:text-white transition uppercase font-bold tracking-widest">View All</a>
+            </div>
+            
+            <div class="glass-panel rounded-3xl p-5 md:p-6 hover:bg-white/10 transition cursor-pointer group">
+                <div class="flex gap-4">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-green-500/20 flex items-center justify-center border border-green-500/30">
+                        <i class='bx bxs-bowl-rice text-green-400 text-lg md:text-xl'></i>
                     </div>
-                    <div>
-                        <h2 class="font-bold text-white">Porcitrack</h2>
-                        <p class="text-xs text-white/60">Worker Portal</p>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="text-base md:text-lg font-bold text-white">Pen 5 Feeding</h3>
+                            <span class="text-[10px] md:text-xs text-white/40 font-medium">2:30 PM</span>
+                        </div>
+                        <p class="text-white/60 text-xs md:text-sm mb-3">5kg of grower mix distributed. All pigs active.</p>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-0.5 bg-green-500/20 text-green-300 rounded-md text-[9px] md:text-[10px] font-bold border border-green-500/20 uppercase tracking-widest">Success</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="{{ route('worker.dashboard') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/15 text-white font-medium transition hover:bg-white/25">
-                    <i class='bx bx-home text-lg'></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ route('worker.tasks') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 font-medium transition hover:bg-white/10 hover:text-white">
-                    <i class='bx bx-task text-lg'></i>
-                    <span>Tasks</span>
-                </a>
-                <a href="{{ route('worker.alerts') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 font-medium transition hover:bg-white/10 hover:text-white">
-                    <i class='bx bx-bell text-lg'></i>
-                    <span>Alerts</span>
-                </a>
-                <a href="{{ route('worker.activity-log') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 font-medium transition hover:bg-white/10 hover:text-white">
-                    <i class='bx bx-history text-lg'></i>
-                    <span>Activity Log</span>
-                </a>
-            </nav>
-
-            <div class="p-4 border-t border-white/10">
-                <button
-                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg transition relative group"
-                    id="userMenuBtn">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                        <i class='bx bx-user text-white'></i>
-                    </div>
-                    <div class="flex-1 min-w-0 text-left">
-                        <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
-                        <p class="text-xs text-white/60">Worker</p>
-                    </div>
-                    <i class='bx bx-chevron-down text-white/60'></i>
-                </button>
-
-                <!-- User Dropdown Menu -->
-                <div id="userDropdown"
-                    class="absolute bottom-20 left-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-lg hidden z-50">
-                    <div class="p-3 border-b border-white/10">
-                        <p class="text-sm font-medium text-white">{{ auth()->user()->name ?? 'User' }}</p>
-                        <p class="text-xs text-white/60">{{ auth()->user()->email ?? 'worker@porcitrack.com' }}</p>
-                    </div>
-                    <form method="POST" action="{{ route('logout') }}" class="p-2">
-                        @csrf
-                        <button type="submit"
-                            class="w-full flex items-center gap-3 px-4 py-2 text-white hover:bg-white/10 rounded-lg transition text-sm font-medium">
-                            <i class='bx bx-log-out text-lg'></i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto overflow-x-hidden">
-            <div class="p-12 max-w-full">
-
-                <!-- Header Section -->
-                <div class="flex justify-between items-center mb-10">
-                    <div>
-                        <p class="text-base font-medium text-white/70 mb-2">Welcome back,</p>
-                        <h1 class="text-5xl font-bold text-white">{{ auth()->user()->name ?? 'Worker' }}</h1>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button
-                            class="relative w-12 h-12 rounded-full flex items-center justify-center glass-button hover:bg-white/20 transition">
-                            <i class='bx bx-bell text-xl text-white'></i>
-                            <!-- Notification Dot -->
-                            <span
-                                class="absolute top-2.5 right-2.5 w-3 h-3 bg-red-500 rounded-full border border-[#428246] animate-pulse"></span>
-                        </button>
-                        <button
-                            class="w-12 h-12 rounded-full flex items-center justify-center glass-button hover:bg-white/20 transition">
-                            <i class='bx bx-search text-xl text-white'></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Primary Action Section -->
-                <div class="mb-10">
-                    <button
-                        class="w-full h-56 glass-panel rounded-3xl flex flex-col items-center justify-center relative overflow-hidden group hover:bg-white/20 transition-all active:scale-[0.98] shadow-2xl">
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        </div>
-                        <div
-                            class="mb-5 relative z-10 w-24 h-24 bg-gradient-to-br from-white/30 to-white/10 border border-white/40 rounded-3xl flex items-center justify-center shadow-lg">
-                            <i class='bx bx-qr-scan text-6xl font-light text-white drop-shadow'></i>
-                        </div>
-                        <h2 class="text-4xl font-bold tracking-wide relative z-10 text-white drop-shadow-md">Scan Pen Gate
-                        </h2>
-                        <p class="text-white/60 text-sm mt-2 relative z-10">Quick access to pen management</p>
-
-                        <!-- Subtle decorative background blob -->
-                        <div class="absolute -top-20 -right-20 w-56 h-56 bg-white/5 rounded-full blur-3xl"></div>
-                    </button>
-                </div>
-
-                <!-- Stats Grid (4 columns) -->
-                <div class="grid grid-cols-4 gap-8 mb-10">
-
-                    <!-- Pending Tasks -->
-                    <div
-                        class="glass-panel rounded-2xl p-8 flex flex-col justify-between min-h-[200px] relative overflow-hidden group hover:bg-white/20 transition-all cursor-pointer">
-                        <div>
-                            <p class="text-sm font-medium text-white/70 mb-6">Pending Tasks</p>
-                            <h3 class="text-5xl font-bold text-white drop-shadow-sm">4</h3>
-                        </div>
-                        <i class='bx bx-list-check absolute bottom-4 right-4 text-6xl text-white/10'></i>
-                    </div>
-
-                    <!-- Critical Alerts -->
-                    <div
-                        class="glass-panel rounded-2xl p-8 flex flex-col justify-between min-h-[200px] relative overflow-hidden group hover:bg-white/20 transition-all cursor-pointer border border-red-400/20">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <div class="w-2.5 h-2.5 bg-red-400 rounded-full animate-pulse"></div>
-                                <p class="text-sm font-medium text-red-300">Critical Alerts</p>
-                            </div>
-                            <h3 class="text-5xl font-bold text-red-400 drop-shadow-sm mt-4">1</h3>
-                        </div>
-                        <i class='bx bx-error-alt absolute bottom-4 right-4 text-6xl text-red-500/10'></i>
-                    </div>
-
-                    <!-- Pens Fed Today -->
-                    <div
-                        class="glass-panel rounded-2xl p-8 flex flex-col justify-between min-h-[200px] relative overflow-hidden group hover:bg-white/20 transition-all cursor-pointer">
-                        <div>
-                            <p class="text-sm font-medium text-white/70 mb-6">Pens Fed Today</p>
-                            <h3 class="text-5xl font-bold text-green-400 drop-shadow-sm">12</h3>
-                        </div>
-                        <i class='bx bxs-bowl-rice absolute bottom-4 right-4 text-6xl text-green-500/10'></i>
-                    </div>
-
-                    <!-- Health Status -->
-                    <div
-                        class="glass-panel rounded-2xl p-8 flex flex-col justify-between min-h-[200px] relative overflow-hidden group hover:bg-white/20 transition-all cursor-pointer">
-                        <div>
-                            <p class="text-sm font-medium text-white/70 mb-6">Healthy Pigs</p>
-                            <h3 class="text-5xl font-bold text-blue-400 drop-shadow-sm">48</h3>
-                        </div>
-                        <i class='bx bx-check-circle absolute bottom-4 right-4 text-6xl text-blue-500/10'></i>
-                    </div>
-
-                </div>
-
-                <!-- Recent Activity & Quick Stats Section -->
-                <div class="grid grid-cols-3 gap-8">
-
-                    <!-- Recent Activity (2 columns) -->
-                    <div class="col-span-2">
-                        <div class="glass-panel rounded-2xl p-8">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-lg font-semibold tracking-wide text-white">Recent Activity</h3>
-                                <button class="text-sm text-white/60 hover:text-white transition font-medium">View all
-                                    →</button>
-                            </div>
-
-                            <div class="space-y-3">
-
-                                <!-- Activity Item 1 -->
-                                <div
-                                    class="flex items-center gap-4 pb-4 border-b border-white/10 last:border-0 hover:bg-white/5 p-3 rounded-lg transition cursor-pointer">
-                                    <div
-                                        class="w-12 h-12 rounded-full bg-green-500/30 flex items-center justify-center border border-green-400/40 shrink-0">
-                                        <i class='bx bxs-bowl-rice text-white text-lg'></i>
-                                    </div>
-                                    <div class="flex-grow">
-                                        <p class="font-medium text-white">Pen 5 Fed</p>
-                                        <p class="text-sm text-white/60">2 hours ago</p>
-                                    </div>
-                                    <span
-                                        class="text-xs bg-green-500/20 text-green-300 px-3 py-1 rounded-full">Completed</span>
-                                </div>
-
-                                <!-- Activity Item 2 -->
-                                <div
-                                    class="flex items-center gap-4 pb-4 border-b border-white/10 last:border-0 hover:bg-white/5 p-3 rounded-lg transition cursor-pointer">
-                                    <div
-                                        class="w-12 h-12 rounded-full bg-red-500/40 flex items-center justify-center border border-red-500/50 shrink-0">
-                                        <i class='bx bx-alert-triangle text-white text-lg'></i>
-                                    </div>
-                                    <div class="flex-grow">
-                                        <p class="font-medium text-white">Pig #105 Health Alert</p>
-                                        <p class="text-sm text-white/60">Sick | 4 hours ago</p>
-                                    </div>
-                                    <span class="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full">Alert</span>
-                                </div>
-
-                                <!-- Activity Item 3 -->
-                                <div
-                                    class="flex items-center gap-4 pb-4 border-b border-white/10 last:border-0 hover:bg-white/5 p-3 rounded-lg transition cursor-pointer">
-                                    <div
-                                        class="w-12 h-12 rounded-full bg-blue-500/30 flex items-center justify-center border border-blue-400/40 shrink-0">
-                                        <i class='bx bx-water text-white text-lg'></i>
-                                    </div>
-                                    <div class="flex-grow">
-                                        <p class="font-medium text-white">Pen 8 Water Refilled</p>
-                                        <p class="text-sm text-white/60">6 hours ago</p>
-                                    </div>
-                                    <span
-                                        class="text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">Completed</span>
-                                </div>
-
-                                <!-- Activity Item 4 -->
-                                <div
-                                    class="flex items-center gap-4 hover:bg-white/5 p-3 rounded-lg transition cursor-pointer">
-                                    <div
-                                        class="w-12 h-12 rounded-full bg-amber-500/30 flex items-center justify-center border border-amber-400/40 shrink-0">
-                                        <i class='bx bx-time text-white text-lg'></i>
-                                    </div>
-                                    <div class="flex-grow">
-                                        <p class="font-medium text-white">Temperature Check - Pen 3</p>
-                                        <p class="text-sm text-white/60">7 hours ago</p>
-                                    </div>
-                                    <span
-                                        class="text-xs bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full">Pending</span>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Stats Widget -->
-                    <div class="glass-panel rounded-2xl p-8">
-                        <h3 class="text-lg font-semibold text-white mb-6">Today's Summary</h3>
-
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                                <span class="flex items-center gap-2 text-white/80">
-                                    <i class='bx bxs-bowl-rice text-green-400 text-lg'></i>
-                                    Feedings
-                                </span>
-                                <span class="font-bold text-white">12/15</span>
-                            </div>
-
-                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                                <span class="flex items-center gap-2 text-white/80">
-                                    <i class='bx bx-water text-blue-400 text-lg'></i>
-                                    Water Checks
-                                </span>
-                                <span class="font-bold text-white">8/12</span>
-                            </div>
-
-                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                                <span class="flex items-center gap-2 text-white/80">
-                                    <i class='bx bx-time text-amber-400 text-lg'></i>
-                                    Temperature
-                                </span>
-                                <span class="font-bold text-white">5/8</span>
-                            </div>
-
-                            <div class="mt-6 pt-4 border-t border-white/10">
-                                <p class="text-sm text-white/60 mb-3">Efficiency</p>
-                                <div class="w-full bg-white/10 rounded-full h-3">
-                                    <div
-                                        class="bg-gradient-to-r from-green-400 to-blue-400 h-3 rounded-full w-3/4 shadow-lg shadow-green-400/30">
-                                    </div>
-                                </div>
-                                <p class="text-right text-xs text-white/60 mt-2">75% Complete</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </main>
-
+        </div>
     </div>
 
+    <!-- QR Scanner Modal -->
+    <div id="qrModal" class="fixed inset-0 z-[200] hidden bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-sm">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">Scan QR</h2>
+                <button onclick="stopQRScanner()" class="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20">
+                    <i class='bx bx-x text-2xl'></i>
+                </button>
+            </div>
+            <div id="qr-reader" class="rounded-3xl overflow-hidden border-2 border-green-500/50 shadow-2xl shadow-green-500/20 bg-black"></div>
+            <p class="text-white/40 text-center mt-6 text-sm">Align the QR code within the frame to scan</p>
+        </div>
+    </div>
+
+    <!-- Create Task Modal (Valex Style for Workers) -->
+    <div id="taskModal" class="fixed inset-0 z-[200] hidden bg-[#0a180e]/80 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 animate-fade-in">
+            <div class="p-8 pb-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Create New Task</h2>
+                        <p class="text-white/40 text-xs uppercase tracking-widest font-bold mt-1">Worker Log Entry</p>
+                    </div>
+                    <button onclick="hideTaskModal()" class="w-10 h-10 rounded-full bg-white/5 text-white/60 flex items-center justify-center hover:bg-white/10 transition">
+                        <i class='bx bx-x text-2xl'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8 pt-4 space-y-6">
+                <!-- Task Title -->
+                <div>
+                    <label class="block text-xs font-bold text-white/40 uppercase tracking-widest mb-3">Task Name</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
+                            <i class='bx bx-task text-xl'></i>
+                        </span>
+                        <input type="text" id="taskTitle" placeholder="e.g. Pen 5 Feeding" 
+                               class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-green-500/50 transition font-medium">
+                    </div>
+                </div>
+
+                <!-- Pen Selection -->
+                <div>
+                    <label class="block text-xs font-bold text-white/40 uppercase tracking-widest mb-3">Target Pen</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
+                            <i class='bx bx-grid-alt text-xl'></i>
+                        </span>
+                        <select id="taskPen" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-10 text-white focus:outline-none focus:border-green-500/50 transition font-medium appearance-none">
+                            <option value="Pen 1">Pen 1 (Piglets)</option>
+                            <option value="Pen 5">Pen 5 (Fattening)</option>
+                            <option value="Pen 12">Pen 12 (Breeding)</option>
+                        </select>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
+                            <i class='bx bx-chevron-down text-xl'></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="pt-4">
+                    <button onclick="submitTask()" 
+                            class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-5 rounded-[1.5rem] font-bold text-lg hover:shadow-[0_10px_30px_rgba(34,197,94,0.3)] transition active:scale-[0.98]">
+                        Confirm & Create Task
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // User menu dropdown toggle
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userDropdown = document.getElementById('userDropdown');
+        // --- Task Modal ---
+        function showTaskModal() {
+            document.getElementById('taskModal').classList.remove('hidden');
+            document.getElementById('taskModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
 
-        userMenuBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            userDropdown.classList.toggle('hidden');
-        });
+        function hideTaskModal() {
+            document.getElementById('taskModal').classList.add('hidden');
+            document.getElementById('taskModal').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-                userDropdown.classList.add('hidden');
+        function submitTask() {
+            const title = document.getElementById('taskTitle').value;
+            const pen = document.getElementById('taskPen').value;
+            
+            if(!title) {
+                Swal.fire({
+                    title: 'Missing Info',
+                    text: 'Please enter a task name.',
+                    icon: 'error',
+                    background: '#0a180e',
+                    color: '#fff',
+                    confirmButtonColor: '#22c55e'
+                });
+                return;
             }
-        });
+
+            Swal.fire({
+                title: 'Task Created!',
+                text: `${title} for ${pen} has been logged.`,
+                icon: 'success',
+                background: '#0a180e',
+                color: '#fff',
+                confirmButtonColor: '#22c55e'
+            }).then(() => {
+                hideTaskModal();
+                document.getElementById('taskTitle').value = '';
+            });
+        }
+
+        // --- QR Scanner ---
+        let html5QrcodeScanner = null;
+
+        function startQRScanner() {
+            document.getElementById('qrModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            const config = { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            };
+
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, 
+                config,
+                onScanSuccess
+            ).catch(err => {
+                console.error("Camera access failed", err);
+                Swal.fire({
+                    title: 'Camera Error',
+                    text: 'Unable to access your camera. Please check permissions.',
+                    icon: 'error',
+                    background: '#0a180e',
+                    color: '#fff'
+                });
+                stopQRScanner();
+            });
+        }
+
+        function stopQRScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('qrModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }).catch(err => console.error(err));
+            } else {
+                document.getElementById('qrModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            stopQRScanner();
+            Swal.fire({
+                title: 'Code Scanned!',
+                text: `Identification: ${decodedText}`,
+                icon: 'success',
+                background: '#0a180e',
+                color: '#fff',
+                confirmButtonColor: '#22c55e'
+            });
+        }
+
+        // --- Sync Mock ---
+        function syncData() {
+            const statusBtn = document.getElementById('syncStatus');
+            statusBtn.innerHTML = `
+                <i class='bx bx-loader-alt animate-spin text-white'></i>
+                <span class="text-white text-xs md:text-sm font-bold uppercase tracking-widest">Syncing...</span>
+            `;
+            
+            setTimeout(() => {
+                statusBtn.innerHTML = `
+                    <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
+                    <span class="text-white text-xs md:text-sm font-bold uppercase tracking-widest">Online / Synced</span>
+                `;
+            }, 2000);
+        }
     </script>
 @endsection

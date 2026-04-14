@@ -118,22 +118,27 @@
 .btn-restock {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 8px;
     background: #22c55e;
     color: #ffffff;
     border: none;
-    padding: 6px 14px;
+    padding: 8px 18px;
     border-radius: 9999px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);
 }
 .btn-restock:hover {
     background: #16a34a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(34, 197, 94, 0.3);
 }
 .btn-restock i {
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 </style>
 
@@ -180,7 +185,8 @@
             <p class="farm-subtitle">Current inventory levels and restock management</p>
         </div>
 
-        <table class="farm-table">
+        <div style="overflow-x: auto;">
+            <table class="farm-table" style="min-width: 800px;">
             <thead>
                 <tr>
                     <th>Feed Type</th>

@@ -14,6 +14,10 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ asset('backend/assets/images/brand-logos/favicon.ico') }}">
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2e7d32">
+
     <!-- Main JS -->
     <script src="{{ asset('backend/assets/js/main.js') }}"></script>
 
@@ -165,6 +169,17 @@
 
     <!-- Custom JS -->
     <script src="{{ asset('backend/assets/js/custom.js') }}"></script>
+
+    <!-- PWA Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.log('Service Worker registration failed', err));
+            });
+        }
+    </script>
 
 </body>
 

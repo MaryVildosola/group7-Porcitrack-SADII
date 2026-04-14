@@ -4,7 +4,7 @@
         <div class="form-card">
             <h2>Sign up</h2>
 
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Name -->
@@ -33,6 +33,18 @@
                         </svg>
                     </span>
                     @error('email')
+                        <div class="error-msg">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Profile Photo -->
+                <div class="input-group">
+                    <input id="photo" type="file" name="photo" accept="image/*" class="hidden" onchange="document.getElementById('photo-label').innerText = this.files[0].name">
+                    <div onclick="document.getElementById('photo').click()" class="cursor-pointer bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white/50 text-sm flex items-center gap-2 hover:bg-white/10 transition">
+                        <i class='bx bx-image-add text-lg'></i>
+                        <span id="photo-label">Upload Profile Photo</span>
+                    </div>
+                    @error('photo')
                         <div class="error-msg">{{ $message }}</div>
                     @enderror
                 </div>

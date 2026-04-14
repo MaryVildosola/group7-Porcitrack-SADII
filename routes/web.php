@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -58,6 +59,20 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
     Route::get('/worker/activity-log', function () {
         return view('worker.activityLog'); // Worker activity log page
     })->name('worker.activity-log');
+
+    Route::get('/worker/settings', [ProfileController::class, 'workerSettings'])->name('worker.settings');
+    Route::post('/worker/settings/update', [ProfileController::class, 'updateWorkerSettings'])->name('worker.settings.update');
+
+    // Weekly Reports
+    Route::get('/worker/weekly-reports', [ReportController::class, 'workerIndex'])->name('worker.reports');
+    Route::post('/worker/weekly-reports/store', [ReportController::class, 'store'])->name('worker.reports.store');
+});
+
+// --- ADMIN ZONE (Protected by Auth and Admin Role) ---
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Other admin routes...
+    Route::get('/admin/weekly-reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
+    Route::get('/admin/weekly-reports/{id}', [ReportController::class, 'show'])->name('admin.reports.show');
 });
 
 // --- SHARED ZONE (All Authenticated Users) ---
