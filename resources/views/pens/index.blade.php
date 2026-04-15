@@ -129,6 +129,8 @@
     transition: background 0.2s;
 }
 .btn-report:hover { background: #16a34a; }
+.btn-action-edit:hover { border-color: #22c55e !important; color: #16a34a !important; background: #f0fdf4 !important; }
+.btn-action-delete:hover { border-color: #ef4444 !important; background: #fee2e2 !important; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1); }
 </style>
 
 <div class="pens-pigs-container">
@@ -323,9 +325,19 @@
         <!-- Details Column -->
         <div class="details-column">
             <div class="details-panel">
-                <div class="details-header">
-                    <h2 class="details-title">Pen A1 Details</h2>
-                    <p class="page-subtitle">Section A</p>
+                <div class="details-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h2 class="details-title">Pen A1 Details</h2>
+                        <p class="page-subtitle">Section A</p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="editPen('Pen A1')" class="btn-action-edit" style="width: 36px; h-height: 36px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                            <i class='bx bx-edit-alt' style="font-size: 1.25rem;"></i>
+                        </button>
+                        <button onclick="deletePen('Pen A1')" class="btn-action-delete" style="width: 36px; h-height: 36px; border-radius: 10px; border: 1px solid #fee2e2; background: #fef2f2; color: #dc2626; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                            <i class='bx bx-trash' style="font-size: 1.25rem;"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Health Status -->
@@ -717,8 +729,83 @@
                 const timelineValues = detailSections[3].querySelectorAll('.financial-value');
                 timelineValues[0].innerText = data.start;
                 timelineValues[1].innerText = data.finish;
+
+                // 6. Update Action Buttons
+                const editBtn = document.querySelector('.btn-action-edit');
+                const deleteBtn = document.querySelector('.btn-action-delete');
+                if (editBtn) editBtn.setAttribute('onclick', `editPen('${penName}')`);
+                if (deleteBtn) deleteBtn.setAttribute('onclick', `deletePen('${penName}')`);
             }
         });
+
+        // --- Management Logic ---
+        window.editPen = function(penName) {
+            Swal.fire({
+                title: `Edit ${penName}`,
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Pen Name</label>
+                        <input id="swal-pen-name" class="swal2-input" value="${penName}" style="width: 100%; margin: 0 0 16px 0;">
+                        
+                        <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Section/Area</label>
+                        <input id="swal-pen-section" class="swal2-input" value="Section ${penName.charAt(4)}" style="width: 100%; margin: 0 0 16px 0;">
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Weight Goal</label>
+                                <input id="swal-pen-weight" class="swal2-input" value="110" style="width: 100%; margin: 0;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Batch Cost</label>
+                                <input id="swal-pen-cost" class="swal2-input" value="625000" style="width: 100%; margin: 0;">
+                            </div>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Save Changes',
+                confirmButtonColor: '#22c55e',
+                cancelButtonColor: '#4b5563',
+                background: '#fff',
+                color: '#111827',
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-pen-name').value,
+                        section: document.getElementById('swal-pen-section').value
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Updated!',
+                        text: `${penName} settings have been updated successfully.`,
+                        icon: 'success',
+                        confirmButtonColor: '#22c55e'
+                    });
+                }
+            });
+        };
+
+        window.deletePen = function(penName) {
+            Swal.fire({
+                title: `Delete ${penName}?`,
+                text: "This will permanently remove the pen and all its associated pig data. This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#4b5563',
+                confirmButtonText: 'Yes, Delete Pen'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: `${penName} has been removed from the system.`,
+                        icon: 'success',
+                        confirmButtonColor: '#22c55e'
+                    });
+                }
+            });
+        };
 
         // --- Alert Highlight Logic ---
         const urlParams = new URLSearchParams(window.location.search);
