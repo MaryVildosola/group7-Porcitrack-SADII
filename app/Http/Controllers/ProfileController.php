@@ -108,6 +108,7 @@ class ProfileController extends Controller
             'birthdate' => $validated['birthdate'] ?? null,
             'role' => $validated['role'],
             'status' => $validated['status'] ?? 1,
+            'email_verified_at' => now(),
             'photo' => $photoPath,
         ]);
 

@@ -1,0 +1,108 @@
+// ============================================================
+// Porcitrack — Database Schema
+// Generated for dbdocs.io
+// Project: Group 7 Porcitrack SADII
+// ============================================================
+
+Project Porcitrack {
+  database_type: 'MySQL'
+  Note: '''
+    Porcitrack is a farm management system for pig monitoring.
+    Workers log daily health checks, feeding data, and weekly reports.
+    Admins review reports and manage worker accounts.
+  '''
+}
+
+// ============================================================
+// USERS
+// Stores both admin and farm_worker accounts
+// ============================================================
+Table users {
+  id             bigint      [pk, increment, note: 'Primary key']
+  name           varchar     [not null, note: 'Full name of the user']
+  email          varchar     [unique, not null, note: 'Login email']
+  phone          varchar     [null, note: 'Contact number (optional)']
+  password       varchar     [not null, note: 'Hashed password']
+  role           varchar     [not null, default: 'farm_worker', note: 'Values: admin | farm_worker']
+  status         boolean     [not null, default: true, note: 'true=active, false=deactivated']
+  birthdate      date        [null, note: 'Optional date of birth']
+  photo          varchar     [null, note: 'Profile photo path/URL']
+  remember_token varchar     [null, note: 'Laravel remember-me token']
+  email_verified_at timestamp [null, note: 'Null if email not verified']
+  created_at     timestamp   [null]
+  updated_at     timestamp   [null]
+
+  Note: 'Core accounts table. role column separates admins from workers.'
+}
+
+// ============================================================
+// WEEKLY REPORTS
+// One report per worker per week. Only created on explicit submission.
+// ============================================================
+Table weekly_reports {
+  id             bigint      [pk, increment, note: 'Primary key']
+  user_id        bigint      [not null, ref: > users.id, note: 'FK → users. The worker who submitted this report']
+  total_pigs     int         [not null, default: 0, note: 'Total pig count reported for the week']
+  sick_pigs      int         [not null, default: 0, note: 'Number of pigs flagged as sick/unhealthy']
+  avg_weight     float       [not null, default: 0, note: 'Average pig weight in kg for the week']
+  feed_consumed  float       [not null, default: 0, note: 'Total feed consumed in kg for the week']
+  week_start_date date       [not null, note: 'Monday of the reporting week (Y-m-d format)']
+  details        text        [null, note: 'Worker operational notes / free text observations']
+  status         varchar     [not null, default: 'submitted', note: 'Values: submitted | draft (draft = incomplete, not shown as submitted)']
+  created_at     timestamp   [null]
+  updated_at     timestamp   [null]
+
+  indexes {
+    (user_id, week_start_date) [unique, name: 'unique_report_per_worker_per_week']
+  }
+
+  Note: 'Weekly submission from a farm worker. Only status=submitted counts as officially filed.'
+}
+
+// ============================================================
+// SESSIONS
+// Laravel native session store
+// ============================================================
+Table sessions {
+  id            varchar    [pk, note: 'Session ID string']
+  user_id       bigint     [null, ref: > users.id, note: 'FK → users (null for unauthenticated sessions)']
+  ip_address    varchar    [null, note: 'Client IP (max 45 chars for IPv6)']
+  user_agent    text       [null, note: 'Browser / device info']
+  payload       longtext   [not null, note: 'Encrypted session data']
+  last_activity int        [not null, note: 'Unix timestamp of last activity']
+
+  Note: 'Laravel database session driver table.'
+}
+
+// ============================================================
+// PASSWORD RESET TOKENS
+// Laravel native password reset
+// ============================================================
+Table password_reset_tokens {
+  email      varchar    [pk, note: 'Email address requesting the reset']
+  token      varchar    [not null, note: 'Hashed reset token']
+  created_at timestamp  [null, note: 'When token was generated']
+
+  Note: 'Short-lived tokens for password reset emails.'
+}
+
+// ============================================================
+// JOBS (Laravel Queue)
+// ============================================================
+Table jobs {
+  id           bigint    [pk, increment]
+  queue        varchar   [not null, note: 'Queue name']
+  payload      longtext  [not null, note: 'Serialised job data']
+  attempts     tinyint   [not null, note: 'Number of attempts made']
+  reserved_at  int       [null, note: 'Unix timestamp when reserved']
+  available_at int       [not null, note: 'Unix timestamp when available']
+  created_at   int       [not null, note: 'Unix timestamp when created']
+
+  Note: 'Laravel queue jobs table.'
+}
+
+// ============================================================
+// RELATIONSHIPS SUMMARY
+// ============================================================
+// users.id       <── weekly_reports.user_id   (one worker → many reports, one per week)
+// users.id       <── sessions.user_id          (one user → many sessions)

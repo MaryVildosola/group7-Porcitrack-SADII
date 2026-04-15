@@ -39,6 +39,7 @@ class ReportController extends Controller
         
         $existingReport = WeeklyReport::where('user_id', $user->id)
             ->where('week_start_date', $thisWeek)
+            ->where('status', 'submitted')
             ->first();
 
         // Mock Analytics Data for the Worker
