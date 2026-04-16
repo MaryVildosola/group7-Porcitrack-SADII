@@ -12,6 +12,9 @@ class SyncController extends Controller
 {
     /**
      * Handle the incoming offline logs from the Worker PWA.
+     * NOTE: This does NOT create a weekly report record — only the worker's
+     * explicit "Submit to HQ" action creates one. This prevents draft records
+     * from being mistaken for a submitted report.
      */
     public function sync(Request $request)
     {
@@ -22,34 +25,34 @@ class SyncController extends Controller
             return response()->json(['status' => 'success', 'message' => 'No logs to sync.']);
         }
 
-        // Find or create the current week's report for this user
-        $report = WeeklyReport::firstOrCreate(
-            [
-                'user_id' => $userId,
-                'week_start_date' => Carbon::now()->startOfWeek(),
-            ],
-            [
-                'status' => 'draft',
-                'total_pigs' => 452, // Mocking current total for now
-            ]
-        );
+        $thisWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
 
-        foreach ($logs as $log) {
-            if ($log['type'] === 'feeding') {
-                $report->feed_consumed += (float)$log['qty'];
-            } elseif ($log['type'] === 'health') {
-                if ($log['symptom'] !== 'Healthy') {
-                    $report->sick_pigs += 1;
+        // Only update an ALREADY SUBMITTED report — never auto-create one
+        $report = WeeklyReport::where('user_id', $userId)
+            ->where('week_start_date', $thisWeek)
+            ->where('status', 'submitted')
+            ->first();
+
+        if ($report) {
+            // Append synced log data into the existing submitted report
+            foreach ($logs as $log) {
+                if ($log['type'] === 'feeding') {
+                    $report->feed_consumed += (float)($log['qty'] ?? 0);
+                } elseif ($log['type'] === 'health') {
+                    if (($log['symptom'] ?? 'Healthy') !== 'Healthy') {
+                        $report->sick_pigs += 1;
+                    }
                 }
             }
+            $report->save();
         }
-
-        $report->save();
+        // If no submitted report exists yet, logs are accepted but not persisted
+        // to a report record — they live in the worker's localStorage until
+        // they explicitly submit their weekly report.
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Logs synchronized successfully.',
-            'report' => $report
+            'status'  => 'success',
+            'message' => 'Logs received. They will be included when you submit your weekly report.',
         ]);
     }
 }

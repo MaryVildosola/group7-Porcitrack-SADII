@@ -5,73 +5,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Valex - Tailwind Admin Template </title>
-    <meta name="description"
-        content="A Tailwind CSS admin template is a pre-designed web page for an admin dashboard. Optimizing it for SEO includes using meta descriptions and ensuring it's responsive and fast-loading.">
-    <meta name="keywords"
-        content="dashboard,admin dashboard,template dashboard,html,html dashboard,admin dashboard template,admin template,tailwind ui,admin panel,html and css,html admin template,tailwind framework,html css javascript,tailwind css dashboard,dashboard html css,admin,template admin panel,dashboard html template">
-
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('backend/assets/images/brand-logos/favicon.ico') }}">
+    <title> PorciTrack - Farm Admin </title>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2e7d32">
 
-    <!-- Main JS -->
-    <script src="{{ asset('backend/assets/js/main.js') }}"></script>
-
-    <!-- Style Css -->
+    <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('backend/assets/css/style.css') }}">
-
-    <!-- Simplebar Css -->
     <link rel="stylesheet" href="{{ asset('backend/assets/libs/simplebar/simplebar.min.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-    <!-- Color Picker Css -->
-    <link rel="stylesheet" href="{{ asset('backend/assets/libs/@simonwep/pickr/themes/nano.min.css') }}">
-    <!-- Jsvector Maps -->
-    <link rel="stylesheet" href="{{ asset('backend/assets/libs/jsvectormap/css/jsvectormap.min.css') }}">
-
-    <!-- Custom Farm Admin Aesthetic Styles -->
     <style>
-        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
-        
-        /* Master Layout Fixes */
+        body {
+            background-color: #f8fafc !important;
+            color: #bfcbdf;
+            font-family: 'Inter', sans-serif;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* 1. Force Remove Top White Space (Aggressive Fix) */
+        .app-header,
+        .main-sidebar-header,
+        .header-main-menu {
+            display: none !important;
+        }
+
+        .page,
+        .main-content,
         .content {
-            padding-top: 0 !important;
+            padding-top: 5 !important;
+            margin-top: 5 !important;
+            top: 5 !important;
         }
-        
-        /* Sidebar Farm Admin Overrides */
-        .app-sidebar, .main-sidebar {
-            background-color: #0b1120 !important; /* Deep dark blue */
-            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-            padding-top: 0 !important;
-            margin-top: 0 !important;
-        }
-        .main-sidebar {
+
+        /* 2. Fix Sidebar position and background gap */
+        .app-sidebar {
             top: 0 !important;
+            position: fixed !important;
+            height: 100vh !important;
+            background-color: #0b1120 !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+            z-index: 999;
         }
-        .sidebar-profile {
-            padding: 24px 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+
+        .main-sidebar,
+        #sidebar-scroll {
+            padding-top: 0 !important;
+            background-color: #0b1120 !important;
         }
+
+        /* 3. FINAL FIX: DELETE ALL BLUE (Hover & Active states) */
         .side-menu__item {
-            color: #94a3b8 !important;
+            color: #f6f9fd !important;
             margin: 4px 16px;
-            border-radius: 8px;
+            border-radius: 12px;
             transition: all 0.3s ease;
         }
-        .side-menu__item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff !important;
+
+        /* Targeted Hover: Specifically removing the blue template default */
+        .side-menu__item:hover,
+        .side-menu__item:focus,
+        .side-menu__item.active:hover {
+            background-color: rgba(34, 197, 94, 0.15) !important;
+            /* Green Tint */
+            color: #e3ffed !important;
+            /* Brighter Green */
+            border-color: transparent !important;
         }
+
+        /* Final Active State: Solid Green Gradient (NO BLUE) */
         .side-menu__item.active {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            background: linear-gradient(135deg, #c2e2ce 0%, #bad6c4 100%) !important;
             color: #fff !important;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3) !important;
         }
-        .side-menu__item.active .side-menu__icon { fill: #fff !important; }
-        .side-menu__item.active .side-menu__label { color: #fff !important; }
+
+        .side-menu__icon {
+            fill: currentColor !important;
+        }
     </style>
 
 </head>
@@ -107,8 +120,7 @@
                 <span class="text-gray dark:text-defaulttextcolor/50"> Copyright © <span id="year"></span> <a
                         href="javascript:void(0);"
                         class="text-defaulttextcolor font-semibold dark:text-defaulttextcolor">Valex</a>.
-                    Designed with <span class="bi bi-heart-fill text-danger"></span> by <a
-                        href="javascript:void(0);">
+                    Designed with <span class="bi bi-heart-fill text-danger"></span> by <a href="javascript:void(0);">
                         <span class="font-semibold text-primary underline">Spruko</span>
                     </a> All
                     rights

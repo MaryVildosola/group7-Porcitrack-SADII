@@ -86,7 +86,6 @@
 .chart-title { font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 4px; }
 .chart-subtitle { font-size: 0.85rem; color: #9ca3af; }
 
-/* Simulated Charts using SVGs from previous logic */
 </style>
 
 <div class="dashboard-wrap">

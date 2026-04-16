@@ -4,28 +4,9 @@
     <div class="p-6 md:p-12 max-w-full">
 
         <!-- Header Section -->
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8 md:mb-10">
-            <div>
-                <p class="text-sm md:text-base font-medium text-white/70 mb-1 md:mb-2">Manage Your</p>
-                <div class="flex items-center gap-3">
-                    <h1 class="text-3xl md:text-5xl font-bold text-white">Tasks</h1>
-                    <div id="syncStatus" class="text-[10px] md:text-xs transition-all p-1 px-3 rounded-full inline-flex items-center bg-green-500/20 text-green-300 border border-green-500/30">
-                        <i class='bx bx-check-double mr-1'></i> Synchronized
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <button onclick="showNotifications()"
-                    class="relative w-12 h-12 rounded-full flex items-center justify-center glass-button hover:bg-white/20 transition shadow-lg">
-                    <i class='bx bx-bell text-xl text-white'></i>
-                    <span
-                        class="absolute top-2.5 right-2.5 w-3 h-3 bg-red-500 rounded-full border border-[#428246] animate-pulse"></span>
-                </button>
-                <button onclick="showSearch()"
-                    class="w-12 h-12 rounded-full flex items-center justify-center glass-button hover:bg-white/20 transition shadow-lg">
-                    <i class='bx bx-search text-xl text-white'></i>
-                </button>
-            </div>
+        <div class="mb-8 md:mb-10 w-full md:w-2/3 lg:w-1/2">
+            <p class="text-sm md:text-base font-medium text-white/70 mb-1 md:mb-2">Manage Your</p>
+            <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight">Tasks</h1>
         </div>
 
         <!-- Task Summary (Anchored Left) -->
@@ -155,9 +136,9 @@
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-white/40"><i class='bx bx-map-pin text-xl'></i></span>
                         <select id="taskPen" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-green-500/50 transition appearance-none font-medium">
-                            <option value="Pen 1">Pen 1 (Piglets)</option>
-                            <option value="Pen 5">Pen 5 (Fattening)</option>
-                            <option value="Pen 12">Pen 12 (Breeding)</option>
+                            <option value="Pen 1" class="bg-[#0a180e]">Pen 1 (Piglets)</option>
+                            <option value="Pen 5" class="bg-[#0a180e]">Pen 5 (Fattening)</option>
+                            <option value="Pen 12" class="bg-[#0a180e]">Pen 12 (Breeding)</option>
                         </select>
                         <i class='bx bx-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-white/40'></i>
                     </div>
