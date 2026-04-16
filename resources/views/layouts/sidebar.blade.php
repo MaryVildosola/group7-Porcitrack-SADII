@@ -49,6 +49,26 @@
                 </a>
             </li>
 
+            <!-- Feed Stock -->
+            <li class="slide {{ request()->routeIs('admin.feed-stock.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.feed-stock.index') }}" class="side-menu__item {{ request()->routeIs('admin.feed-stock.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
+                        <path d="M4 4h16v3H4V4zm0 6h16v3H4v-3zm0 6h16v3H4v-3z" />
+                    </svg>
+                    <span class="side-menu__label">Feed Stock</span>
+                </a>
+            </li>
+
+            <!-- QR Labels -->
+            <li class="slide {{ request()->routeIs('admin.qr.index') ? 'active' : '' }}">
+                <a href="{{ route('admin.qr.index') }}" class="side-menu__item {{ request()->routeIs('admin.qr.index') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
+                        <path d="M4 4h4v4H4V4zm2 2h0v0h0v0zm10-2h4v4h-4V4zm2 2h0v0h0v0zM4 14h4v4H4v-4zm2 2h0v0h0v0zm10-2h4v4h-4v-4zm2 2h0v0h0v0zM10 4h4v4h-4V4zm0 10h4v4h-4v-4z" />
+                    </svg>
+                    <span class="side-menu__label">QR Labels</span>
+                </a>
+            </li>
+
             <!-- Analytics -->
             <li class="slide {{ request()->routeIs('subject.*') ? 'active' : '' }}">
                 <a href="{{ route('subject.index') }}" class="side-menu__item {{ request()->routeIs('subject.*') ? 'active' : '' }}">

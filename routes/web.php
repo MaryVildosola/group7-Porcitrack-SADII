@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\InventoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,6 +41,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
     Route::resource('enrollments', EnrollmentController::class);
     Route::resource('subject', SubjectController::class);
+
+    Route::get('/admin/feed-stock', [InventoryController::class, 'index'])->name('admin.feed-stock.index');
+    Route::post('/admin/feed-stock', [InventoryController::class, 'store'])->name('admin.feed-stock.store');
+    Route::get('/admin/qr-labels', [InventoryController::class, 'qrGenerator'])->name('admin.qr.index');
 });
 
 // --- WORKER ZONE ---
