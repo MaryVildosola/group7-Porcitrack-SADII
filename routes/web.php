@@ -28,9 +28,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         return view('users.dashboard'); // Placeholder for admin dashboard
     })->name('admin.dashboard');
 
-    Route::get('/pens/index', function () {
-        return view('pens.index'); 
-    })->name('pens.index');
+    Route::get('/pens/index', [App\Http\Controllers\PenController::class, 'index'])->name('pens.index');
+    Route::post('/pens/store', [App\Http\Controllers\PenController::class, 'store'])->name('pens.store');
+    Route::put('/pens/{pen}', [App\Http\Controllers\PenController::class, 'update'])->name('pens.update');
+    Route::delete('/pens/{pen}', [App\Http\Controllers\PenController::class, 'destroy'])->name('pens.destroy');
 
     Route::get('users/index', [ProfileController::class, 'getAllUsers'])->name('users.index');
     Route::get('users/create', [ProfileController::class, 'create'])->name('users.create');
