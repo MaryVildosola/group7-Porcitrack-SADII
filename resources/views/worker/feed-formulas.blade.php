@@ -147,24 +147,8 @@
 
 {{-- Preload formula data as JSON --}}
 <script>
-const FORMULAS = @json($formulas->map(function($f) {
-    return [
-        'id'          => $f->id,
-        'name'        => $f->name,
-        'life_stage'  => $f->life_stage,
-        'total_sacks' => $f->total_batch_sacks,
-        'all_pass'    => $f->all_pass,
-        'notes'       => $f->notes,
-        'ingredients' => $f->formulaIngredients->map(fn($i) => [
-            'name'   => $i->ingredient->name,
-            'sacks'  => $i->quantity_sacks,
-            'kg'     => $i->quantity_sacks * 50,
-            'pct'    => $f->total_batch_sacks > 0 ? round($i->quantity_sacks / $f->total_batch_sacks * 100, 1) : 0,
-        ]),
-        'nutrients'   => $f->nutrient_summary,
-        'requirements'=> $f->requirement,
-    ];
-}));
+const FORMULAS = @json($formulasData);
+
 
 const STAGE_LABELS = { starter: 'Starter (10–25 kg)', grower: 'Grower (25–60 kg)', finisher: 'Finisher (60–100 kg)', breeder: 'Breeder / Sow' };
 const STAGE_EMOJI  = { starter: '🐷', grower: '🐖', finisher: '🥩', breeder: '🐽' };

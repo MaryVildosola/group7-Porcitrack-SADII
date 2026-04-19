@@ -23,16 +23,44 @@ class WorkerFeedFormulaController extends Controller
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($formula) {
-                $nutrients   = $this->computeNutrients($formula);
-                $req         = self::REQUIREMENTS[$formula->life_stage] ?? [];
-                $checks      = $this->checkRequirements($nutrients, $req);
-                $formula->nutrient_summary  = $nutrients;
-                $formula->requirement       = $req;
-                $formula->all_pass          = !empty($checks) && !in_array(false, $checks);
+                $nutrients  = $this->computeNutrients($formula);
+                $req        = self::REQUIREMENTS[$formula->life_stage] ?? [];
+                $checks     = $this->checkRequirements($nutrients, $req);
+                $formula->nutrient_summary = $nutrients;
+                $formula->requirement      = $req;
+                $formula->all_pass         = !empty($checks) && !in_array(false, $checks);
                 return $formula;
             });
 
-        return view('worker.feed-formulas', compact('formulas'));
+        // Build a plain PHP array safe for @json() in Blade (no closures inside)
+        $formulasData = [];
+        foreach ($formulas as $formula) {
+            $ingredients = [];
+            foreach ($formula->formulaIngredients as $item) {
+                $ingredients[] = [
+                    'name'  => $item->ingredient->name,
+                    'sacks' => $item->quantity_sacks,
+                    'kg'    => $item->quantity_sacks * self::KG_PER_SACK,
+                    'pct'   => $formula->total_batch_sacks > 0
+                        ? round($item->quantity_sacks / $formula->total_batch_sacks * 100, 1)
+                        : 0,
+                ];
+            }
+
+            $formulasData[] = [
+                'id'           => $formula->id,
+                'name'         => $formula->name,
+                'life_stage'   => $formula->life_stage,
+                'total_sacks'  => $formula->total_batch_sacks,
+                'all_pass'     => $formula->all_pass,
+                'notes'        => $formula->notes,
+                'nutrients'    => $formula->nutrient_summary,
+                'requirements' => $formula->requirement,
+                'ingredients'  => $ingredients,
+            ];
+        }
+
+        return view('worker.feed-formulas', compact('formulas', 'formulasData'));
     }
 
     private function computeNutrients(FeedFormula $formula): array
