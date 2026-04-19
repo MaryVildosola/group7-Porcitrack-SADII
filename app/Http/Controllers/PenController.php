@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pen;
+use App\Models\Pig;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PenController extends Controller
 {
@@ -12,7 +14,7 @@ class PenController extends Controller
      */
     public function index()
     {
-        $pens = Pen::all();
+        $pens = Pen::with('pigs')->get();
         return view('pens.index', compact('pens'));
     }
 
@@ -35,15 +37,33 @@ class PenController extends Controller
             'progress' => 'nullable|integer',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
+            'pig_count' => 'nullable|integer|min:0|max:100', // Limit for safety
         ]);
 
-        $pen = Pen::create($validated);
+        return \DB::transaction(function () use ($validated) {
+            $pen = Pen::create($validated);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pen created successfully!',
-            'pen' => $pen
-        ]);
+            // Bulk generate pigs if pig_count is provided
+            $pigCount = $validated['pig_count'] ?? 0;
+            if ($pigCount > 0) {
+                for ($i = 1; $i <= $pigCount; $i++) {
+                    // Generate a tag like PENNAME-001
+                    $tag = sprintf('%s-%03d', $pen->name, $i);
+                    
+                    Pig::create([
+                        'tag' => $tag,
+                        'pen_id' => $pen->id,
+                        'birth_date' => $pen->start_date, // Default to start date of batch
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pen created successfully with ' . $pigCount . ' pigs!',
+                'pen' => $pen->load('pigs')
+            ]);
+        });
     }
 
     /**
