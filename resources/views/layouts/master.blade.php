@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title> PorciTrack - Farm Admin </title>
 
     <!-- PWA Manifest -->
@@ -157,30 +158,28 @@
 
 
     <!-- Simplebar JS -->
-    <script src="{{ asset('backend/assets/libs/simplebar/simplebar.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/libs/simplebar/simplebar.min.js') }}" defer></script>
 
     <!-- Preline JS -->
-    <script src="{{ asset('backend/assets/libs/preline/preline.js') }}"></script>
+    <script src="{{ asset('backend/assets/libs/preline/preline.js') }}" defer></script>
 
     <!-- Apex Charts JS -->
-    <script src="{{ asset('backend/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/libs/apexcharts/apexcharts.min.js') }}" defer></script>
 
-    <!-- JSVector Maps JS -->
+    <!-- JSVector Maps JS commented out to save load time
     <script src="{{ asset('backend/assets/libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
-
-    <!-- JSVector Maps MapsJS -->
     <script src="{{ asset('backend/assets/libs/jsvectormap/maps/world-merc.js') }}"></script>
     <script src="{{ asset('backend/assets/js/us-merc-en.js') }}"></script>
+    -->
 
     <!-- CRM-Dashboard -->
-    <script src="{{ asset('backend/assets/js/index.js') }}"></script>
-
+    <script src="{{ asset('backend/assets/js/index.js') }}" defer></script>
 
     <!-- Custom-Switcher JS -->
-    <script src="{{ asset('backend/assets/js/custom-switcher.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/custom-switcher.js') }}" defer></script>
 
     <!-- Custom JS -->
-    <script src="{{ asset('backend/assets/js/custom.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/custom.js') }}" defer></script>
 
     <!-- PWA Registration -->
     <script>
