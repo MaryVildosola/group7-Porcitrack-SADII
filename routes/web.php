@@ -8,6 +8,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\FeedMixController;
 use App\Http\Controllers\FeedIngredientController;
 use App\Http\Controllers\Worker\WorkerFeedFormulaController;
+use App\Http\Controllers\PigController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,6 +37,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::put('/pens/{pen}', [App\Http\Controllers\PenController::class, 'update'])->name('pens.update');
     Route::delete('/pens/{pen}', [App\Http\Controllers\PenController::class, 'destroy'])->name('pens.destroy');
 
+    Route::post('/pigs/{pig}/sell-dispose', [\App\Http\Controllers\PigController::class, 'sellOrDispose'])->name('pigs.sellOrDispose');
+
     Route::get('users/index', [ProfileController::class, 'getAllUsers'])->name('users.index');
     Route::get('users/create', [ProfileController::class, 'create'])->name('users.create');
     Route::get('users/{id}/edit', [ProfileController::class, 'editUser'])->name('users.edit');
@@ -62,7 +65,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('/admin/feed-ingredients', [FeedIngredientController::class, 'store'])->name('admin.feed-ingredients.store');
     Route::put('/admin/feed-ingredients/{ingredient}', [FeedIngredientController::class, 'update'])->name('admin.feed-ingredients.update');
     Route::delete('/admin/feed-ingredients/{ingredient}', [FeedIngredientController::class, 'destroy'])->name('admin.feed-ingredients.destroy');
-});
+
+    });
 
 // --- WORKER ZONE ---
 Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
@@ -94,7 +98,8 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 
     // Feed Formulas (read-only for workers)
     Route::get('/worker/feed-formulas', [WorkerFeedFormulaController::class, 'index'])->name('worker.feed-formulas');
-});
+
+    });
 
 // --- ADMIN ZONE (Protected by Auth and Admin Role) ---
 Route::middleware(['auth', 'role:admin'])->group(function () {

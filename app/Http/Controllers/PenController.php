@@ -88,4 +88,14 @@ class PenController extends Controller
             'message' => 'Pen deleted successfully!'
         ]);
     }
+
+    public function show($id)
+{
+    // Kukunin ang pen at isasama lahat ng pigs na 'Healthy' o 'Active'
+    $pen = Pen::with(['pigs' => function($query) {
+        $query->whereNotIn('status', ['Sold', 'Disposed']);
+    }])->findOrFail($id);
+
+    return view('pens.show', compact('pen'));
+}
 }
