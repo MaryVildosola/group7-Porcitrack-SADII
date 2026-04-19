@@ -147,179 +147,39 @@
     <div class="pens-grid">
         <!-- List side -->
         <div class="pens-list">
-            <!-- Pen A1 -->
-            <div class="pen-card active">
+            @forelse($pens as $pen)
+            <div class="pen-card {{ $loop->first ? 'active' : '' }}" data-id="{{ $pen->id }}">
                 <div class="pen-info">
                     <div class="pen-name-row">
-                        <span class="pen-name">Pen A1</span>
-                        <span class="badge-fair">Fair</span>
+                        <span class="pen-name">{{ $pen->name }}</span>
+                        <span class="badge-{{ strtolower($pen->status) }}">{{ $pen->status }}</span>
                     </div>
                     <div class="pen-stats-row">
                         <div class="stat-item">
                             <span class="stat-label">Total Pigs</span>
-                            <span class="stat-value">48</span>
+                            <span class="stat-value">{{ $pen->healthy_pigs + $pen->sick_pigs }}</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Sick Pigs</span>
-                            <span class="stat-value danger">3</span>
+                            <span class="stat-value {{ $pen->sick_pigs > 0 ? 'danger' : '' }}">{{ $pen->sick_pigs }}</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Avg Weight</span>
-                            <span class="stat-value">65 kg</span>
+                            <span class="stat-value">{{ $pen->avg_weight }}</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Progress</span>
-                            <span class="stat-value">59%</span>
+                            <span class="stat-value">{{ $pen->progress }}%</span>
                         </div>
                     </div>
                 </div>
                 <i class="bx bx-chevron-right pen-chevron"></i>
             </div>
-
-            <!-- Pen A2 -->
-            <div class="pen-card">
-                <div class="pen-info">
-                    <div class="pen-name-row">
-                        <span class="pen-name">Pen A2</span>
-                        <span class="badge-excellent">Excellent</span>
-                    </div>
-                    <div class="pen-stats-row">
-                        <div class="stat-item">
-                            <span class="stat-label">Total Pigs</span>
-                            <span class="stat-value">48</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Sick Pigs</span>
-                            <span class="stat-value">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Avg Weight</span>
-                            <span class="stat-value">72 kg</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Progress</span>
-                            <span class="stat-value">65%</span>
-                        </div>
-                    </div>
-                </div>
-                <i class="bx bx-chevron-right pen-chevron"></i>
+            @empty
+            <div class="p-8 text-center text-gray-500">
+                No pens found. Click "Add Pen" to create one.
             </div>
-
-            <!-- Pen B1 -->
-            <div class="pen-card">
-                <div class="pen-info">
-                    <div class="pen-name-row">
-                        <span class="pen-name">Pen B1</span>
-                        <span class="badge-poor">Poor</span>
-                    </div>
-                    <div class="pen-stats-row">
-                        <div class="stat-item">
-                            <span class="stat-label">Total Pigs</span>
-                            <span class="stat-value">47</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Sick Pigs</span>
-                            <span class="stat-value danger">5</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Avg Weight</span>
-                            <span class="stat-value">58 kg</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Progress</span>
-                            <span class="stat-value">53%</span>
-                        </div>
-                    </div>
-                </div>
-                <i class="bx bx-chevron-right pen-chevron"></i>
-            </div>
-
-            <!-- Pen B2 -->
-            <div class="pen-card">
-                <div class="pen-info">
-                    <div class="pen-name-row">
-                        <span class="pen-name">Pen B2</span>
-                        <span class="badge-good">Good</span>
-                    </div>
-                    <div class="pen-stats-row">
-                        <div class="stat-item">
-                            <span class="stat-label">Total Pigs</span>
-                            <span class="stat-value">52</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Sick Pigs</span>
-                            <span class="stat-value danger">2</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Avg Weight</span>
-                            <span class="stat-value">68 kg</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Progress</span>
-                            <span class="stat-value">62%</span>
-                        </div>
-                    </div>
-                </div>
-                <i class="bx bx-chevron-right pen-chevron"></i>
-            </div>
-
-            <!-- Pen C1 -->
-            <div class="pen-card">
-                <div class="pen-info">
-                    <div class="pen-name-row">
-                        <span class="pen-name">Pen C1</span>
-                        <span class="badge-excellent">Excellent</span>
-                    </div>
-                    <div class="pen-stats-row">
-                        <div class="stat-item">
-                            <span class="stat-label">Total Pigs</span>
-                            <span class="stat-value">45</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Sick Pigs</span>
-                            <span class="stat-value">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Avg Weight</span>
-                            <span class="stat-value">85 kg</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Progress</span>
-                            <span class="stat-value">77%</span>
-                        </div>
-                    </div>
-                </div>
-                <i class="bx bx-chevron-right pen-chevron"></i>
-            </div>
-
-            <!-- Pen C2 -->
-            <div class="pen-card">
-                <div class="pen-info">
-                    <div class="pen-name-row">
-                        <span class="pen-name">Pen C2</span>
-                        <span class="badge-good">Good</span>
-                    </div>
-                    <div class="pen-stats-row">
-                        <div class="stat-item">
-                            <span class="stat-label">Total Pigs</span>
-                            <span class="stat-value">50</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Sick Pigs</span>
-                            <span class="stat-value danger">1</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Avg Weight</span>
-                            <span class="stat-value">78 kg</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Progress</span>
-                            <span class="stat-value">71%</span>
-                        </div>
-                    </div>
-                </div>
-                <i class="bx bx-chevron-right pen-chevron"></i>
-            </div>
+            @endforelse
         </div>
 
         <!-- Details Column -->
@@ -421,50 +281,64 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Report Generation Logic ---
-        const reportBtn = document.querySelector('.btn-report');
-        if (reportBtn) {
-            reportBtn.addEventListener('click', () => {
-                const penName = document.querySelector('.details-title').innerText.replace(' Details', '').trim();
+        // --- CSRF Setup for AJAX ---
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                Swal.fire({
-                    title: 'Generating Report...',
-                    html: `Compiling health, weight, and financial data for <b>${penName}</b>. Please wait...`,
-                    timer: 2000,
-                    timerProgressBar: true,
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                }).then(() => {
-                    Swal.fire({
-                        title: 'Report Ready!',
-                        text: `The comprehensive report for ${penName} has been successfully generated.`,
-                        icon: 'success',
-                        showCancelButton: true,
-                        confirmButtonText: '<i class="bx bx-printer" style="vertical-align: middle; margin-right: 4px;"></i> Print Report',
-                        cancelButtonText: '<i class="bx bx-download" style="vertical-align: middle; margin-right: 4px;"></i> Download PDF',
-                        confirmButtonColor: '#22c55e',
-                        cancelButtonColor: '#3b82f6',
-                        customClass: {
-                            confirmButton: 'shadow-sm',
-                            cancelButton: 'shadow-sm'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.print();
-                        } else if (result.dismiss === Swal.DismissReason.cancel) {
-                            Swal.fire({
-                                title: 'Downloaded',
-                                text: `The PDF report for ${penName} has been securely saved to your device.`,
-                                icon: 'success',
-                                confirmButtonColor: '#22c55e'
-                            });
-                        }
-                    });
-                });
-            });
-        }
+        // --- Interactive Pen Cards Logic ---
+        let penDetails = @json($pens->keyBy('name'));
+
+        const pensList = document.querySelector('.pens-list');
+        pensList.addEventListener('click', (e) => {
+            const card = e.target.closest('.pen-card');
+            if (!card) return;
+
+            // Update active selection state visually
+            document.querySelectorAll('.pen-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+
+            // Retrieve clicked pen Name and Data
+            const penId = card.getAttribute('data-id');
+            const penName = card.querySelector('.pen-name').innerText.trim();
+            
+            // Find in details
+            const data = Object.values(penDetails).find(p => p.id == penId);
+
+            if (data) {
+                // 1. Update Headers
+                document.querySelector('.details-title').innerText = `${data.name} Details`;
+                document.querySelector('.details-header .page-subtitle').innerText = data.section || 'Unassigned';
+
+                // 2. Update Health Status
+                const healthValues = document.querySelectorAll('.health-grid .health-value');
+                healthValues[0].innerText = data.healthy_pigs || 0;
+                healthValues[1].innerText = data.sick_pigs || 0;
+
+                // 3. Update Weight Progress
+                const detailSections = document.querySelectorAll('.details-section');
+                const weightValues = detailSections[1].querySelectorAll('.font-bold');
+                weightValues[0].innerText = data.avg_weight || '0 kg';
+                weightValues[1].innerText = data.target_weight || '0 kg';
+                document.querySelector('.progress-bar-fill').style.width = `${data.progress || 0}%`;
+                document.querySelector('.progress-meta').innerText = `${data.progress || 0}% to target`;
+
+                // 4. Update Financial Overview
+                const financialValues = detailSections[2].querySelectorAll('.financial-value');
+                financialValues[0].innerText = data.batch_cost || '₱0';
+                financialValues[1].innerText = data.feed_cons || '0 kg';
+                financialValues[2].innerText = data.profit_margin || '0%';
+
+                // 5. Update Timeline
+                const timelineValues = detailSections[3].querySelectorAll('.financial-value');
+                timelineValues[0].innerText = data.start_date || 'N/A';
+                timelineValues[1].innerText = data.end_date || 'N/A';
+
+                // 6. Update Action Buttons
+                const editBtn = document.querySelector('.btn-action-edit');
+                const deleteBtn = document.querySelector('.btn-action-delete');
+                if (editBtn) editBtn.setAttribute('onclick', `editPen(${data.id})`);
+                if (deleteBtn) deleteBtn.setAttribute('onclick', `deletePen(${data.id})`);
+            }
+        });
 
         // --- Add Pen Logic ---
         const addPenBtn = document.querySelector('.btn-add-pen');
@@ -478,7 +352,6 @@
                             .custom-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
                             .custom-input:focus { border-color: #22c55e; outline: none; }
                             .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
-                            .form-group { margin-bottom: 4px; }
                             .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }
                         </style>
                         <div class="form-grid">
@@ -528,7 +401,7 @@
                                 <input id="pen-profit" class="custom-input" placeholder="e.g. 20%">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Progress</label>
+                                <label class="form-label">Progress (%)</label>
                                 <input id="pen-progress" type="number" class="custom-input" placeholder="e.g. 45">
                             </div>
                             <div class="form-group">
@@ -544,265 +417,219 @@
                     showCancelButton: true,
                     confirmButtonText: 'Save Pen',
                     confirmButtonColor: '#22c55e',
+                    showLoaderOnConfirm: true,
                     preConfirm: () => {
-                        const name = document.getElementById('pen-name').value;
-                        const section = document.getElementById('pen-section').value;
-                        const status = document.getElementById('pen-status').value;
-                        const healthy = document.getElementById('pen-healthy').value;
-                        const sick = document.getElementById('pen-sick').value;
-                        const currentAvg = document.getElementById('pen-avg-weight').value;
-                        const targetWeight = document.getElementById('pen-target-weight').value;
-                        const batchCost = document.getElementById('pen-batch-cost').value;
-                        const feedCons = document.getElementById('pen-feed-cons').value;
-                        const profit = document.getElementById('pen-profit').value;
-                        const progress = document.getElementById('pen-progress').value;
-                        const start = document.getElementById('pen-start').value;
-                        const finish = document.getElementById('pen-finish').value;
+                        const payload = {
+                            name: document.getElementById('pen-name').value,
+                            section: document.getElementById('pen-section').value,
+                            status: document.getElementById('pen-status').value,
+                            healthy_pigs: document.getElementById('pen-healthy').value,
+                            sick_pigs: document.getElementById('pen-sick').value,
+                            avg_weight: document.getElementById('pen-avg-weight').value,
+                            target_weight: document.getElementById('pen-target-weight').value,
+                            batch_cost: document.getElementById('pen-batch-cost').value,
+                            feed_cons: document.getElementById('pen-feed-cons').value,
+                            profit_margin: document.getElementById('pen-profit').value,
+                            progress: document.getElementById('pen-progress').value,
+                            start_date: document.getElementById('pen-start').value,
+                            end_date: document.getElementById('pen-finish').value,
+                        };
 
-                        if (!name || !section || !healthy || !sick || !currentAvg || !targetWeight || !batchCost || !feedCons || !profit || !progress || !start || !finish) {
-                            Swal.showValidationMessage('Please completely fill up all fields to ensure data is properly structured!');
+                        if (!payload.name) {
+                            Swal.showValidationMessage('Pen Name is required!');
+                            return false;
                         }
 
-                        return {
-                            name, section, status,
-                            healthy: parseInt(healthy), sick: parseInt(sick),
-                            currentAvg, targetWeight, batchCost, feedCons, profit,
-                            progress: parseInt(progress), start, finish
-                        };
+                        return fetch('{{ route("pens.store") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error(response.statusText);
+                            return response.json();
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Request failed: ${error}`);
+                        });
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const data = result.value;
-                        
-                        // Add to details object
-                        penDetails[data.name] = {
-                            subtitle: data.section,
-                            healthy: data.healthy,
-                            sick: data.sick,
-                            currentAvg: data.currentAvg,
-                            targetWeight: data.targetWeight,
-                            progress: data.progress,
-                            batchCost: data.batchCost,
-                            feedCons: data.feedCons,
-                            profit: data.profit,
-                            start: data.start,
-                            finish: data.finish
-                        };
-
-                        // Calculate total pigs
-                        const totalPigs = data.healthy + data.sick;
-                        
-                        // Create DOM element
-                        const newCard = document.createElement('div');
-                        newCard.className = 'pen-card';
-                        
-                        // Determine badge class
-                        const statusLower = data.status.toLowerCase();
-                        
-                        newCard.innerHTML = `
-                            <div class="pen-info">
-                                <div class="pen-name-row">
-                                    <span class="pen-name">${data.name}</span>
-                                    <span class="badge-${statusLower}">${data.status}</span>
-                                </div>
-                                <div class="pen-stats-row">
-                                    <div class="stat-item">
-                                        <span class="stat-label">Total Pigs</span>
-                                        <span class="stat-value">${totalPigs}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Sick Pigs</span>
-                                        <span class="stat-value ${data.sick > 0 ? 'danger' : ''}">${data.sick}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Avg Weight</span>
-                                        <span class="stat-value">${data.currentAvg}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Progress</span>
-                                        <span class="stat-value">${data.progress}%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <i class="bx bx-chevron-right pen-chevron"></i>
-                        `;
-                        
-                        document.querySelector('.pens-list').appendChild(newCard);
-                        newCard.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                        newCard.click();
-                        
                         Swal.fire({
                             icon: 'success',
                             title: 'Pen Added!',
-                            text: `${data.name} has been successfully added to the report.`,
+                            text: result.value.message,
                             confirmButtonColor: '#22c55e'
-                        });
+                        }).then(() => window.location.reload());
                     }
                 });
             });
         }
 
-        // --- Interactive Pen Cards Logic ---
-        let penDetails = {
-            'Pen A1': {
-                subtitle: 'Section A',
-                healthy: 45, sick: 3,
-                currentAvg: '65 kg', targetWeight: '110 kg', progress: 59,
-                batchCost: '₱625,000', feedCons: '145 kg', profit: '22%',
-                start: '2025-12-01', finish: '2026-03-15'
-            },
-            'Pen A2': {
-                subtitle: 'Section A',
-                healthy: 48, sick: 0,
-                currentAvg: '72 kg', targetWeight: '110 kg', progress: 65,
-                batchCost: '₱620,000', feedCons: '150 kg', profit: '25%',
-                start: '2025-11-20', finish: '2026-03-05'
-            },
-            'Pen B1': {
-                subtitle: 'Section B',
-                healthy: 42, sick: 5,
-                currentAvg: '58 kg', targetWeight: '110 kg', progress: 53,
-                batchCost: '₱650,000', feedCons: '135 kg', profit: '15%',
-                start: '2025-12-10', finish: '2026-03-25'
-            },
-            'Pen B2': {
-                subtitle: 'Section B',
-                healthy: 50, sick: 2,
-                currentAvg: '68 kg', targetWeight: '110 kg', progress: 62,
-                batchCost: '₱630,000', feedCons: '148 kg', profit: '20%',
-                start: '2025-11-25', finish: '2026-03-10'
-            },
-            'Pen C1': {
-                subtitle: 'Section C',
-                healthy: 45, sick: 0,
-                currentAvg: '85 kg', targetWeight: '110 kg', progress: 77,
-                batchCost: '₱600,000', feedCons: '160 kg', profit: '28%',
-                start: '2025-10-15', finish: '2026-02-01'
-            },
-            'Pen C2': {
-                subtitle: 'Section C',
-                healthy: 49, sick: 1,
-                currentAvg: '78 kg', targetWeight: '110 kg', progress: 71,
-                batchCost: '₱610,000', feedCons: '155 kg', profit: '24%',
-                start: '2025-11-01', finish: '2026-02-15'
-            }
-        };
+        // --- Edit Pen Logic ---
+        window.editPen = function(id) {
+            const data = Object.values(penDetails).find(p => p.id == id);
+            if (!data) return;
 
-        const pensList = document.querySelector('.pens-list');
-        pensList.addEventListener('click', (e) => {
-            const card = e.target.closest('.pen-card');
-            if (!card) return;
-
-            // Update active selection state visually
-            document.querySelectorAll('.pen-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-
-            // Retrieve clicked pen Name and Data
-            const penName = card.querySelector('.pen-name').innerText.trim();
-            const data = penDetails[penName];
-
-            if (data) {
-                // 1. Update Headers
-                document.querySelector('.details-title').innerText = `${penName} Details`;
-                document.querySelector('.details-header .page-subtitle').innerText = data.subtitle;
-
-                // 2. Update Health Status
-                const healthValues = document.querySelectorAll('.health-grid .health-value');
-                healthValues[0].innerText = data.healthy;
-                healthValues[1].innerText = data.sick;
-
-                // 3. Update Weight Progress
-                const detailSections = document.querySelectorAll('.details-section');
-                const weightValues = detailSections[1].querySelectorAll('.font-bold');
-                weightValues[0].innerText = data.currentAvg;
-                weightValues[1].innerText = data.targetWeight;
-                document.querySelector('.progress-bar-fill').style.width = `${data.progress}%`;
-                document.querySelector('.progress-meta').innerText = `${data.progress}% to target`;
-
-                // 4. Update Financial Overview
-                const financialValues = detailSections[2].querySelectorAll('.financial-value');
-                financialValues[0].innerText = data.batchCost;
-                financialValues[1].innerText = data.feedCons;
-                financialValues[2].innerText = data.profit;
-
-                // 5. Update Timeline
-                const timelineValues = detailSections[3].querySelectorAll('.financial-value');
-                timelineValues[0].innerText = data.start;
-                timelineValues[1].innerText = data.finish;
-
-                // 6. Update Action Buttons
-                const editBtn = document.querySelector('.btn-action-edit');
-                const deleteBtn = document.querySelector('.btn-action-delete');
-                if (editBtn) editBtn.setAttribute('onclick', `editPen('${penName}')`);
-                if (deleteBtn) deleteBtn.setAttribute('onclick', `deletePen('${penName}')`);
-            }
-        });
-
-        // --- Management Logic ---
-        window.editPen = function(penName) {
             Swal.fire({
-                title: `Edit ${penName}`,
+                title: `Edit ${data.name}`,
+                width: 600,
                 html: `
-                    <div style="text-align: left; padding: 10px;">
-                        <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Pen Name</label>
-                        <input id="swal-pen-name" class="swal2-input" value="${penName}" style="width: 100%; margin: 0 0 16px 0;">
-                        
-                        <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Section/Area</label>
-                        <input id="swal-pen-section" class="swal2-input" value="Section ${penName.charAt(4)}" style="width: 100%; margin: 0 0 16px 0;">
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                            <div>
-                                <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Weight Goal</label>
-                                <input id="swal-pen-weight" class="swal2-input" value="110" style="width: 100%; margin: 0;">
-                            </div>
-                            <div>
-                                <label style="display: block; font-size: 0.8rem; font-weight: bold; color: #6b7280; margin-bottom: 4px;">Batch Cost</label>
-                                <input id="swal-pen-cost" class="swal2-input" value="625000" style="width: 100%; margin: 0;">
-                            </div>
+                    <style>
+                        .custom-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+                        .custom-input:focus { border-color: #22c55e; outline: none; }
+                        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+                        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }
+                    </style>
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Pen Name</label>
+                            <input id="edit-name" class="custom-input" value="${data.name}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Section</label>
+                            <input id="edit-section" class="custom-input" value="${data.section || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select id="edit-status" class="custom-input">
+                                <option value="Excellent" ${data.status == 'Excellent' ? 'selected' : ''}>Excellent</option>
+                                <option value="Good" ${data.status == 'Good' ? 'selected' : ''}>Good</option>
+                                <option value="Fair" ${data.status == 'Fair' ? 'selected' : ''}>Fair</option>
+                                <option value="Poor" ${data.status == 'Poor' ? 'selected' : ''}>Poor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Healthy Pigs</label>
+                            <input id="edit-healthy" type="number" class="custom-input" value="${data.healthy_pigs || 0}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sick Pigs</label>
+                            <input id="edit-sick" type="number" class="custom-input" value="${data.sick_pigs || 0}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Current Avg Weight</label>
+                            <input id="edit-avg-weight" class="custom-input" value="${data.avg_weight || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Target Weight</label>
+                            <input id="edit-target-weight" class="custom-input" value="${data.target_weight || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Batch Cost</label>
+                            <input id="edit-batch-cost" class="custom-input" value="${data.batch_cost || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Feed Cons/Day</label>
+                            <input id="edit-feed-cons" class="custom-input" value="${data.feed_cons || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Profit Margin</label>
+                            <input id="edit-profit" class="custom-input" value="${data.profit_margin || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Progress (%)</label>
+                            <input id="edit-progress" type="number" class="custom-input" value="${data.progress || 0}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Start Date</label>
+                            <input id="edit-start" type="date" class="custom-input" value="${data.start_date || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Est. Finish Date</label>
+                            <input id="edit-finish" type="date" class="custom-input" value="${data.end_date || ''}">
                         </div>
                     </div>
                 `,
                 showCancelButton: true,
-                confirmButtonText: 'Save Changes',
+                confirmButtonText: 'Update Pen',
                 confirmButtonColor: '#22c55e',
-                cancelButtonColor: '#4b5563',
-                background: '#fff',
-                color: '#111827',
+                showLoaderOnConfirm: true,
                 preConfirm: () => {
-                    return {
-                        name: document.getElementById('swal-pen-name').value,
-                        section: document.getElementById('swal-pen-section').value
-                    }
+                    const payload = {
+                        name: document.getElementById('edit-name').value,
+                        section: document.getElementById('edit-section').value,
+                        status: document.getElementById('edit-status').value,
+                        healthy_pigs: document.getElementById('edit-healthy').value,
+                        sick_pigs: document.getElementById('edit-sick').value,
+                        avg_weight: document.getElementById('edit-avg-weight').value,
+                        target_weight: document.getElementById('edit-target-weight').value,
+                        batch_cost: document.getElementById('edit-batch-cost').value,
+                        feed_cons: document.getElementById('edit-feed-cons').value,
+                        profit_margin: document.getElementById('edit-profit').value,
+                        progress: document.getElementById('edit-progress').value,
+                        start_date: document.getElementById('edit-start').value,
+                        end_date: document.getElementById('edit-finish').value,
+                    };
+
+                    return fetch(`/pens/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error(response.statusText);
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Update failed: ${error}`);
+                    });
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        title: 'Updated!',
-                        text: `${penName} settings have been updated successfully.`,
                         icon: 'success',
+                        title: 'Updated!',
+                        text: result.value.message,
                         confirmButtonColor: '#22c55e'
-                    });
+                    }).then(() => window.location.reload());
                 }
             });
         };
 
-        window.deletePen = function(penName) {
+        // --- Delete Pen Logic ---
+        window.deletePen = function(id) {
             Swal.fire({
-                title: `Delete ${penName}?`,
-                text: "This will permanently remove the pen and all its associated pig data. This action cannot be undone.",
+                title: 'Are you sure?',
+                text: "All associated pig data will be lost!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#4b5563',
-                confirmButtonText: 'Yes, Delete Pen'
+                cancelButtonColor: '#9ca3af',
+                confirmButtonText: 'Yes, delete it!',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return fetch(`/pens/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error(response.statusText);
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(`Delete failed: ${error}`);
+                    });
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        title: 'Deleted!',
-                        text: `${penName} has been removed from the system.`,
                         icon: 'success',
+                        title: 'Deleted!',
+                        text: result.value.message,
                         confirmButtonColor: '#22c55e'
-                    });
+                    }).then(() => window.location.reload());
                 }
             });
         };
@@ -812,43 +639,54 @@
         const highlightParam = urlParams.get('highlight');
         
         if (highlightParam) {
-            // Add a dynamic style for the flashing effect
             const style = document.createElement('style');
             style.innerHTML = `
                 @keyframes flashRed {
                     0%, 100% { background-color: #ffffff; border-color: #e5e7eb; box-shadow: none; }
                     50% { background-color: #fee2e2; border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
                 }
-                .highlight-flash {
-                    animation: flashRed 1s ease-in-out 3;
-                }
+                .highlight-flash { animation: flashRed 1s ease-in-out 3; }
             `;
             document.head.appendChild(style);
 
-            // Find the pen card that matches the highlight parameter
             const allPenCards = document.querySelectorAll('.pen-card');
             allPenCards.forEach(card => {
                 const penName = card.querySelector('.pen-name').innerText.trim();
                 if (penName === highlightParam) {
-                    // Simulate a click to load its data into the details panel
                     card.click();
-                    
-                    // Scroll to it
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // Apply flash class
                     card.classList.add('highlight-flash');
-                    
-                    // Clean up URL without reloading to avoid flashing again on refresh
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    
-                    // Remove class after animation finishes
-                    setTimeout(() => {
-                        card.classList.remove('highlight-flash');
-                    }, 3000);
                 }
             });
         }
+
+        // --- Report Generation Logic ---
+        const reportBtn = document.querySelector('.btn-report');
+        if (reportBtn) {
+            reportBtn.addEventListener('click', () => {
+                const penName = document.querySelector('.details-title').innerText.replace(' Details', '').trim();
+                Swal.fire({
+                    title: 'Generating Report...',
+                    html: `Compiling data for <b>${penName}</b>...`,
+                    timer: 1500,
+                    didOpen: () => Swal.showLoading()
+                }).then(() => {
+                    Swal.fire({
+                        title: 'Report Ready!',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: 'Print',
+                        cancelButtonText: 'Download',
+                        confirmButtonColor: '#22c55e'
+                    }).then((result) => {
+                        if (result.isConfirmed) window.print();
+                    });
+                });
+            });
+        }
+    });
+</script>
 
     });
 </script>
