@@ -43,12 +43,13 @@
 
     <style>
         body {
-            /* Create a beautiful vibrant green gradient for the background */
+            /* Restored original vibrant green gradient */
             background: linear-gradient(135deg, #1a472a 0%, #0f2818 50%, #050a08 100%);
             background-attachment: fixed;
             -webkit-tap-highlight-color: transparent;
             margin: 0;
             padding: 0;
+            color: white;
         }
 
         html,
@@ -92,11 +93,11 @@
         <!-- Backdrop Overlay (Mobile only) -->
         <div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] hidden md:hidden transition-opacity duration-300 opacity-0"></div>
 
-        <!-- Mobile Header -->
-        <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white/5 backdrop-blur-lg border-b border-white/10 flex items-center justify-between px-4 z-[80]">
+        <!-- Mobile Header (Green as requested) -->
+        <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f2818] border-b border-white/10 flex items-center justify-between px-4 z-[80] shadow-md">
             <!-- Left: Logo -->
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-md bg-gradient-to-br from-[#428246] to-[#2d5a2f] flex items-center justify-center shadow-lg">
+                <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center shadow-lg border border-white/10">
                     <i class='bx bx-pig text-white text-sm'></i>
                 </div>
                 <h2 class="font-bold text-white text-sm tracking-tight hidden sm:block">Porcitrack</h2>
@@ -136,28 +137,48 @@
                 </div>
             </div>
 
-            <nav class="flex-1 px-4 py-8 space-y-3">
+            <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
                 <a href="{{ route('worker.dashboard') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.dashboard') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
                     <i class='bx bx-home text-lg'></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('worker.tasks') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.tasks') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
-                    <i class='bx bx-task text-lg'></i>
-                    <span>Tasks</span>
-                </a>
 
-                <a href="{{ route('worker.reports') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.reports') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
-                    <i class='bx bx-book-content text-lg'></i>
-                    <span>Weekly Report</span>
-                </a>
-                <a href="{{ route('worker.feed-formulas') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.feed-formulas') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
-                    <i class='bx bx-bowl-hot text-lg'></i>
-                    <span>Feed Formulas</span>
-                </a>
+                <!-- Farm Operations Dropdown -->
+                <div>
+                    <button id="farmOpsToggle" onclick="toggleDropdown('farmOpsDropdown', 'farmOpsIcon')"
+                        class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white font-medium transition group">
+                        <div class="flex items-center gap-3">
+                            <i class='bx bx-landscape text-lg'></i>
+                            <span>Farm Operations</span>
+                        </div>
+                        <i id="farmOpsIcon" class='bx bx-chevron-down transition-transform duration-300'></i>
+                    </button>
+                    
+                    <div id="farmOpsDropdown" class="hidden pl-4 mt-1 space-y-1 overflow-hidden transition-all duration-300">
+                        <a href="{{ route('worker.tasks') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.tasks') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            <i class='bx bx-task text-lg'></i>
+                            <span>Tasks</span>
+                        </a>
+                        <a href="{{ route('worker.reports') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.reports') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            <i class='bx bx-book-content text-lg'></i>
+                            <span>Weekly Report</span>
+                        </a>
+                        <a href="{{ route('worker.feed-formulas') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.feed-formulas') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            <i class='bx bx-bowl-hot text-lg'></i>
+                            <span>Feed Formulas</span>
+                        </a>
+                        <a href="{{ route('admin.qr.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.qr.index') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            <i class='bx bx-qr-scan text-lg'></i>
+                            <span>QR Labels</span>
+                        </a>
+                    </div>
+                </div>
+
                 <a href="{{ route('worker.settings') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.settings') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
                     <i class='bx bx-cog text-lg'></i>
@@ -204,24 +225,24 @@
         <!-- Main Content Area -->
         <main class="flex-1 overflow-y-auto overflow-x-hidden pt-16 md:pt-0 relative">
             
-            <!-- Global Floating Icons (Right Side) -->
-            <div class="hidden md:flex absolute top-4 right-4 md:top-8 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-none">
+            <!-- Global Floating Icons (Right Side - Green as requested) -->
+            <div class="hidden md:flex absolute top-4 right-4 md:top-8 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
                 <!-- Sync Status -->
-                <div id="globalSyncStatus" class="pointer-events-auto flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/20 transition shadow-lg" onclick="if(typeof syncData === 'function'){ syncData(); }">
-                    <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
+                <div id="globalSyncStatus" class="flex items-center gap-2 md:gap-3 bg-[#1a472a] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#235c36] transition shadow-lg" onclick="if(typeof syncData === 'function'){ syncData(); }">
+                    <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
                     <span class="text-white text-[9px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Synced</span>
                 </div>
 
                 <!-- Notifications Bell -->
                 <button onclick="if(typeof openNotificationsPanel === 'function'){ openNotificationsPanel(); } else { window.location.href='/worker/dashboard'; }" 
-                        class="pointer-events-auto relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/20 transition shadow-lg text-white">
+                        class="relative w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#1a472a] border border-white/10 hover:bg-[#235c36] transition shadow-lg text-white">
                     <i class='bx bx-bell text-lg md:text-xl'></i>
                     <span id="globalAlertBadge" class="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full border border-[rgba(0,0,0,0.5)] animate-pulse"></span>
                 </button>
 
                 <!-- Search -->
                 <button onclick="if(typeof showSearch === 'function'){ showSearch(); }" 
-                        class="pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/20 transition shadow-lg text-white">
+                        class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#1a472a] border border-white/10 hover:bg-[#235c36] transition shadow-lg text-white">
                     <i class='bx bx-search text-lg md:text-xl'></i>
                 </button>
             </div>
@@ -330,15 +351,15 @@
                 title: 'Manual ID Entry',
                 input: 'text',
                 inputPlaceholder: 'e.g. PEN-1 or PIG-123',
-                html: '<p class="text-xs text-white/50 mb-4 px-2">Type the Pen ID or animal Tag ID directly instead of scanning the QR.</p>',
-                background: '#0a180e',
-                color: '#fff',
+                html: '<p class="text-xs text-slate-500 mb-4 px-2">Type the Pen ID or animal Tag ID directly instead of scanning the QR.</p>',
+                background: '#ffffff',
+                color: '#1e293b',
                 confirmButtonText: 'Record Log',
                 confirmButtonColor: '#22c55e',
                 showCancelButton: true,
-                cancelButtonColor: '#4b5563',
+                cancelButtonColor: '#94a3b8',
                 customClass: {
-                    input: 'bg-white/5 border border-white/10 text-white rounded-xl text-center uppercase tracking-widest text-lg font-bold'
+                    input: 'bg-slate-50 border border-slate-200 text-slate-800 rounded-xl text-center uppercase tracking-widest text-lg font-bold'
                 },
                 inputValidator: (value) => {
                     if (!value) return 'You need to enter an ID!'
@@ -356,6 +377,33 @@
                 }
             });
         }
+
+        // --- Dropdown Logic ---
+        function toggleDropdown(id, iconId) {
+            const dropdown = document.getElementById(id);
+            const icon = document.getElementById(iconId);
+            
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                dropdown.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        // Auto-open dropdown if child is active
+        document.addEventListener('DOMContentLoaded', () => {
+            const farmOpsDropdown = document.getElementById('farmOpsDropdown');
+            const farmOpsIcon = document.getElementById('farmOpsIcon');
+            if (farmOpsDropdown) {
+                const activeChild = farmOpsDropdown.querySelector('[class*="bg-white/15"]');
+                if (activeChild) {
+                    farmOpsDropdown.classList.remove('hidden');
+                    if (farmOpsIcon) farmOpsIcon.classList.add('rotate-180');
+                }
+            }
+        });
 
         // Global Notifications Panel Logic
         function openNotificationsPanel() {

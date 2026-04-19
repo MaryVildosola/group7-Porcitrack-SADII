@@ -20,25 +20,9 @@
     <style>
         body {
             background-color: #f8fafc !important;
-            color: #bfcbdf;
             font-family: 'Inter', sans-serif;
             margin: 0 !important;
             padding: 0 !important;
-        }
-
-        /* 1. Force Remove Top White Space (Aggressive Fix) */
-        .app-header,
-        .main-sidebar-header,
-        .header-main-menu {
-            display: none !important;
-        }
-
-        .page,
-        .main-content,
-        .content {
-            padding-top: 5 !important;
-            margin-top: 5 !important;
-            top: 5 !important;
         }
 
         /* 2. Fix Sidebar position and background gap */
@@ -85,6 +69,28 @@
 
         .side-menu__icon {
             fill: currentColor !important;
+        }
+
+        /* 4. Global Input Fields High-Contrast Fix */
+        input:not([type="checkbox"]):not([type="radio"]), 
+        select, 
+        textarea, 
+        .form-input,
+        .form-control {
+            color: #0f172a !important; /* Dark Navy/Black for maximum visibility */
+            font-weight: 500 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        input::placeholder, 
+        textarea::placeholder {
+            color: #94a3b8 !important; /* Readable but distinct from actual values */
+            font-weight: 400 !important;
+        }
+
+        /* Ensure values inside dropdowns are also solid dark */
+        select option {
+            color: #0f172a !important;
         }
     </style>
 

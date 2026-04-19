@@ -1,12 +1,10 @@
-{{-- New PorciTrack Dark Sidebar --}}
-
-
+{{-- New PorciTrack Dark Sidebar with Dropdowns --}}
 
 <!-- Start::main-sidebar -->
-<div class="main-sidebar" id="sidebar-scroll">
+<div class="main-sidebar" id="sidebar-scroll" style="padding-top: 0 !important; margin-top: 0 !important;">
 
     <!-- Farm Admin Profile -->
-    <div class="sidebar-profile">
+    <div class="sidebar-profile" style="padding-top: 24px !important;">
         <div class="sidebar-avatar">
             <img src="{{ asset('assets/images/pig-logo.png') }}" alt="Farm Admin">
         </div>
@@ -19,108 +17,80 @@
     <!-- Start::nav -->
     <nav class="main-menu-container nav nav-pills flex-column sub-open">
         <ul class="main-menu">
-            <!-- Dashboard -->
+            <!-- Home -->
             <li class="slide {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <a href="{{ route('dashboard') }}"
-                    class="side-menu__item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
-                        <path
-                            d="M3 13h8V3H3v10zm2-8h4v6H5V5zm8 16h8V11h-8v10zm2-8h4v6h-4v-6zM13 3v6h8V3h-8zm6 4h-4V5h4v2zM3 21h8v-6H3v6zm2-4h4v2H5v-2z" />
-                    </svg>
+                <a href="{{ route('dashboard') }}" class="side-menu__item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm2-8h4v6H5V5zm8 16h8V11h-8v10zm2-8h4v6h-4v-6zM13 3v6h8V3h-8zm6 4h-4V5h4v2zM3 21h8v-6H3v6zm2-4h4v2H5v-2z" /></svg>
                     <span class="side-menu__label">Dashboard</span>
                 </a>
             </li>
 
-            <!-- Inventory -->
-            <li class="slide {{ request()->routeIs('enrollments.*') ? 'active' : '' }}">
-                <a href="{{ route('enrollments.index') }}"
-                    class="side-menu__item {{ request()->routeIs('enrollments.*') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
-                        <path
-                            d="M20 6h-2.18c.07-.44.18-.88.18-1.34 0-2.58-2.09-4.66-4.67-4.66-1.41 0-2.67.61-3.55 1.57L8 3.96 6.22 1.57C5.34.61 4.08 0 2.67 0 .09 0-2 2.08-2 4.66c0 .46.11.9.18 1.34H-2v2h24V6zM2.67 2c1.23 0 2.19.96 2.19 2.13L8 6H2.67C1.44 6 .48 5.04.48 3.87c0-1.13.95-2.05 2.19-2.05L2.67 2zm8.66 2.13c0-1.18.96-2.13 2.19-2.13l.02-.13c1.24 0 2.2.97 2.2 2.18 0 1.17-.96 2.13-2.19 2.13H11.5L10.15 4.13zM4 8v12h2v-9h2v9h2V8H4zm10 0v3h-2v9h2v-9h2V8h-4z" />
-                    </svg>
+            <!-- Operations Dropdown -->
+            <li class="slide has-sub {{ request()->routeIs('pens.*') || request()->routeIs('admin.tasks.*') || request()->routeIs('admin.qr.index') ? 'open active' : '' }}">
+                <a href="javascript:void(0);" class="side-menu__item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor"/></svg>
+                    <span class="side-menu__label">Operations</span>
+                    <i class="fe fe-chevron-right side-menu__angle"></i>
+                </a>
+                <ul class="slide-menu child1">
+                    <li class="slide {{ request()->routeIs('pens.*') ? 'active' : '' }}">
+                        <a href="{{ route('pens.index') }}" class="side-menu__item">Pens & Pigs</a>
+                    </li>
+                    <li class="slide {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.tasks.index') }}" class="side-menu__item">Farmer Tasks</a>
+                    </li>
+                    <li class="slide {{ request()->routeIs('admin.qr.index') ? 'active' : '' }}">
+                        <a href="{{ route('admin.qr.index') }}" class="side-menu__item">QR Labels</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Stock & Inventory Dropdown -->
+            <li class="slide has-sub {{ request()->routeIs('admin.feed-stock.*') || request()->routeIs('admin.feed-mix.*') ? 'open active' : '' }}">
+                <a href="javascript:void(0);" class="side-menu__item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34 0-2.58-2.09-4.66-4.67-4.66-1.41 0-2.67.61-3.55 1.57L8 3.96 6.22 1.57C5.34.61 4.08 0 2.67 0 .09 0-2 2.08-2 4.66c0 .46.11.9.18 1.34H-2v2h24V6z" fill="currentColor"/></svg>
                     <span class="side-menu__label">Inventory</span>
+                    <i class="fe fe-chevron-right side-menu__angle"></i>
                 </a>
+                <ul class="slide-menu child1">
+                    <li class="slide {{ request()->routeIs('admin.feed-stock.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.feed-stock.index') }}" class="side-menu__item">Master Stocks</a>
+                    </li>
+                    <li class="slide {{ request()->routeIs('admin.feed-mix.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.feed-mix.index') }}" class="side-menu__item">Feed Mixing</a>
+                    </li>
+                </ul>
             </li>
 
-            <!-- Pens & Pigs -->
-            <li class="slide {{ request()->routeIs('pens.*') ? 'active' : '' }}">
-                <a href="{{ route('pens.index') }}"
-                    class="side-menu__item {{ request()->routeIs('pens.*') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
-                        <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM6.5 9C7.33 9 8 8.33 8 7.5S7.33 6 6.5 6 5 6.67 5 7.5 5.67 9 6.5 9zm2.5 6.5c0 .83-.67 1.5-1.5 1.5S6 16.33 6 15.5 6.67 14 7.5 14s1.5.67 1.5 1.5zm8.5-6.5c-.83 0-1.5-.67-1.5-1.5S16.67 6 17.5 6 19 6.67 19 7.5 18.33 9 17.5 9zM15 15.5c0 .83-.67 1.5-1.5 1.5S12 16.33 12 15.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5zm-3-3.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-                    </svg>
-                    <span class="side-menu__label">Pens &amp; Pigs</span>
+            <!-- Analysis Dropdown -->
+            <li class="slide has-sub {{ request()->routeIs('subject.*') || request()->routeIs('admin.reports*') ? 'open active' : '' }}">
+                <a href="javascript:void(0);" class="side-menu__item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="currentColor"/></svg>
+                    <span class="side-menu__label">Reports</span>
+                    <i class="fe fe-chevron-right side-menu__angle"></i>
                 </a>
+                <ul class="slide-menu child1">
+                    <li class="slide {{ request()->routeIs('subject.*') ? 'active' : '' }}">
+                        <a href="{{ route('subject.index') }}" class="side-menu__item">Live Analytics</a>
+                    </li>
+                    <li class="slide {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.reports') }}" class="side-menu__item">Weekly Reports</a>
+                    </li>
+                </ul>
             </li>
 
-            <!-- Feed Stock -->
-            <li class="slide {{ request()->routeIs('admin.feed-stock.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.feed-stock.index') }}" class="side-menu__item {{ request()->routeIs('admin.feed-stock.*') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
-                        <path d="M4 4h16v3H4V4zm0 6h16v3H4v-3zm0 6h16v3H4v-3z" />
-                    </svg>
-                    <span class="side-menu__label">Feed Stock</span>
+            <!-- Systems Dropdown -->
+            <li class="slide has-sub {{ request()->routeIs('users.*') ? 'open active' : '' }}">
+                <a href="javascript:void(0);" class="side-menu__item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"/></svg>
+                    <span class="side-menu__label">Settings</span>
+                    <i class="fe fe-chevron-right side-menu__angle"></i>
                 </a>
-            </li>
-
-            <!-- Feed Mixing -->
-            <li class="slide {{ request()->routeIs('admin.feed-mix.*') || request()->routeIs('admin.feed-ingredients.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.feed-mix.index') }}" class="side-menu__item {{ request()->routeIs('admin.feed-mix.*') || request()->routeIs('admin.feed-ingredients.*') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
-                        <path d="M17 8C8 10 5.9 16.17 3.82 21h1.71C7 17 9 13 17 11V8zM1 3l19 7.46L1 18V3zM3 6.12V14l5.23-2.05L3 6.12zM19 19c-1.1 0-2 .9-2 2h-1c0-1.65 1.35-3 3-3s3 1.35 3 3h-1c0-1.1-.9-2-2-2z"/>
-                    </svg>
-                    <span class="side-menu__label">Feed Mixing</span>
-                </a>
-            </li>
-
-            <!-- QR Labels -->
-            <li class="slide {{ request()->routeIs('admin.qr.index') ? 'active' : '' }}">
-                <a href="{{ route('admin.qr.index') }}" class="side-menu__item {{ request()->routeIs('admin.qr.index') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
-                        <path d="M4 4h4v4H4V4zm2 2h0v0h0v0zm10-2h4v4h-4V4zm2 2h0v0h0v0zM4 14h4v4H4v-4zm2 2h0v0h0v0zm10-2h4v4h-4v-4zm2 2h0v0h0v0zM10 4h4v4h-4V4zm0 10h4v4h-4v-4z" />
-                    </svg>
-                    <span class="side-menu__label">QR Labels</span>
-                </a>
-            </li>
-
-            <!-- Analytics -->
-            <li class="slide {{ request()->routeIs('subject.*') ? 'active' : '' }}">
-                <a href="{{ route('subject.index') }}"
-                    class="side-menu__item {{ request()->routeIs('subject.*') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
-                        <path
-                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
-                    </svg>
-                    <span class="side-menu__label">Analytics</span>
-                </a>
-            </li>
-
-            <!-- Weekly Reports -->
-            <li class="slide {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
-                <a href="{{ route('admin.reports') }}"
-                    class="side-menu__item {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"
-                        fill="currentColor">
-                        <path
-                            d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-                    </svg>
-                    <span class="side-menu__label">Weekly Reports</span>
-                </a>
-            </li>
-
-            <!-- User Management -->
-            <li class="slide {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                <a href="{{ route('users.index') }}"
-                    class="side-menu__item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"
-                        fill="currentColor">
-                        <path
-                            d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                    </svg>
-                    <span class="side-menu__label">User Management</span>
-                </a>
+                <ul class="slide-menu child1">
+                    <li class="slide {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <a href="{{ route('users.index') }}" class="side-menu__item">User Management</a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </nav>
@@ -132,8 +102,7 @@
             @csrf
             <button type="submit" class="sidebar-logout-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                        d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor" />
                 </svg>
                 <span>Logout</span>
             </button>
@@ -193,8 +162,21 @@
         margin: 0;
     }
 
-
-
+    /* Sub-menu styling for dark theme */
+    .slide-menu.child1 {
+        background: rgba(0, 0, 0, 0.2) !important;
+        padding-left: 12px !important;
+    }
+    
+    .slide-menu.child1 .side-menu__item {
+        font-size: 0.8rem !important;
+        opacity: 0.7;
+    }
+    
+    .slide-menu.child1 .side-menu__item:hover {
+        opacity: 1;
+        color: #fff !important;
+    }
 
     /* Sidebar logout */
     .sidebar-logout {

@@ -24,9 +24,8 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="flex flex-col md:flex-row gap-4 mb-8">
-            <button onclick="startQRScanner()" class="flex-1 glass-panel p-6 rounded-3xl flex items-center justify-center gap-4 hover:bg-green-500/20 transition group border border-green-500/20 shadow-lg active:scale-95">
-                <div class="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition">
+            <button onclick="startQRScanner()" class="flex-1 glass-panel p-6 rounded-3xl flex items-center justify-center gap-4 hover:bg-white/10 transition group border border-white/10 shadow-lg active:scale-95">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition">
                     <i class='bx bx-qr-scan text-2xl text-green-400'></i>
                 </div>
                 <div class="text-left">
@@ -34,8 +33,8 @@
                     <p class="text-white/40 text-xs uppercase tracking-wider font-semibold">Immediate Monitoring</p>
                 </div>
             </button>
-            <button onclick="showTaskModal()" class="flex-1 glass-panel p-6 rounded-3xl flex items-center justify-center gap-4 hover:bg-blue-500/20 transition group border border-blue-500/20 shadow-lg active:scale-95">
-                <div class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition">
+            <button onclick="showTaskModal()" class="flex-1 glass-panel p-6 rounded-3xl flex items-center justify-center gap-4 hover:bg-white/10 transition group border border-white/10 shadow-lg active:scale-95">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition">
                     <i class='bx bx-plus text-2xl text-blue-400'></i>
                 </div>
                 <div class="text-left">
@@ -47,28 +46,28 @@
 
         <!-- Stats Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
-            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer" onclick="window.location='{{ route('worker.tasks') }}'">
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/10 transition cursor-pointer" onclick="window.location='{{ route('worker.tasks') }}'">
                 <div class="flex flex-col relative z-20">
                     <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Active Tasks</span>
                     <span class="text-4xl font-bold text-white">08</span>
                 </div>
-                <i class='bx bx-list-check absolute bottom-[-10px] right-[-10px] text-6xl md:text-8xl text-white/10 group-hover:scale-110 transition duration-500'></i>
+                <i class='bx bx-list-check absolute bottom-[-10px] right-[-10px] text-6xl md:text-8xl text-white/5 group-hover:scale-110 transition duration-500'></i>
             </div>
-            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer" onclick="showAnimalSummary()">
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/10 transition cursor-pointer" onclick="showAnimalSummary()">
                 <div class="flex flex-col relative z-20">
                     <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Animals</span>
                     <span class="text-4xl font-bold text-white">452</span>
                 </div>
-                <i class='bx bxs-dog absolute bottom-[-10px] right-[-10px] text-6xl md:text-8xl text-white/10 group-hover:scale-110 transition duration-500'></i>
+                <i class='bx bxs-dog absolute bottom-[-10px] right-[-10px] text-6xl md:text-8xl text-white/5 group-hover:scale-110 transition duration-500'></i>
             </div>
-            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer border-l-4 border-red-500/50" onclick="openNotificationsPanel()">
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/10 transition cursor-pointer border-l-4 border-red-500/50" onclick="openNotificationsPanel()">
                 <div class="flex flex-col relative z-20">
                     <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Alerts</span>
                     <span id="alertCountStat" class="text-4xl font-bold text-red-400">03</span>
                 </div>
                 <i class='bx bxs-bell absolute bottom-[-10px] right-[-10px] text-6xl md:text-8xl text-red-500/10 group-hover:scale-110 transition duration-500'></i>
             </div>
-            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/15 transition cursor-pointer" onclick="showFeedSummary()">
+            <div class="glass-panel p-6 rounded-3xl relative overflow-hidden group hover:bg-white/10 transition cursor-pointer" onclick="showFeedSummary()">
                 <div class="flex flex-col relative z-20">
                     <span class="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">Feed Stock</span>
                     <span class="text-4xl font-bold text-green-400">78%</span>
@@ -85,7 +84,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Pen 1 -->
-                <div onclick="openFeedingModal('1')" class="glass-panel rounded-2xl p-5 border border-white/10 hover:bg-white/15 transition cursor-pointer group active:scale-[0.98]">
+                <div onclick="openFeedingModal('1')" class="glass-panel rounded-2xl p-5 border border-white/10 hover:bg-white/10 transition cursor-pointer group active:scale-[0.98]">
                     <div class="flex justify-between items-start mb-3">
                         <div>
                             <p class="text-white font-black text-lg">Pen 1</p>
@@ -179,7 +178,7 @@
             </div>
             <div id="recentMonitoringList" class="space-y-3">
                 <!-- Static placeholder -->
-                <div class="glass-panel rounded-2xl p-5 flex gap-4 items-start border border-white/5">
+                <div class="glass-panel rounded-2xl p-5 flex gap-4 items-start border border-white/10">
                     <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center shrink-0 border border-green-500/20">
                         <i class='bx bxs-bowl-rice text-green-400 text-lg'></i>
                     </div>
@@ -813,13 +812,13 @@
 
             container.innerHTML = logs.map(log => {
                 const sick = isSickColor(log);
-                const border = sick ? 'border-red-500/30' : 'border-green-500/20';
-                const iconBg = sick ? 'bg-red-500/20' : 'bg-green-500/20';
-                const iconColor = sick ? 'text-red-400' : 'text-green-400';
+                const border = sick ? 'border-red-200' : 'border-green-200';
+                const iconBg = sick ? 'bg-red-100' : 'bg-green-100';
+                const iconColor = sick ? 'text-red-600' : 'text-green-600';
                 const icon = sick ? 'bx-error-circle' : 'bx-heart';
                 const badge = sick
-                    ? `<span class="px-2 py-0.5 bg-red-500/20 text-red-300 rounded-md text-[9px] font-black border border-red-500/30 uppercase">Alert</span>`
-                    : `<span class="px-2 py-0.5 bg-green-500/20 text-green-300 rounded-md text-[9px] font-black border border-green-500/20 uppercase">Healthy</span>`;
+                    ? `<span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-[9px] font-black border border-red-200 uppercase">Alert</span>`
+                    : `<span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-md text-[9px] font-black border border-green-200 uppercase">Healthy</span>`;
                 return `
                     <div class="glass-panel rounded-2xl p-4 flex gap-4 items-start border ${border}">
                         <div class="w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shrink-0">
@@ -827,11 +826,11 @@
                         </div>
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
-                                <p class="text-white font-bold text-sm">Pig #${log.pigId} — ${log.symptom}</p>
-                                <span class="text-white/30 text-xs">${log.timeStr}</span>
+                                <p class="text-slate-900 font-bold text-sm">Pig #${log.pigId} — ${log.symptom}</p>
+                                <span class="text-slate-400 text-xs">${log.timeStr}</span>
                             </div>
-                            <p class="text-white/50 text-xs mt-1">BCS: ${log.bcs||'—'} · Weight: ${log.weight?log.weight+'kg':'—'} · Feeding: ${log.feed||'—'} · Checks: ${log.physicalChecks}</p>
-                            ${log.notes ? `<p class="text-white/40 text-xs mt-1 italic">"${log.notes}"</p>` : ''}
+                            <p class="text-slate-500 text-xs mt-1">BCS: ${log.bcs||'—'} · Weight: ${log.weight?log.weight+'kg':'—'} · Feeding: ${log.feed||'—'} · Checks: ${log.physicalChecks}</p>
+                            ${log.notes ? `<p class="text-slate-400 text-xs mt-1 italic">"${log.notes}"</p>` : ''}
                             <div class="mt-2">${badge}</div>
                         </div>
                     </div>`;

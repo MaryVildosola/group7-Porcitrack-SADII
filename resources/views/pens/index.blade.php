@@ -257,21 +257,18 @@
                     </div>
                 </div>
 
-                <!-- Batch Timeline -->
+                <!-- Pigs in this Pen -->
                 <div class="details-section">
                     <div class="section-label">
-                        <i class="bx bx-time-five"></i> Batch Timeline
+                        <i class="bx bxs-car"></i> Pigs in this Pen
                     </div>
-                    <div class="financial-row">
-                        <span class="financial-label">Start Date</span>
-                        <span class="financial-value">2025-12-01</span>
-                    </div>
-                    <div class="financial-row">
-                        <span class="financial-label">Est. Finish Date</span>
-                        <span class="financial-value">2026-03-15</span>
+                    <div id="pigs-list-container" style="max-height: 250px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 12px; padding: 8px;">
+                        <!-- Pig items will load here -->
+                        <p class="text-xs text-center text-gray-400 py-4">Select a pen to see pigs</p>
                     </div>
                 </div>
 
+                <a href="{{ route('admin.qr.index') }}" class="btn-report" style="display: block; text-align: center; text-decoration: none; background: #111827; margin-top: 16px;">Go to QR Generator</a>
                 <button class="btn-report">Generate Full Report</button>
             </div>
         </div>
@@ -304,16 +301,13 @@
             const data = Object.values(penDetails).find(p => p.id == penId);
 
             if (data) {
-                // 1. Update Headers
                 document.querySelector('.details-title').innerText = `${data.name} Details`;
                 document.querySelector('.details-header .page-subtitle').innerText = data.section || 'Unassigned';
 
-                // 2. Update Health Status
                 const healthValues = document.querySelectorAll('.health-grid .health-value');
                 healthValues[0].innerText = data.healthy_pigs || 0;
                 healthValues[1].innerText = data.sick_pigs || 0;
 
-                // 3. Update Weight Progress
                 const detailSections = document.querySelectorAll('.details-section');
                 const weightValues = detailSections[1].querySelectorAll('.font-bold');
                 weightValues[0].innerText = data.avg_weight || '0 kg';
@@ -321,18 +315,31 @@
                 document.querySelector('.progress-bar-fill').style.width = `${data.progress || 0}%`;
                 document.querySelector('.progress-meta').innerText = `${data.progress || 0}% to target`;
 
-                // 4. Update Financial Overview
                 const financialValues = detailSections[2].querySelectorAll('.financial-value');
                 financialValues[0].innerText = data.batch_cost || '₱0';
                 financialValues[1].innerText = data.feed_cons || '0 kg';
                 financialValues[2].innerText = data.profit_margin || '0%';
 
-                // 5. Update Timeline
                 const timelineValues = detailSections[3].querySelectorAll('.financial-value');
                 timelineValues[0].innerText = data.start_date || 'N/A';
                 timelineValues[1].innerText = data.end_date || 'N/A';
 
-                // 6. Update Action Buttons
+                // --- NEW: Update Pigs List ---
+                const pigsContainer = document.getElementById('pigs-list-container');
+                if (data.pigs && data.pigs.length > 0) {
+                    pigsContainer.innerHTML = data.pigs.map(pig => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #f9fafb; font-size: 0.8rem;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="bx bx-purchase-tag" style="color: #22c55e;"></i>
+                                <span class="font-bold text-gray-700">${pig.tag}</span>
+                            </div>
+                            <span class="badge-good">Active</span>
+                        </div>
+                    `).join('');
+                } else {
+                    pigsContainer.innerHTML = `<p class="text-xs text-center text-gray-400 py-4">No individual pigs registered.</p>`;
+                }
+
                 const editBtn = document.querySelector('.btn-action-edit');
                 const deleteBtn = document.querySelector('.btn-action-delete');
                 if (editBtn) editBtn.setAttribute('onclick', `editPen(${data.id})`);
@@ -372,14 +379,16 @@
                                     <option value="Poor">Poor</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Healthy Pigs</label>
+                            <div class="form-group" style="grid-column: span 2; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px dashed #22c55e;">
+                                <label class="form-label" style="color: #15803d;">Auto-Generate Pigs</label>
+                                <input id="pen-pig-count" type="number" class="custom-input" placeholder="How many pigs to add in this batch? (e.g. 20)" style="margin-bottom: 0;">
+                                <p style="font-size: 0.7rem; color: #16a34a; margin-top: 4px;">System will automatically create unique tags for each pig.</p>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label class="form-label">Starting Healthy Count (Display Only)</label>
                                 <input id="pen-healthy" type="number" class="custom-input" placeholder="0">
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Sick Pigs</label>
-                                <input id="pen-sick" type="number" class="custom-input" placeholder="0">
-                            </div>
+                            <input id="pen-sick" type="hidden" value="0">
                             <div class="form-group">
                                 <label class="form-label">Current Avg Weight</label>
                                 <input id="pen-avg-weight" class="custom-input" placeholder="e.g. 50 kg">
@@ -415,7 +424,7 @@
                         </div>
                     `,
                     showCancelButton: true,
-                    confirmButtonText: 'Save Pen',
+                    confirmButtonText: 'Save Pen & Generate Pigs',
                     confirmButtonColor: '#22c55e',
                     showLoaderOnConfirm: true,
                     preConfirm: () => {
@@ -433,6 +442,7 @@
                             progress: document.getElementById('pen-progress').value,
                             start_date: document.getElementById('pen-start').value,
                             end_date: document.getElementById('pen-finish').value,
+                            pig_count: document.getElementById('pen-pig-count').value,
                         };
 
                         if (!payload.name) {

@@ -46,16 +46,16 @@
             <div class="space-y-4">
                 <!-- Critical Alert 1 -->
                 <div
-                    class="glass-panel rounded-3xl p-5 md:p-6 border-l-4 border-red-500 hover:bg-white/20 transition cursor-pointer shadow-lg group">
+                    class="glass-panel rounded-3xl p-5 md:p-6 border-l-4 border-red-500 hover:bg-white/10 transition cursor-pointer shadow-lg group">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 rounded-2xl bg-red-500/30 flex items-center justify-center border border-red-500/30">
+                                <div class="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
                                     <i class='bx bx-heart-broken text-red-400 text-lg'></i>
                                 </div>
                                 <div>
                                     <h3 class="text-base md:text-lg font-bold text-white">Pig #42 - Health Crisis</h3>
-                                    <p class="text-[10px] md:text-sm text-white/60 uppercase tracking-widest">Pen 3 | 2 mins ago</p>
+                                    <p class="text-[10px] md:text-sm text-white/40 uppercase tracking-widest">Pen 3 | 2 mins ago</p>
                                 </div>
                             </div>
                             <p class="text-white/80 text-xs md:text-sm mb-4 leading-relaxed">Unusual behavior detected: rapid breathing, lethargy. Immediate veterinary attention required.</p>

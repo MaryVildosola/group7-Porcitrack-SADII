@@ -28,7 +28,19 @@ Route::get('/dashboard', function (Request $request) {
 // --- ADMIN ZONE ---
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
-        return view('users.dashboard'); // Placeholder for admin dashboard
+        $pendingTasks = \App\Models\Task::where('status', 'pending')->count();
+        $totalPigs = \App\Models\Pig::where('status', 'active')->count();
+        $sickPigs = \App\Models\Pen::sum('sick_pigs');
+        
+        $totalDelivered = \App\Models\FeedDelivery::sum('quantity');
+        $totalConsumed = \App\Models\FeedConsumption::sum('quantity');
+        $availableStock = max($totalDelivered - $totalConsumed, 0);
+
+        $recentTasks = \App\Models\Task::with('assignee')->latest()->limit(5)->get();
+
+        return view('users.dashboard', compact(
+            'pendingTasks', 'totalPigs', 'sickPigs', 'availableStock', 'recentTasks'
+        ));
     })->name('admin.dashboard');
 
     Route::get('/pens/index', [App\Http\Controllers\PenController::class, 'index'])->name('pens.index');
@@ -62,6 +74,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('/admin/feed-ingredients', [FeedIngredientController::class, 'store'])->name('admin.feed-ingredients.store');
     Route::put('/admin/feed-ingredients/{ingredient}', [FeedIngredientController::class, 'update'])->name('admin.feed-ingredients.update');
     Route::delete('/admin/feed-ingredients/{ingredient}', [FeedIngredientController::class, 'destroy'])->name('admin.feed-ingredients.destroy');
+    Route::get('/admin/tasks', [App\Http\Controllers\TaskController::class, 'adminIndex'])->name('admin.tasks.index');
+    Route::post('/admin/tasks', [App\Http\Controllers\TaskController::class, 'store'])->name('admin.tasks.store');
+    Route::delete('/admin/tasks/{task}', [App\Http\Controllers\TaskController::class, 'destroy'])->name('admin.tasks.destroy');
 });
 
 // --- WORKER ZONE ---
@@ -70,9 +85,8 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
         return view('worker.dashboard'); // High-fidelity mobile worker dashboard
     })->name('worker.dashboard');
 
-    Route::get('/worker/tasks', function () {
-        return view('worker.task'); // Worker tasks page
-    })->name('worker.tasks');
+    Route::get('/worker/tasks', [App\Http\Controllers\TaskController::class, 'workerIndex'])->name('worker.tasks');
+    Route::post('/worker/tasks/{task}/complete', [App\Http\Controllers\TaskController::class, 'updateStatus'])->name('worker.tasks.complete');
 
     Route::get('/worker/alerts', function () {
         return view('worker.alerts'); // Worker alerts page

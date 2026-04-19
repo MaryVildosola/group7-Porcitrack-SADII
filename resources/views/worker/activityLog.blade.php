@@ -21,7 +21,7 @@
             </div>
 
             <!-- Activity Entry 1 -->
-            <div class="glass-panel rounded-3xl p-5 md:p-6 hover:bg-white/20 transition cursor-pointer shadow-lg group">
+            <div class="glass-panel rounded-3xl p-5 md:p-6 hover:bg-white/10 transition cursor-pointer shadow-lg group border border-white/10">
                 <div class="flex gap-4">
                     <div class="flex flex-col items-center">
                         <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-green-500/30 flex items-center justify-center border border-green-500/30 shadow-inner">
