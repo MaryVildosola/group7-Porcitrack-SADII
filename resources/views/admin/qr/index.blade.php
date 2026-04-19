@@ -91,16 +91,24 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js" integrity="sha512-kqINN+YecAjBJNVobbZumx4cE2hC41o7Nz011wj9aS5E7xHMyqMrbnqFrRNtYqYnUG2dSEmGJFJ+pjF0H+dxIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-BMevIbvL+URxuh5Q+Y17fIohWTXzB1b6lqXxWYA6d4EJFMWJfVQx8io+ez1h5A5nvmps+PLS41rg0ev4KxO6Vw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script>
-    const qr = new QRious({
-        element: document.getElementById('qr-canvas'),
-        size: 260,
-        value: 'PORCI-QR',
-        background: 'white',
-        foreground: '#111827',
-    });
+    // Initialize QRious
+    let qr;
+    try {
+        qr = new QRious({
+            element: document.getElementById('qr-canvas'),
+            size: 260,
+            value: 'PORCI-QR-INITIAL',
+            background: 'white',
+            foreground: '#111827',
+            level: 'H' // High error correction for better scanning on physical tags
+        });
+    } catch (e) {
+        console.error("QRious failed to initialize", e);
+    }
 
     const labelType = document.getElementById('label-type');
     const labelText = document.getElementById('label-text');
@@ -109,12 +117,32 @@
     const pigPenSelect = document.getElementById('pig_pen_id');
 
     function updatePreview(type, text, payload) {
+        if (!qr) return;
         qr.value = payload;
         labelType.textContent = type;
         labelText.textContent = text;
+        
+        // Add a subtle "pop" animation to the preview box
+        const previewBox = document.getElementById('qr-label-preview');
+        previewBox.style.transform = 'scale(1.02)';
+        previewBox.style.transition = 'transform 0.2s ease';
+        setTimeout(() => previewBox.style.transform = 'scale(1)', 200);
     }
 
+    // Generate initial preview if pens exist
+    window.addEventListener('load', () => {
+        if (penSelect && penSelect.options.length > 0) {
+            const penName = penSelect.options[0].text;
+            const payload = JSON.stringify({ type: 'pen', id: penSelect.value, name: penName });
+            updatePreview('Pen QR Label', penName, payload);
+        }
+    });
+
     document.getElementById('generate-pen').addEventListener('click', () => {
+        if (!penSelect.value) {
+            Swal.fire('Error', 'Please select a pen first', 'error');
+            return;
+        }
         const penName = penSelect.options[penSelect.selectedIndex].text;
         const note = document.getElementById('pen_note').value.trim();
         const payload = JSON.stringify({ type: 'pen', id: penSelect.value, name: penName, note: note });
@@ -123,29 +151,68 @@
 
     document.getElementById('generate-pig').addEventListener('click', () => {
         const tagValue = pigTag.value.trim() || 'NEW-PIG';
+        if (!pigPenSelect.value) {
+            Swal.fire('Error', 'Please assign the pig to a pen', 'error');
+            return;
+        }
         const penName = pigPenSelect.options[pigPenSelect.selectedIndex].text;
         const payload = JSON.stringify({ type: 'pig', tag: tagValue, pen_id: pigPenSelect.value, pen_name: penName });
         updatePreview('Pig Tag', `${tagValue} — ${penName}`, payload);
     });
 
     document.getElementById('download-image').addEventListener('click', () => {
+        const canvas = document.getElementById('qr-canvas');
+        if (qr.value === 'PORCI-QR-INITIAL') {
+            Swal.fire('Notice', 'Please generate a specific pen or pig QR first', 'info');
+            return;
+        }
         const link = document.createElement('a');
-        link.href = document.getElementById('qr-canvas').toDataURL('image/png');
-        link.download = 'porci-qr-label.png';
+        link.href = canvas.toDataURL('image/png');
+        link.download = `porci-qr-${labelType.textContent.toLowerCase().replace(/\s+/g, '-')}.png`;
         link.click();
     });
 
     document.getElementById('download-pdf').addEventListener('click', async () => {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [400, 520] });
-        const dataUrl = document.getElementById('qr-canvas').toDataURL('image/png');
+        if (qr.value === 'PORCI-QR-INITIAL') {
+            Swal.fire('Notice', 'Please generate a specific pen or pig QR first', 'info');
+            return;
+        }
+        
+        try {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [400, 520] });
+            const dataUrl = document.getElementById('qr-canvas').toDataURL('image/png');
 
-        pdf.setFontSize(18);
-        pdf.text(labelType.textContent, 20, 36);
-        pdf.addImage(dataUrl, 'PNG', 66, 70, 268, 268);
-        pdf.setFontSize(14);
-        pdf.text(labelText.textContent, 20, 370);
-        pdf.save('porci-qr-label.pdf');
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(0, 0, 400, 520, 'F');
+            
+            pdf.setTextColor(17, 24, 39);
+            pdf.setFontSize(22);
+            pdf.setFont("helvetica", "bold");
+            pdf.text("PORCITRACK", 200, 40, { align: 'center' });
+            
+            pdf.setFontSize(16);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(labelType.textContent, 200, 65, { align: 'center' });
+            
+            // Draw QR
+            pdf.addImage(dataUrl, 'PNG', 50, 90, 300, 300);
+            
+            // Draw Label
+            pdf.setFontSize(18);
+            pdf.setFont("helvetica", "bold");
+            const splitText = pdf.splitTextToSize(labelText.textContent, 360);
+            pdf.text(splitText, 200, 420, { align: 'center' });
+            
+            pdf.setFontSize(10);
+            pdf.setTextColor(107, 114, 128);
+            pdf.text("Generated via Porcitrack Farm Management", 200, 490, { align: 'center' });
+            
+            pdf.save(`porci-label-${Date.now()}.pdf`);
+        } catch (e) {
+            console.error("PDF Generation failed", e);
+            Swal.fire('Error', 'Failed to generate PDF. Please try PNG download instead.', 'error');
+        }
     });
 </script>
 @endsection
