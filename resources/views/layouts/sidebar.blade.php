@@ -65,6 +65,16 @@
                 </a>
             </li>
 
+            <!-- Feed Mixing -->
+            <li class="slide {{ request()->routeIs('admin.feed-mix.*') || request()->routeIs('admin.feed-ingredients.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.feed-mix.index') }}" class="side-menu__item {{ request()->routeIs('admin.feed-mix.*') || request()->routeIs('admin.feed-ingredients.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
+                        <path d="M17 8C8 10 5.9 16.17 3.82 21h1.71C7 17 9 13 17 11V8zM1 3l19 7.46L1 18V3zM3 6.12V14l5.23-2.05L3 6.12zM19 19c-1.1 0-2 .9-2 2h-1c0-1.65 1.35-3 3-3s3 1.35 3 3h-1c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                    <span class="side-menu__label">Feed Mixing</span>
+                </a>
+            </li>
+
             <!-- QR Labels -->
             <li class="slide {{ request()->routeIs('admin.qr.index') ? 'active' : '' }}">
                 <a href="{{ route('admin.qr.index') }}" class="side-menu__item {{ request()->routeIs('admin.qr.index') ? 'active' : '' }}">

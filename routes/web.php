@@ -5,6 +5,9 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\FeedMixController;
+use App\Http\Controllers\FeedIngredientController;
+use App\Http\Controllers\Worker\WorkerFeedFormulaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,6 +49,19 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/feed-stock', [InventoryController::class, 'index'])->name('admin.feed-stock.index');
     Route::post('/admin/feed-stock', [InventoryController::class, 'store'])->name('admin.feed-stock.store');
     Route::get('/admin/qr-labels', [InventoryController::class, 'qrGenerator'])->name('admin.qr.index');
+
+    // Feed Mixing / Custom Feed Formulation
+    Route::get('/admin/feed-mix', [FeedMixController::class, 'index'])->name('admin.feed-mix.index');
+    Route::get('/admin/feed-mix/create', [FeedMixController::class, 'create'])->name('admin.feed-mix.create');
+    Route::post('/admin/feed-mix', [FeedMixController::class, 'store'])->name('admin.feed-mix.store');
+    Route::get('/admin/feed-mix/{formula}', [FeedMixController::class, 'show'])->name('admin.feed-mix.show');
+    Route::delete('/admin/feed-mix/{formula}', [FeedMixController::class, 'destroy'])->name('admin.feed-mix.destroy');
+
+    // Feed Ingredient Library
+    Route::get('/admin/feed-ingredients', [FeedIngredientController::class, 'index'])->name('admin.feed-ingredients.index');
+    Route::post('/admin/feed-ingredients', [FeedIngredientController::class, 'store'])->name('admin.feed-ingredients.store');
+    Route::put('/admin/feed-ingredients/{ingredient}', [FeedIngredientController::class, 'update'])->name('admin.feed-ingredients.update');
+    Route::delete('/admin/feed-ingredients/{ingredient}', [FeedIngredientController::class, 'destroy'])->name('admin.feed-ingredients.destroy');
 });
 
 // --- WORKER ZONE ---
@@ -75,6 +91,9 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 
     // PWA Offline Sync
     Route::post('/worker/sync-logs', [App\Http\Controllers\Worker\SyncController::class, 'sync'])->name('worker.sync');
+
+    // Feed Formulas (read-only for workers)
+    Route::get('/worker/feed-formulas', [WorkerFeedFormulaController::class, 'index'])->name('worker.feed-formulas');
 });
 
 // --- ADMIN ZONE (Protected by Auth and Admin Role) ---

@@ -153,6 +153,11 @@
                     <i class='bx bx-book-content text-lg'></i>
                     <span>Weekly Report</span>
                 </a>
+                <a href="{{ route('worker.feed-formulas') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.feed-formulas') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
+                    <i class='bx bx-bowl-hot text-lg'></i>
+                    <span>Feed Formulas</span>
+                </a>
                 <a href="{{ route('worker.settings') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.settings') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
                     <i class='bx bx-cog text-lg'></i>
