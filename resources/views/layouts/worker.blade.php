@@ -8,7 +8,7 @@
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#2e7d32">
+    <meta name="theme-color" content="#0b1120">
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,9 +30,9 @@
                     },
                     colors: {
                         app: {
-                            green: '#65a767',
-                            dark: '#1b3f21',
-                            darker: '#132817',
+                            green: '#22c55e',
+                            dark: '#0b1120',
+                            darker: '#060b16',
                             accent: '#ff5c5c', // for alerts
                         }
                     }
@@ -43,13 +43,12 @@
 
     <style>
         body {
-            /* Restored original vibrant green gradient */
-            background: linear-gradient(135deg, #1a472a 0%, #0f2818 50%, #050a08 100%);
-            background-attachment: fixed;
+            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
             margin: 0;
             padding: 0;
-            color: white;
+            color: #0f172a;
         }
 
         html,
@@ -65,28 +64,28 @@
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .glass-button {
-            background: rgba(255, 255, 255, 0.10);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             transition: all 0.2s ease;
         }
 
         .glass-button:active {
             transform: scale(0.97);
-            background: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 1);
         }
     </style>
 </head>
 
-<body class="text-white antialiased min-h-screen selection:bg-white/30 overflow-x-hidden">
+<body class="text-slate-800 antialiased min-h-screen selection:bg-green-200 overflow-x-hidden">
 
     <div class="flex h-screen w-screen overflow-hidden">
         
@@ -94,7 +93,7 @@
         <div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] hidden md:hidden transition-opacity duration-300 opacity-0"></div>
 
         <!-- Mobile Header (Green as requested) -->
-        <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f2818] border-b border-white/10 flex items-center justify-between px-4 z-[80] shadow-md">
+        <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0b1120] border-b border-white/5 flex items-center justify-between px-4 z-[80] shadow-md">
             <!-- Left: Logo -->
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center shadow-lg border border-white/10">
@@ -124,10 +123,10 @@
         </div>
 
         <!-- Sidebar Navigation -->
-        <aside id="workerSidebar" class="fixed inset-y-0 left-0 z-[100] w-72 bg-[#0f2818]/95 backdrop-blur-2xl border-r border-white/10 flex flex-col shrink-0 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 md:bg-white/5 shadow-2xl md:shadow-none">
+        <aside id="workerSidebar" class="fixed inset-y-0 left-0 z-[100] w-72 bg-[#0b1120] backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 shadow-2xl">
             <div class="p-6 border-b border-white/10">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-[#428246] to-[#2d5a2f] flex items-center justify-center shadow-inner">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-inner">
                         <i class='bx bx-pig text-xl text-white font-bold'></i>
                     </div>
                     <div>
@@ -137,9 +136,9 @@
                 </div>
             </div>
 
-            <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
+            <nav class="flex-1 px-4 py-8 space-y-1 overflow-y-auto custom-scrollbar">
                 <a href="{{ route('worker.dashboard') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.dashboard') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.dashboard') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
                     <i class='bx bx-home text-lg'></i>
                     <span>Dashboard</span>
                 </a>
@@ -157,22 +156,27 @@
                     
                     <div id="farmOpsDropdown" class="hidden pl-4 mt-1 space-y-1 overflow-hidden transition-all duration-300">
                         <a href="{{ route('worker.tasks') }}"
-                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.tasks') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.tasks') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
                             <i class='bx bx-task text-lg'></i>
                             <span>Tasks</span>
                         </a>
                         <a href="{{ route('worker.reports') }}"
-                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.reports') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.reports') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
                             <i class='bx bx-book-content text-lg'></i>
                             <span>Weekly Report</span>
                         </a>
+                        <a href="{{ route('worker.swineDetails') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.swineDetails') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            <i class='bx bx-pig text-lg'></i>
+                            <span>Swine Details</span>
+                        </a>
                         <a href="{{ route('worker.feed-formulas') }}"
-                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.feed-formulas') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.feed-formulas') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
                             <i class='bx bx-bowl-hot text-lg'></i>
                             <span>Feed Formulas</span>
                         </a>
                         <a href="{{ route('admin.qr.index') }}"
-                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.qr.index') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('admin.qr.index') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
                             <i class='bx bx-qr-scan text-lg'></i>
                             <span>QR Labels</span>
                         </a>
@@ -180,7 +184,7 @@
                 </div>
 
                 <a href="{{ route('worker.settings') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.settings') ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.settings') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/70 hover:bg-white/10 hover:text-white' }} font-medium transition">
                     <i class='bx bx-cog text-lg'></i>
                     <span>Settings</span>
                 </a>
@@ -189,7 +193,7 @@
                     <p class="text-[10px] uppercase font-bold text-white/30 tracking-widest">Quick Actions</p>
                 </div>
                 <a href="#" onclick="triggerManualEntry(event)"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/10 text-white border border-green-500/30 hover:bg-green-500/30 font-medium transition shadow-sm">
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-green-500/15 text-green-300 border border-green-500/30 hover:bg-green-500/25 font-medium transition shadow-sm">
                     <i class='bx bx-edit text-lg text-green-400'></i>
                     <span>Manual ID Entry</span>
                 </a>
@@ -198,7 +202,7 @@
             <div class="p-4 border-t border-white/10">
                 <div class="flex items-center gap-3 px-4 py-3">
                     <div class="w-10 h-10 rounded-full overflow-hidden border border-white/20 shadow-inner bg-white/10">
-                        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=65a767&color=fff' }}" 
+                        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=0b1120&color=22c55e' }}" 
                              alt="User" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
@@ -228,21 +232,21 @@
             <!-- Global Floating Icons (Right Side - Green as requested) -->
             <div class="hidden md:flex absolute top-4 right-4 md:top-8 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
                 <!-- Sync Status -->
-                <div id="globalSyncStatus" class="flex items-center gap-2 md:gap-3 bg-[#1a472a] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#235c36] transition shadow-lg" onclick="if(typeof syncData === 'function'){ syncData(); }">
+                <div id="globalSyncStatus" class="flex items-center gap-2 md:gap-3 bg-[#0b1120] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#141e36] transition shadow-lg" onclick="if(typeof syncData === 'function'){ syncData(); }">
                     <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
                     <span class="text-white text-[9px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Synced</span>
                 </div>
 
                 <!-- Notifications Bell -->
                 <button onclick="if(typeof openNotificationsPanel === 'function'){ openNotificationsPanel(); } else { window.location.href='/worker/dashboard'; }" 
-                        class="relative w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#1a472a] border border-white/10 hover:bg-[#235c36] transition shadow-lg text-white">
+                        class="relative w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white">
                     <i class='bx bx-bell text-lg md:text-xl'></i>
                     <span id="globalAlertBadge" class="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full border border-[rgba(0,0,0,0.5)] animate-pulse"></span>
                 </button>
 
                 <!-- Search -->
                 <button onclick="if(typeof showSearch === 'function'){ showSearch(); }" 
-                        class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#1a472a] border border-white/10 hover:bg-[#235c36] transition shadow-lg text-white">
+                        class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white">
                     <i class='bx bx-search text-lg md:text-xl'></i>
                 </button>
             </div>
@@ -253,7 +257,7 @@
 
     <!-- Notifications / Alerts Slide Panel (Global) -->
     <div id="notificationsBackdrop" class="fixed inset-0 z-[190] hidden bg-black/50 backdrop-blur-sm" onclick="closeNotificationsPanel()"></div>
-    <div id="notificationsPanel" class="fixed top-0 right-0 bottom-0 z-[200] w-full max-w-sm bg-[#060f08] border-l border-white/10 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div id="notificationsPanel" class="fixed top-0 right-0 bottom-0 z-[200] w-full max-w-sm bg-[#0b1120] border-l border-white/10 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-6 border-b border-white/10 flex justify-between items-center shrink-0">
             <div>
                 <h2 class="text-2xl font-black text-white">Alerts</h2>

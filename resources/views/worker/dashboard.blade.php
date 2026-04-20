@@ -1,6 +1,26 @@
 @extends('layouts.worker')
 
 @section('content')
+<style>
+    /* Scoped overrides: convert white text → dark text for light background */
+    .worker-dash .text-white          { color: #1e293b !important; }
+    .worker-dash .text-white\/30,
+    .worker-dash .text-white\/40,
+    .worker-dash .text-white\/50,
+    .worker-dash .text-white\/60,
+    .worker-dash .text-white\/70,
+    .worker-dash .text-white\/80      { color: #64748b !important; }
+    .worker-dash .bg-white\/5,
+    .worker-dash .bg-white\/10,
+    .worker-dash .bg-white\/15        { background-color: rgba(0,0,0,0.05) !important; }
+    .worker-dash .border-white\/10,
+    .worker-dash .border-white\/5     { border-color: rgba(0,0,0,0.1) !important; }
+    .worker-dash .hover\:bg-white\/10:hover,
+    .worker-dash .hover\:bg-white\/15:hover { background-color: rgba(0,0,0,0.07) !important; }
+    /* Keep the glass-panel light */
+    .worker-dash .glass-panel         { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; }
+</style>
+<div class="worker-dash min-h-screen bg-[#f8fafc]">
     <div class="p-6 md:p-12 max-w-full">
 
         <!-- Header Section -->
@@ -31,15 +51,6 @@
                 <div class="text-left">
                     <p class="text-white font-bold text-lg">Scan QR Code</p>
                     <p class="text-white/40 text-xs uppercase tracking-wider font-semibold">Immediate Monitoring</p>
-                </div>
-            </button>
-            <button onclick="showTaskModal()" class="flex-1 glass-panel p-6 rounded-3xl flex items-center justify-center gap-4 hover:bg-white/10 transition group border border-white/10 shadow-lg active:scale-95">
-                <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition">
-                    <i class='bx bx-plus text-2xl text-blue-400'></i>
-                </div>
-                <div class="text-left">
-                    <p class="text-white font-bold text-lg">Create Task</p>
-                    <p class="text-white/40 text-xs uppercase tracking-wider font-semibold">Log Activity</p>
                 </div>
             </button>
         </div>
@@ -194,7 +205,7 @@
         </div>
 
     </div>
-
+</div>
 
 
 
