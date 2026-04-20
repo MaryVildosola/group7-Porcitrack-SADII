@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FeedIngredient;
+use App\Http\Controllers\PigController;
 use Illuminate\Http\Request;
 
 class FeedIngredientController extends Controller

@@ -12,6 +12,7 @@ use App\Http\Controllers\FeedIngredientController;
 use App\Http\Controllers\Worker\WorkerFeedFormulaController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PenController;
+use App\Http\Controllers\PigController;
 
 // --- PUBLIC & REDIRECTS ---
 Route::get('/', function () {
@@ -46,36 +47,39 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         }
         )->name('admin.dashboard');
 
+        Route::post('/pigs/{pig}/sell-dispose', [PigController::class, 'sellOrDispose'])->name('pigs.sellOrDispose');
+
         // Pens Management
-        Route::get('/pens/index', [PenController::class , 'index'])->name('pens.index');
-        Route::post('/pens/store', [PenController::class , 'store'])->name('pens.store');
-        Route::put('/pens/{pen}', [PenController::class , 'update'])->name('pens.update');
-        Route::delete('/pens/{pen}', [PenController::class , 'destroy'])->name('pens.destroy');
+        Route::get('/pens/index', [PenController::class, 'index'])->name('pens.index');
+        Route::post('/pens/store', [PenController::class, 'store'])->name('pens.store');
+        Route::put('/pens/{pen}', [PenController::class, 'update'])->name('pens.update');
+        Route::delete('/pens/{pen}', [PenController::class, 'destroy'])->name('pens.destroy');
 
         // User Management
-        Route::get('users/index', [ProfileController::class , 'getAllUsers'])->name('users.index');
-        Route::get('users/create', [ProfileController::class , 'create'])->name('users.create');
-        Route::get('users/{id}/edit', [ProfileController::class , 'editUser'])->name('users.edit');
-        Route::post('users/store', [ProfileController::class , 'store'])->name('users.store');
-        Route::put('users/update/{id}', [ProfileController::class , 'updateUser'])->name('users.update');
-        Route::delete('users/destroy/{id}', [ProfileController::class , 'destroyUser'])->name('users.destroy');
+        Route::get('users/index', [ProfileController::class, 'getAllUsers'])->name('users.index');
+        Route::get('users/create', [ProfileController::class, 'create'])->name('users.create');
+        Route::get('users/{id}/edit', [ProfileController::class, 'editUser'])->name('users.edit');
+        Route::post('users/store', [ProfileController::class, 'store'])->name('users.store');
+        Route::put('users/update/{id}', [ProfileController::class, 'updateUser'])->name('users.update');
+        Route::delete('users/destroy/{id}', [ProfileController::class, 'destroyUser'])->name('users.destroy');
 
         // Feed & Inventory
-        Route::get('/admin/feed-stock', [InventoryController::class , 'index'])->name('admin.feed-stock.index');
-        Route::post('/admin/feed-stock', [InventoryController::class , 'store'])->name('admin.feed-stock.store');
-        Route::get('/admin/qr-labels', [InventoryController::class , 'qrGenerator'])->name('admin.qr.index');
+        Route::get('/admin/feed-stock', [InventoryController::class, 'index'])->name('admin.feed-stock.index');
+        Route::post('/admin/feed-stock', [InventoryController::class, 'store'])->name('admin.feed-stock.store');
+        Route::get('/admin/qr-labels', [InventoryController::class, 'qrGenerator'])->name('admin.qr.index');
 
         Route::resource('admin/feed-mix', FeedMixController::class)->names('admin.feed-mix');
         Route::resource('admin/feed-ingredients', FeedIngredientController::class)->names('admin.feed-ingredients');
 
         // Admin Tasks & Reports
-        Route::get('/admin/tasks', [TaskController::class , 'adminIndex'])->name('admin.tasks.index');
-        Route::post('/admin/tasks', [TaskController::class , 'store'])->name('admin.tasks.store');
-        Route::delete('/admin/tasks/{task}', [TaskController::class , 'destroy'])->name('admin.tasks.destroy');
+        Route::get('/admin/tasks', [TaskController::class, 'adminIndex'])->name('admin.tasks.index');
+        Route::post('/admin/tasks', [TaskController::class, 'store'])->name('admin.tasks.store');
+        Route::delete('/admin/tasks/{task}', [TaskController::class, 'destroy'])->name('admin.tasks.destroy');
 
-        Route::get('/admin/weekly-reports', [ReportController::class , 'adminIndex'])->name('admin.reports');
-        Route::get('/admin/weekly-reports/{id}', [ReportController::class , 'show'])->name('admin.reports.show');
+        Route::get('/admin/weekly-reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
+        Route::get('/admin/weekly-reports/{id}', [ReportController::class, 'show'])->name('admin.reports.show');
 
+        // Enrollment & Subjects (Legacy or other features)
         Route::resource('enrollments', EnrollmentController::class);
         Route::resource('subject', SubjectController::class);
     });
@@ -87,23 +91,24 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
         }
         )->name('worker.dashboard');
 
-        Route::get('/worker/tasks', [TaskController::class , 'workerIndex'])->name('worker.tasks');
-        Route::post('/worker/tasks/{task}/complete', [TaskController::class , 'updateStatus'])->name('worker.tasks.complete');
+        Route::get('/worker/tasks', [TaskController::class, 'workerIndex'])->name('worker.tasks');
+        Route::post('/worker/tasks/{task}/complete', [TaskController::class, 'updateStatus'])->name('worker.tasks.complete');
 
         Route::get('/worker/alerts', function () {
             return view('worker.alerts');
         }
         )->name('worker.alerts');
+
         Route::get('/worker/activity-log', function () {
             return view('worker.activityLog');
         }
         )->name('worker.activity-log');
 
-        Route::get('/worker/settings', [ProfileController::class , 'workerSettings'])->name('worker.settings');
-        Route::post('/worker/settings/update', [ProfileController::class , 'updateWorkerSettings'])->name('worker.settings.update');
+        Route::get('/worker/settings', [ProfileController::class, 'workerSettings'])->name('worker.settings');
+        Route::post('/worker/settings/update', [ProfileController::class, 'updateWorkerSettings'])->name('worker.settings.update');
 
-        Route::get('/worker/weekly-reports', [ReportController::class , 'workerIndex'])->name('worker.reports');
-        Route::post('/worker/weekly-reports/store', [ReportController::class , 'store'])->name('worker.reports.store');
+        Route::get('/worker/weekly-reports', [ReportController::class, 'workerIndex'])->name('worker.reports');
+        Route::post('/worker/weekly-reports/store', [ReportController::class, 'store'])->name('worker.reports.store');
 
         // --- SWINE DETAILS ---
         Route::get('/worker/swine-details', function () {
@@ -114,35 +119,34 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
                             $q->where('user_id', auth()->id())->orWhere('assigned_to', auth()->id());
                         }
                         )->where('status', 'completed')->whereBetween('updated_at', [$thisWeek, \Carbon\Carbon::now()->endOfWeek()])->exists();
-                    }
-                    catch (\Exception $e) {
-                        $existingReport = false;
-                    }
+            }
+            catch (\Exception $e) {
+                $existingReport = false;
+            }
 
-                    try {
-                        $analytics = [
-                            'total_pigs' => \App\Models\Pig::where('status', 'active')->count() ?? 0,
-                            'sick_pigs' => \App\Models\Pen::sum('sick_pigs') ?? 0,
-                            'avg_weight' => \App\Models\Pig::where('status', 'active')->avg('weight') ?? 0,
-                            'active_pens' => \App\Models\Pen::where('is_active', true)->count() ?? 0,
-                        ];
-                    }
-                    catch (\Exception $e) {
-                        $analytics = ['total_pigs' => 0, 'sick_pigs' => 0, 'avg_weight' => 0, 'active_pens' => 0];
-                    }
+            try {
+                $analytics = [
+                    'total_pigs' => \App\Models\Pig::where('status', 'active')->count() ?? 0,
+                    'sick_pigs' => \App\Models\Pen::sum('sick_pigs') ?? 0,
+                    'avg_weight' => \App\Models\Pig::where('status', 'active')->avg('weight') ?? 0,
+                    'active_pens' => \App\Models\Pen::where('is_active', true)->count() ?? 0,
+                ];
+            }
+            catch (\Exception $e) {
+                $analytics = ['total_pigs' => 0, 'sick_pigs' => 0, 'avg_weight' => 0, 'active_pens' => 0];
+            }
 
-                    return view('worker.swineDetails', compact('thisWeek', 'existingReport', 'analytics'));
-                }
-                )->name('worker.swineDetails');
+            return view('worker.swineDetails', compact('thisWeek', 'existingReport', 'analytics'));
+        })->name('worker.swineDetails');
 
-                Route::post('/worker/sync-logs', [App\Http\Controllers\Worker\SyncController::class , 'sync'])->name('worker.sync');
-                Route::get('/worker/feed-formulas', [WorkerFeedFormulaController::class , 'index'])->name('worker.feed-formulas');
-            });
+        Route::post('/worker/sync-logs', [App\Http\Controllers\Worker\SyncController::class, 'sync'])->name('worker.sync');
+        Route::get('/worker/feed-formulas', [WorkerFeedFormulaController::class, 'index'])->name('worker.feed-formulas');
+    });
 
 // --- SHARED ZONE (All Auth Users) ---
 Route::middleware('auth')->group(function () {
-    Route::get('profile/edit', [ProfileController::class , 'editOwnProfile'])->name('profile.edit');
-    Route::put('profile/update', [ProfileController::class , 'updateOwnProfile'])->name('profile.update');
+    Route::get('profile/edit', [ProfileController::class, 'editOwnProfile'])->name('profile.edit');
+    Route::put('profile/update', [ProfileController::class, 'updateOwnProfile'])->name('profile.update');
 });
 
 require __DIR__ . '/auth.php';

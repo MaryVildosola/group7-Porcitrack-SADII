@@ -17,8 +17,15 @@ class Pig extends Model
         'birth_date' => 'date',
     ];
 
+    public function sale()
+{
+    return $this->hasOne(PigSale::class);
+}
+
     public function pen()
     {
         return $this->belongsTo(Pen::class);
     }
+
+    
 }
