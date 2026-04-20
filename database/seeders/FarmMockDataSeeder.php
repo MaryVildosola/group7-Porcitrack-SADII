@@ -14,10 +14,13 @@ use App\Models\FeedConsumption;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\DB;
+
 class FarmMockDataSeeder extends Seeder
 {
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         // 1. Create a Worker if not exists
         $worker = User::firstOrCreate(
             ['email' => 'worker@porcitrack.com'],
@@ -29,6 +32,7 @@ class FarmMockDataSeeder extends Seeder
         );
 
         // 2. Create Pens
+        Pen::truncate();
         $pens = [];
         $sections = ['Nursery', 'Growth', 'Finishing', 'Breeding', 'Gestation'];
         foreach ($sections as $index => $section) {
@@ -40,15 +44,32 @@ class FarmMockDataSeeder extends Seeder
         }
 
         // 3. Create Pigs for each pen
+        Pig::truncate();
+        $breeds = ['Landrace', 'Large White', 'Duroc', 'Berkshire', 'Yorkshire'];
+        $feedingOptions = ['Active', 'Normal', 'Poor'];
+        $symptomsList = [null, null, null, 'Minor Cough', 'Lethargic', 'Skin Irritation'];
+
         foreach ($pens as $index => $pen) {
             $prefix = chr(65 + $index); // A, B, C...
-            for ($j = 1; $j <= 10; $j++) {
+            for ($j = 1; $j <= 12; $j++) {
+                $status = (rand(1, 10) > 8) ? 'Warning' : 'Healthy';
+                $weight = rand(20, 95);
+                $target = rand(100, 115);
+                
                 Pig::firstOrCreate(
                     ['tag' => "$prefix$j-00" . str_pad($j, 2, '0', STR_PAD_LEFT)],
                     [
                         'pen_id' => $pen->id,
+                        'breed' => $breeds[array_rand($breeds)],
                         'status' => 'active',
-                        'birth_date' => now()->subMonths(rand(1, 4))
+                        'health_status' => $status === 'Warning' ? (rand(1,2) == 1 ? 'Warning' : 'Sick') : 'Healthy',
+                        'weight' => $weight,
+                        'target_weight' => $target,
+                        'bcs_score' => rand(2, 4),
+                        'feeding_status' => $feedingOptions[array_rand($feedingOptions)],
+                        'symptoms' => $status !== 'Healthy' ? $symptomsList[array_rand(array_slice($symptomsList, 3))] : null,
+                        'birth_date' => now()->subMonths(rand(1, 4)),
+                        'remarks' => $status !== 'Healthy' ? 'Requires immediate clinical observation.' : 'Standard growth pattern observed.'
                     ]
                 );
             }
@@ -96,5 +117,6 @@ class FarmMockDataSeeder extends Seeder
                 'status' => 'pending'
             ]);
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
