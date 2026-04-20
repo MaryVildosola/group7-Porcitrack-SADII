@@ -11,6 +11,15 @@ class Pig extends Model
         'tag',
         'pen_id',
         'birth_date',
+        'status',
+        'weight',
+        'target_weight',
+        'health_status',
+        'remarks',
+        'breed',
+        'bcs_score',
+        'feeding_status',
+        'symptoms',
     ];
 
     protected $casts = [
@@ -27,5 +36,9 @@ class Pig extends Model
         return $this->belongsTo(Pen::class);
     }
 
+    public function activities()
+    {
+        return $this->hasMany(PigActivity::class)->latest();
+    }
     
 }
