@@ -26,7 +26,7 @@ class InventoryController extends Controller
         $stockSummary = [];
         $currentGroups = ($selectedCategory === 'all') ? $inventoryGroups : [$selectedCategory => $inventoryGroups[$selectedCategory] ?? []];
 
-        foreach ($currentGroups as $catName => $items) {
+        foreach ($currentGroups as $catName => $items) { 
             foreach ($items as $type) {
                 $delivered = FeedDelivery::where('feed_type', $type)->sum('quantity');
                 $consumed = FeedConsumption::where('feed_type', $type)->sum('quantity');
