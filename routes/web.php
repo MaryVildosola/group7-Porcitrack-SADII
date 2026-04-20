@@ -113,6 +113,9 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
         // --- SWINE DETAILS ---
         Route::get('/worker/swine-details', function () {
             $thisWeek = \Carbon\Carbon::now()->startOfWeek();
+            $pens = \App\Models\Pen::with(['pigs' => function($q) {
+                $q->whereNotIn('status', ['Sold', 'Disposed']);
+            }])->get();
 
             try {
                 $existingReport = \App\Models\Task::where(function ($q) {
@@ -126,9 +129,9 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 
             try {
                 $analytics = [
-                    'total_pigs' => \App\Models\Pig::where('status', 'active')->count() ?? 0,
-                    'sick_pigs' => \App\Models\Pen::sum('sick_pigs') ?? 0,
-                    'avg_weight' => \App\Models\Pig::where('status', 'active')->avg('weight') ?? 0,
+                    'total_pigs' => \App\Models\Pig::whereNotIn('status', ['Sold', 'Disposed'])->count() ?? 0,
+                    'sick_pigs' => \App\Models\Pig::where('health_status', 'Sick')->count() ?? 0,
+                    'avg_weight' => \App\Models\Pig::whereNotIn('status', ['Sold', 'Disposed'])->avg('weight') ?? 0,
                     'active_pens' => \App\Models\Pen::where('is_active', true)->count() ?? 0,
                 ];
             }
@@ -136,9 +139,11 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
                 $analytics = ['total_pigs' => 0, 'sick_pigs' => 0, 'avg_weight' => 0, 'active_pens' => 0];
             }
 
-            return view('worker.swineDetails', compact('thisWeek', 'existingReport', 'analytics'));
+            return view('worker.swineDetails', compact('thisWeek', 'existingReport', 'analytics', 'pens'));
         })->name('worker.swineDetails');
 
+        Route::get('/worker/pigs/{pig}', [PigController::class, 'show'])->name('worker.pigs.show');
+        Route::post('/worker/pigs/{pig}/update', [PigController::class, 'updateRecord'])->name('worker.pigs.update');
         Route::post('/worker/sync-logs', [App\Http\Controllers\Worker\SyncController::class, 'sync'])->name('worker.sync');
         Route::get('/worker/feed-formulas', [WorkerFeedFormulaController::class, 'index'])->name('worker.feed-formulas');
     });
