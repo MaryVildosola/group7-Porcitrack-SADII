@@ -222,21 +222,54 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
                         <p class="text-xs text-slate-400 font-bold uppercase mb-1">Pen</p>
-                        <p class="text-lg text-slate-900 font-black" id="pigInfoPen">—</p>
+                        <p class="text-lg text-slate-900 font-black" id="pigInfoPen">Loading...</p>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
                         <p class="text-xs text-slate-400 font-bold uppercase mb-1">Stage</p>
-                        <p class="text-lg text-slate-900 font-black" id="pigInfoStage">—</p>
+                        <p class="text-lg text-slate-900 font-black" id="pigInfoStage">Loading...</p>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
                         <p class="text-xs text-slate-400 font-bold uppercase mb-1">Last Check</p>
-                        <p class="text-base text-slate-900 font-black" id="pigInfoLastCheck">—</p>
+                        <p class="text-base text-slate-900 font-black" id="pigInfoLastCheck">Loading...</p>
                     </div>
                 </div>
+
+                <!-- Body Condition Score -->
                 <div>
-                    <p class="text-base font-black text-slate-900 mb-4">Physical Inspection — Tap each item to confirm</p>
-                    <div class="space-y-3" id="physicalChecklist"></div>
+                    <p class="text-base font-black text-slate-900 mb-1">Body Condition Score</p>
+                    <p class="text-sm text-slate-400 mb-3">1 = Thin | 3 = Ideal | 5 = Obese</p>
+                    <div class="flex gap-2">
+                        @foreach([1, 2, 3, 4, 5] as $score)
+                        <button type="button" onclick="setBCS(this, {{ $score }})" class="bcs-btn flex-1 py-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-black text-base transition active:scale-95">
+                            {{ $score }}
+                        </button>
+                        @endforeach
+                    </div>
+                    <input type="hidden" id="selectedBCS" value="3">
                 </div>
+
+                <!-- Feeding Behavior -->
+                <div>
+                    <p class="text-base font-black text-slate-900 mb-3">Feeding Behavior</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="setFeedBehavior(this, 'Active')" class="feed-btn py-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-bold text-xs transition active:scale-95">
+                            Active
+                        </button>
+                        <button type="button" onclick="setFeedBehavior(this, 'Normal')" class="feed-btn py-4 rounded-xl border border-green-500 bg-green-50 text-green-700 font-bold text-xs transition active:scale-95">
+                            Normal
+                        </button>
+                        <button type="button" onclick="setFeedBehavior(this, 'Poor/None')" class="feed-btn py-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-bold text-xs transition active:scale-95">
+                            Poor/None
+                        </button>
+                    </div>
+                    <input type="hidden" id="selectedFeedBehavior" value="Normal">
+                </div>
+
+                <div>
+                    <p class="text-base font-black text-slate-900 mb-4">Physical Inspection — Tap to confirm</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="physicalChecklist"></div>
+                </div>
+
                 <div>
                     <p class="text-base font-black text-slate-900 mb-3">Estimated Weight (kg)</p>
                     <div class="relative">
@@ -244,6 +277,7 @@
                         <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xl">kg</span>
                     </div>
                 </div>
+
                 <div>
                     <p class="text-base font-black text-slate-900 mb-3">Observed Symptom</p>
                     <select id="symptom" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-5 text-slate-900 text-base focus:outline-none focus:border-green-500 transition font-bold">
@@ -257,13 +291,17 @@
                         <option value="Other">Other — See Notes Below</option>
                     </select>
                 </div>
+
                 <div>
                     <p class="text-base font-black text-slate-900 mb-3">Additional Notes</p>
-                    <textarea id="pigNotes" rows="3" placeholder="Write any other observations here..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-5 text-slate-900 text-base font-medium focus:outline-none focus:border-green-500 transition resize-none"></textarea>
+                    <textarea id="pigNotes" rows="3" placeholder="Write any other observations here..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-5 text-slate-900 text-base font-medium focus:outline-none focus:border-green-500 transition resize-none leading-relaxed"></textarea>
                 </div>
-                <button onclick="submitHealthLog()" class="w-full bg-green-600 text-white py-6 rounded-2xl font-black text-xl hover:shadow-[0_10px_30px_rgba(34,197,94,0.3)] transition active:scale-[0.98]">
-                    Save Report
-                </button>
+
+                <div class="pt-4">
+                    <button onclick="submitHealthLog()" class="w-full bg-green-600 text-white py-6 rounded-2xl font-black text-xl hover:shadow-[0_10px_30px_rgba(34,197,94,0.3)] transition active:scale-[0.98]">
+                        Save Report
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -384,14 +422,33 @@
             document.getElementById('healthModal').classList.add('flex');
             document.body.style.overflow = 'hidden';
 
+            // Reset UI states
+            document.getElementById('pigInfoPen').innerText = 'Loading...';
+            document.getElementById('pigInfoStage').innerText = 'Loading...';
+            document.getElementById('pigInfoLastCheck').innerText = 'Loading...';
+            document.getElementById('selectedBCS').value = '3';
+            document.getElementById('selectedFeedBehavior').value = 'Normal';
+            document.getElementById('pigWeight').value = '';
+            document.getElementById('pigNotes').value = '';
+            document.getElementById('symptom').value = 'Healthy';
+
+            document.querySelectorAll('.bcs-btn').forEach(b => {
+                b.classList.remove('border-green-500', 'bg-green-50', 'text-green-700');
+                if (b.innerText.trim() === '3') b.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+            });
+            document.querySelectorAll('.feed-btn').forEach(b => {
+                b.classList.remove('border-green-500', 'bg-green-50', 'text-green-700');
+                if (b.innerText.trim() === 'Normal') b.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+            });
+
             // Reset checklist
             const container = document.getElementById('physicalChecklist');
             container.innerHTML = '';
             physicalCheckItems.forEach((item, i) => {
                 container.insertAdjacentHTML('beforeend', `
-                    <div onclick="this.querySelector('input').click()" class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition cursor-pointer">
-                        <input type="checkbox" class="w-6 h-6 rounded border-slate-300 text-green-600 focus:ring-green-500" id="pcheck-${i}">
-                        <span class="text-slate-700 text-base font-semibold">${item}</span>
+                    <div onclick="toggleCheck(this)" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition cursor-pointer group">
+                        <input type="checkbox" class="w-5 h-5 rounded border-slate-300 text-green-600 focus:ring-green-500 pointer-events-none" id="pcheck-${i}">
+                        <span class="text-slate-600 text-sm font-bold group-hover:text-slate-900">${item}</span>
                     </div>
                 `);
             });
@@ -407,6 +464,28 @@
                         document.getElementById('targetPigId').dataset.pigDatabaseId = data.pig.id;
                     }
                 });
+        }
+
+        function toggleCheck(el) {
+            const cb = el.querySelector('input');
+            cb.checked = !cb.checked;
+            if (cb.checked) {
+                el.classList.add('border-green-200', 'bg-green-50/50');
+            } else {
+                el.classList.remove('border-green-200', 'bg-green-50/50');
+            }
+        }
+
+        function setBCS(btn, score) {
+            document.querySelectorAll('.bcs-btn').forEach(b => b.classList.remove('border-green-500', 'bg-green-50', 'text-green-700'));
+            btn.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+            document.getElementById('selectedBCS').value = score;
+        }
+
+        function setFeedBehavior(btn, val) {
+            document.querySelectorAll('.feed-btn').forEach(b => b.classList.remove('border-green-500', 'bg-green-50', 'text-green-700'));
+            btn.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+            document.getElementById('selectedFeedBehavior').value = val;
         }
 
         function closeHealthModal() {
@@ -426,20 +505,37 @@
                 pig_id: pigId,
                 symptom: document.getElementById('symptom').value,
                 weight: document.getElementById('pigWeight').value,
+                body_condition_score: document.getElementById('selectedBCS').value,
+                feeding_behavior: document.getElementById('selectedFeedBehavior').value,
                 notes: document.getElementById('pigNotes').value,
                 physical_checks: physicalChecks
             };
 
-            const response = await fetch('/api/health/report', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: JSON.stringify(data)
+            Swal.fire({
+                title: 'Saving Report...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
             });
 
-            if (response.ok) {
-                Swal.fire({ title: 'Report Saved', icon: 'success' });
-                closeHealthModal();
-                location.reload();
+            try {
+                const response = await fetch('/api/health/report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    Swal.fire({ title: 'Report Saved', text: 'Farm database updated successfully.', icon: 'success' });
+                    closeHealthModal();
+                    // Smoothly refresh the dashboard data without a full page reload if possible, 
+                    // but for now location.reload() is the most reliable way to update all counts and recent activities.
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    const err = await response.json();
+                    Swal.fire({ title: 'Error', text: err.message || 'Failed to save report', icon: 'error' });
+                }
+            } catch (e) {
+                Swal.fire({ title: 'Error', text: 'Network error', icon: 'error' });
             }
         }
     </script>
