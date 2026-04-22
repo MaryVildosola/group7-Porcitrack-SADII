@@ -185,91 +185,108 @@
         <!-- Details Column -->
         <div class="details-column">
             <div class="details-panel">
-                <div class="details-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                        <h2 class="details-title">Pen A1 Details</h2>
-                        <p class="page-subtitle">Section A</p>
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button onclick="editPen('Pen A1')" class="btn-action-edit" style="width: 36px; h-height: 36px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
-                            <i class='bx bx-edit-alt' style="font-size: 1.25rem;"></i>
-                        </button>
-                        <button onclick="deletePen('Pen A1')" class="btn-action-delete" style="width: 36px; h-height: 36px; border-radius: 10px; border: 1px solid #fee2e2; background: #fef2f2; color: #dc2626; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
-                            <i class='bx bx-trash' style="font-size: 1.25rem;"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Health Status -->
-                <div class="details-section">
-                    <div class="section-label">
-                        <i class="bx bx-error-alt"></i> Health Status
-                    </div>
-                    <div class="health-grid">
-                        <div class="health-card healthy">
-                            <div class="health-label">Healthy</div>
-                            <div class="health-value">45</div>
+                @if($pens->isNotEmpty())
+                    @php $firstPen = $pens->first(); @endphp
+                    <div class="details-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h2 class="details-title">{{ $firstPen->name }} Details</h2>
+                            <p class="page-subtitle">{{ $firstPen->section ?? 'Unassigned Section' }}</p>
                         </div>
-                        <div class="health-card sick">
-                            <div class="health-label">Sick</div>
-                            <div class="health-value">3</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="editPen({{ $firstPen->id }})" class="btn-action-edit" style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                <i class='bx bx-edit-alt' style="font-size: 1.25rem;"></i>
+                            </button>
+                            <button onclick="deletePen({{ $firstPen->id }})" class="btn-action-delete" style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #fee2e2; background: #fef2f2; color: #dc2626; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                <i class='bx bx-trash' style="font-size: 1.25rem;"></i>
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Weight Progress -->
-                <div class="details-section">
-                    <div class="section-label">
-                        <i class="bx bx-line-chart"></i> Weight Progress
-                    </div>
-                    <div class="flex justify-between text-xs mb-2">
-                        <span class="text-gray-500">Current Average</span>
-                        <span class="font-bold">65 kg</span>
-                    </div>
-                    <div class="flex justify-between text-xs mb-4">
-                        <span class="text-gray-500">Target Weight</span>
-                        <span class="font-bold">110 kg</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" style="width: 59%;"></div>
+                    <!-- Health Status -->
+                    <div class="details-section">
+                        <div class="section-label">
+                            <i class="bx bx-error-alt"></i> Health Status
                         </div>
-                        <div class="progress-meta">59% to target</div>
+                        <div class="health-grid">
+                            <div class="health-card healthy">
+                                <div class="health-label">Healthy</div>
+                                <div class="health-value">{{ $firstPen->pigs->where('health_status', 'Healthy')->count() }}</div>
+                            </div>
+                            <div class="health-card sick">
+                                <div class="health-label">Sick</div>
+                                <div class="health-value text-red-600">{{ $firstPen->pigs->where('health_status', 'Sick')->count() }}</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Financial Overview -->
-                <div class="details-section">
-                    <div class="section-label">
-                        <i class="bx bx-dollar"></i> Financial Overview
+                    <!-- Weight Progress -->
+                    <div class="details-section">
+                        <div class="section-label">
+                            <i class="bx bx-line-chart"></i> Weight Progress
+                        </div>
+                        <div class="flex justify-between text-xs mb-2">
+                            <span class="text-gray-500">Current Average</span>
+                            <span class="font-bold">{{ $firstPen->avg_weight ?: '0 kg' }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs mb-4">
+                            <span class="text-gray-500">Target Weight</span>
+                            <span class="font-bold">{{ $firstPen->target_weight ?: '0 kg' }}</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: {{ $firstPen->progress ?: 0 }}%;"></div>
+                            </div>
+                            <div class="progress-meta">{{ $firstPen->progress ?: 0 }}% to target</div>
+                        </div>
                     </div>
-                    <div class="financial-row">
-                        <span class="financial-label">Batch Cost</span>
-                        <span class="financial-value">₱625,000</span>
-                    </div>
-                    <div class="financial-row">
-                        <span class="financial-label">Feed Consumption/Day</span>
-                        <span class="financial-value">145 kg</span>
-                    </div>
-                    <div class="financial-row">
-                        <span class="financial-label">Profit Margin</span>
-                        <span class="financial-value success">22%</span>
-                    </div>
-                </div>
 
-                <!-- Pigs in this Pen -->
-                <div class="details-section">
-                    <div class="section-label">
-                        <i class="bx bxs-car"></i> Pigs in this Pen
+                    <!-- Financial Overview -->
+                    <div class="details-section">
+                        <div class="section-label">
+                            <i class="bx bx-dollar"></i> Financial Overview
+                        </div>
+                        <div class="financial-row">
+                            <span class="financial-label">Batch Cost</span>
+                            <span class="financial-value">{{ $firstPen->batch_cost ?: '₱0' }}</span>
+                        </div>
+                        <div class="financial-row">
+                            <span class="financial-label">Feed Consumption/Day</span>
+                            <span class="financial-value">{{ $firstPen->feed_cons ?: '0 kg' }}</span>
+                        </div>
+                        <div class="financial-row">
+                            <span class="financial-label">Profit Margin</span>
+                            <span class="financial-value success">{{ $firstPen->profit_margin ?: '0%' }}</span>
+                        </div>
                     </div>
-                    <div id="pigs-list-container" style="max-height: 250px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 12px; padding: 8px;">
-                        <!-- Pig items will load here -->
-                        <p class="text-xs text-center text-gray-400 py-4">Select a pen to see pigs</p>
-                    </div>
-                </div>
 
-                <a href="{{ route('admin.qr.index') }}" class="btn-report" style="display: block; text-align: center; text-decoration: none; background: #111827; margin-top: 16px;">Go to QR Generator</a>
-                <button class="btn-report">Generate Full Report</button>
+                    <!-- Pigs in this Pen -->
+                    <div class="details-section">
+                        <div class="section-label">
+                            <i class="bx bxs-pig"></i> Pigs in this Pen
+                        </div>
+                        <div id="pigs-list-container" style="max-height: 250px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 12px; padding: 8px;">
+                            @forelse($firstPen->pigs as $pig)
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #f9fafb; font-size: 0.8rem;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="bx bx-purchase-tag" style="color: #22c55e;"></i>
+                                    <span class="font-bold text-gray-700">{{ $pig->tag }}</span>
+                                </div>
+                                <span class="badge-{{ $pig->health_status === 'Sick' ? 'poor' : 'good' }}">{{ $pig->health_status }}</span>
+                            </div>
+                            @empty
+                            <p class="text-xs text-center text-gray-400 py-4">No individual pigs registered.</p>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <a href="{{ route('admin.qr.index') }}" class="btn-report" style="display: block; text-align: center; text-decoration: none; background: #111827; margin-top: 16px;">Go to QR Generator</a>
+                    <button class="btn-report">Generate Full Report</button>
+                @else
+                    <div class="text-center py-20">
+                        <i class='bx bx-info-circle text-4xl text-gray-300 mb-4'></i>
+                        <p class="text-gray-500">Select a pen to view details</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -305,8 +322,10 @@
                 document.querySelector('.details-header .page-subtitle').innerText = data.section || 'Unassigned';
 
                 const healthValues = document.querySelectorAll('.health-grid .health-value');
-                healthValues[0].innerText = data.healthy_pigs || 0;
-                healthValues[1].innerText = data.sick_pigs || 0;
+                const healthyCount = data.pigs ? data.pigs.filter(p => p.health_status === 'Healthy').length : 0;
+                const sickCount = data.pigs ? data.pigs.filter(p => p.health_status === 'Sick').length : 0;
+                healthValues[0].innerText = healthyCount;
+                healthValues[1].innerText = sickCount;
 
                 const detailSections = document.querySelectorAll('.details-section');
                 const weightValues = detailSections[1].querySelectorAll('.font-bold');
@@ -333,7 +352,7 @@
                                 <i class="bx bx-purchase-tag" style="color: #22c55e;"></i>
                                 <span class="font-bold text-gray-700">${pig.tag}</span>
                             </div>
-                            <span class="badge-good">Active</span>
+                            <span class="badge-${pig.health_status === 'Sick' ? 'poor' : 'good'}">${pig.health_status}</span>
                         </div>
                     `).join('');
                 } else {
@@ -697,8 +716,4 @@
         }
     });
 </script>
-
-    });
-</script>
-
 @endsection

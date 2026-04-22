@@ -103,20 +103,20 @@
     <div class="kpi-grid">
         <div class="farm-card">
             <div class="kpi-header">
-                <span>Total Costs (MTD)</span>
+                <span>Total Costs (All Batches)</span>
                 <i class="bx bx-dollar text-green-500"></i>
             </div>
-            <div class="kpi-value">₱1,100,000</div>
-            <div class="kpi-subtext">Month to date expenses</div>
+            <div class="kpi-value">₱{{ number_format($totalCosts, 2) }}</div>
+            <div class="kpi-subtext">Cumulative investment across pens</div>
         </div>
 
         <div class="farm-card">
             <div class="kpi-header">
-                <span>Avg Feed Cost/Day</span>
+                <span>Avg Feed Mix Cost</span>
                 <i class="bx bx-trending-up text-green-500"></i>
             </div>
-            <div class="kpi-value">₱20,179</div>
-            <div class="kpi-subtext trend-up">Within budget range</div>
+            <div class="kpi-value">₱{{ number_format($avgFeedCost, 2) }}</div>
+            <div class="kpi-subtext trend-up">Per batch of mixed feed</div>
         </div>
 
         <div class="farm-card">
@@ -124,19 +124,19 @@
                 <span>Current Sick Pigs</span>
                 <i class="bx bx-pulse text-red-500"></i>
             </div>
-            <div class="kpi-value">10</div>
-            <div class="kpi-subtext trend-down">
-                <i class="bx bx-down-arrow-alt"></i> 44.4% vs last month
+            <div class="kpi-value">{{ $sickPigs }}</div>
+            <div class="kpi-subtext {{ $sickPigs > 5 ? 'trend-down' : 'trend-up' }}">
+                {{ $sickPigs > 5 ? 'High Alert' : 'Normal Levels' }}
             </div>
         </div>
 
         <div class="farm-card">
             <div class="kpi-header">
-                <span>Recovery Rate</span>
+                <span>Overall Health Score</span>
                 <i class="bx bx-health text-green-500"></i>
             </div>
-            <div class="kpi-value">83%</div>
-            <div class="kpi-subtext">Last 30 days</div>
+            <div class="kpi-value">{{ $recoveryRate }}%</div>
+            <div class="kpi-subtext">Healthy vs Total Livestock</div>
         </div>
     </div>
 

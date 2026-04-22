@@ -54,8 +54,15 @@ class PenController extends Controller
                         'tag' => $tag,
                         'pen_id' => $pen->id,
                         'birth_date' => $pen->start_date, // Default to start date of batch
+                        'health_status' => 'Healthy',
+                        'status' => 'Active',
                     ]);
                 }
+                // Update pen stats
+                $pen->update([
+                    'healthy_pigs' => $pigCount,
+                    'sick_pigs' => 0
+                ]);
             }
 
             return response()->json([

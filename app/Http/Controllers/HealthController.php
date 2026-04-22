@@ -73,21 +73,29 @@ class HealthController extends Controller
         $pig = Pig::find($validated['pig_id']);
         if ($pig) {
             // Update pig's health status based on report
-            $pig->health_status = ($validated['symptom'] === 'Healthy') ? 'Healthy' : 'Sick';
+            $oldStatus = $pig->health_status;
+            $newStatus = ($validated['symptom'] === 'Healthy') ? 'Healthy' : 'Sick';
+            $pig->health_status = $newStatus;
             $pig->save();
 
             // Log activity
             PigActivity::create([
                 'pig_id' => $pig->id,
                 'user_id' => Auth::id(),
-                'type' => ($validated['symptom'] === 'Healthy') ? 'Health Check' : 'Medical',
+                'type' => ($newStatus === 'Healthy') ? 'Health Check' : 'Medical',
                 'action' => 'Health Report: ' . $validated['symptom'],
                 'details' => $validated['notes'] ?? 'Standard health check performed.',
             ]);
 
-            // Update pen stats if sick
-            if ($pig->health_status === 'Sick' || ($validated['feeding_behavior'] ?? '') === 'Poor/None') {
-                $pig->pen->increment('sick_pigs');
+            // Sync Pen Stats
+            if ($oldStatus !== $newStatus) {
+                if ($newStatus === 'Sick') {
+                    $pig->pen->increment('sick_pigs');
+                    $pig->pen->decrement('healthy_pigs');
+                } else {
+                    $pig->pen->decrement('sick_pigs');
+                    $pig->pen->increment('healthy_pigs');
+                }
             }
         }
 
