@@ -13,6 +13,7 @@ use App\Http\Controllers\Worker\WorkerFeedFormulaController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PenController;
 use App\Http\Controllers\PigController;
+use App\Http\Controllers\HealthController;
 
 // --- PUBLIC & REDIRECTS ---
 Route::get('/', function () {
@@ -86,10 +87,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
 // --- WORKER ZONE ---
 Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
-    Route::get('/worker/dashboard', function () {
-            return view('worker.dashboard');
-        }
-        )->name('worker.dashboard');
+        Route::get('/worker/dashboard', [ReportController::class, 'dashboard'])->name('worker.dashboard');
 
         Route::get('/worker/tasks', [TaskController::class, 'workerIndex'])->name('worker.tasks');
         Route::post('/worker/tasks/{task}/complete', [TaskController::class, 'updateStatus'])->name('worker.tasks.complete');
@@ -104,7 +102,12 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
         }
         )->name('worker.activity-log');
 
-        Route::get('/worker/settings', [ProfileController::class, 'workerSettings'])->name('worker.settings');
+        Route::get('/worker/settings', function () { return view('worker.settings'); })->name('worker.settings');
+
+        // Health & Monitoring API (Used by QR Scanner)
+        Route::get('/api/health/pig/{tag}', [HealthController::class, 'getPigData'])->name('api.health.pig');
+        Route::post('/api/health/report', [HealthController::class, 'saveHealthReport'])->name('api.health.report');
+        Route::get('/api/health/history/{pigId}', [HealthController::class, 'getPigHealthHistory'])->name('api.health.history');
         Route::post('/worker/settings/update', [ProfileController::class, 'updateWorkerSettings'])->name('worker.settings.update');
 
         Route::get('/worker/weekly-reports', [ReportController::class, 'workerIndex'])->name('worker.reports');

@@ -11,18 +11,22 @@
         </div>
 
         <!-- Critical Alerts Banner -->
+        @if($criticalAlerts->count() > 0)
+        @foreach($criticalAlerts as $alert)
         <div id="criticalAlertsBanner" class="mb-10 animate-fade-in">
-            <div class="flex items-center gap-4 p-5 rounded-[2rem] bg-white border border-red-100 shadow-sm hover:shadow-md transition cursor-pointer" onclick="openNotificationsPanel()">
+            <div class="flex items-center gap-4 p-5 rounded-[2rem] bg-white border border-red-100 shadow-sm hover:shadow-md transition cursor-pointer" onclick="window.location='{{ route('worker.pigs.show', $alert->id) }}'">
                 <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center shrink-0 animate-pulse">
                     <i class='bx bxs-error-circle text-2xl'></i>
                 </div>
                 <div class="flex-1">
-                    <p class="text-slate-900 font-black text-sm">CRITICAL — Pig #42, Pen 3</p>
-                    <p class="text-slate-500 text-xs font-medium">Unusual health metrics detected. Immediate check-up required.</p>
+                    <p class="text-slate-900 font-black text-sm">CRITICAL — Pig #{{ $alert->tag }}, {{ $alert->pen->name ?? 'Unknown Pen' }}</p>
+                    <p class="text-slate-500 text-xs font-medium">{{ $alert->remarks ?? 'Unusual health metrics detected. Immediate check-up required.' }}</p>
                 </div>
                 <i class='bx bx-chevron-right text-slate-300 text-2xl'></i>
             </div>
         </div>
+        @endforeach
+        @endif
 
         <!-- Top Actions Wrapper -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -53,14 +57,6 @@
 
         <!-- Stats Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            @php
-                $stats = [
-                    ['label' => 'Active Tasks', 'val' => '08', 'icon' => 'bx-list-check', 'color' => 'slate'],
-                    ['label' => 'Total Animals', 'val' => '452', 'icon' => 'bx-pig', 'color' => 'slate'],
-                    ['label' => 'Alerts', 'val' => '03', 'icon' => 'bx-bell', 'color' => 'red'],
-                    ['label' => 'Feed Stock', 'val' => '78%', 'icon' => 'bx-bowl-hot', 'color' => 'green'],
-                ];
-            @endphp
             @foreach($stats as $s)
                 <div class="bg-white p-7 rounded-[2.2rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
                     <div class="relative z-10">
@@ -85,11 +81,7 @@
 
         <!-- Pens Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            @foreach([
-                ['id' => '1', 'name' => 'Pen 1', 'type' => 'Piglets', 'count' => 24, 'sick' => 0, 'weight' => 12, 'progress' => 30, 'tag' => 'Good', 'color' => 'green'],
-                ['id' => '5', 'name' => 'Pen 5', 'type' => 'Fattening', 'count' => 48, 'sick' => 2, 'weight' => 65, 'progress' => 59, 'tag' => 'Fair', 'color' => 'amber'],
-                ['id' => '12', 'name' => 'Pen 12', 'type' => 'Breeding', 'count' => 12, 'sick' => 0, 'weight' => 90, 'progress' => 82, 'tag' => 'Excellent', 'color' => 'indigo']
-            ] as $pen)
+            @foreach($pens as $pen)
                 <div onclick="openFeedingModal('{{ $pen['id'] }}')" class="group bg-white rounded-[2.5rem] p-8 border border-slate-100 hover:border-green-500/50 hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden shadow-sm">
                     <div class="flex justify-between items-start mb-6">
                         <div>
@@ -137,25 +129,322 @@
         </div>
 
         <div id="recentMonitoringList" class="space-y-4 pb-20">
-            <div class="bg-white rounded-[2rem] p-6 flex gap-5 items-center border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer">
-                <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center shrink-0 border border-green-100 text-green-600">
-                    <i class='bx bx-check-double text-2xl'></i>
+            @forelse($recentActivities as $activity)
+            <div class="bg-white rounded-[2rem] p-6 flex gap-5 items-center border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer" onclick="window.location='{{ route('worker.pigs.show', $activity->pig_id) }}'">
+                <div class="w-14 h-14 rounded-2xl bg-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-50 flex items-center justify-center shrink-0 border border-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-100 text-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-600">
+                    <i class='bx {{ $activity->type === 'Medical' ? 'bx-plus-medical' : ($activity->type === 'Growth' ? 'bx-trending-up' : 'bx-check-double') }} text-2xl'></i>
                 </div>
                 <div class="flex-1">
                     <div class="flex justify-between items-start mb-0.5">
-                        <p class="text-slate-900 font-black text-base tracking-tight">Pen 5 — Feeding Log Complete</p>
-                        <span class="text-slate-300 text-[10px] font-black">2:30 PM</span>
+                        <p class="text-slate-900 font-black text-base tracking-tight">{{ $activity->pig->tag }} — {{ $activity->action }}</p>
+                        <span class="text-slate-300 text-[10px] font-black">{{ $activity->created_at->diffForHumans() }}</span>
                     </div>
-                    <p class="text-slate-500 text-xs font-medium">500kg total distributed. All animals matched behavior specs.</p>
+                    <p class="text-slate-500 text-xs font-medium">{{ $activity->details ?? 'Activity recorded by ' . $activity->user->name }}</p>
                 </div>
             </div>
+            @empty
+            <div class="p-10 text-center bg-white rounded-[2rem] border border-dashed border-slate-200">
+                <p class="text-slate-400 text-sm font-medium">No recent activity found.</p>
+            </div>
+            @endforelse
         </div>
 
     </div>
 </div>
 
-<style>
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-</style>
+    <!-- QR Scanner Modal -->
+    <div id="qrModal" class="fixed inset-0 z-[200] hidden bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-sm">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-black text-white tracking-tight">Scanner</h2>
+                    <p class="text-green-400 text-[10px] uppercase font-bold tracking-[0.2em] mt-1">Operational ID Check</p>
+                </div>
+                <button onclick="stopQRScanner()" class="w-14 h-14 rounded-2xl bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-all active:scale-90">
+                    <i class='bx bx-x text-3xl'></i>
+                </button>
+            </div>
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div id="qr-reader" class="relative rounded-[2.5rem] overflow-hidden border-2 border-white/10 bg-black aspect-square"></div>
+                <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none"></div>
+                <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.8)] animate-pulse"></div>
+            </div>
+            <div class="mt-8 text-center space-y-2">
+                <p class="text-white font-bold">Waiting for ID...</p>
+                <p class="text-white/40 text-xs px-6 leading-relaxed">Position a Pen QR or Ear Tag within the frame to automatically trigger the log entry.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Routine Feeding Form Modal -->
+    <div id="feedingModal" class="fixed inset-0 z-[210] hidden bg-slate-900/95 backdrop-blur-3xl flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl border border-slate-200 animate-fade-in my-auto">
+            <div class="p-8 pb-6 border-b border-slate-100 relative">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold border border-green-200 uppercase tracking-widest">
+                        Pen ID: <span id="targetPenId">--</span><span id="targetPenName"></span>
+                    </div>
+                    <button onclick="closeFeedingModal()" class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100 transition">
+                        <i class='bx bx-x text-3xl'></i>
+                    </button>
+                </div>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight">Routine Feeding</h2>
+                <p class="text-slate-500 text-sm mt-2 leading-relaxed font-medium">Batch log for pigs in current growth stage.</p>
+            </div>
+            <div class="p-8 pt-6 space-y-6">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Quantity (kg)</label>
+                    <input type="number" id="feedQty" placeholder="0.0" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 text-2xl font-black text-slate-900 focus:outline-none focus:border-green-500 transition">
+                </div>
+                <button onclick="submitFeedingLog()" class="w-full bg-green-600 text-white py-5 rounded-[2rem] font-black text-lg hover:shadow-[0_10px_30px_rgba(34,197,94,0.3)] transition active:scale-[0.98]">
+                    Confirm Log
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health & Pig Monitoring Form Modal -->
+    <div id="healthModal" class="fixed inset-0 z-[210] hidden bg-slate-900/95 backdrop-blur-3xl flex items-start justify-center p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-slate-200 animate-fade-in my-6">
+            <div class="p-6 border-b border-slate-100 bg-slate-50">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-slate-400 text-sm font-semibold uppercase tracking-widest mb-1">Ear Tag No.</p>
+                        <h2 class="text-4xl font-black text-slate-900 tracking-tight" id="targetPigId">--</h2>
+                    </div>
+                    <button onclick="closeHealthModal()" class="w-14 h-14 rounded-2xl bg-white text-slate-400 flex items-center justify-center hover:bg-slate-100 transition border border-slate-200">
+                        <i class='bx bx-x text-4xl'></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 space-y-8">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                        <p class="text-xs text-slate-400 font-bold uppercase mb-1">Pen</p>
+                        <p class="text-lg text-slate-900 font-black" id="pigInfoPen">—</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                        <p class="text-xs text-slate-400 font-bold uppercase mb-1">Stage</p>
+                        <p class="text-lg text-slate-900 font-black" id="pigInfoStage">—</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                        <p class="text-xs text-slate-400 font-bold uppercase mb-1">Last Check</p>
+                        <p class="text-base text-slate-900 font-black" id="pigInfoLastCheck">—</p>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-base font-black text-slate-900 mb-4">Physical Inspection — Tap each item to confirm</p>
+                    <div class="space-y-3" id="physicalChecklist"></div>
+                </div>
+                <div>
+                    <p class="text-base font-black text-slate-900 mb-3">Estimated Weight (kg)</p>
+                    <div class="relative">
+                        <input type="number" id="pigWeight" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 pl-6 pr-16 text-slate-900 text-3xl font-black focus:outline-none focus:border-green-500 transition">
+                        <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xl">kg</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-base font-black text-slate-900 mb-3">Observed Symptom</p>
+                    <select id="symptom" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-5 text-slate-900 text-base focus:outline-none focus:border-green-500 transition font-bold">
+                        <option value="Healthy">Healthy — No Issues</option>
+                        <option value="Coughing">Coughing / Respiratory Problem</option>
+                        <option value="Lethargic">Lethargic / Not Eating</option>
+                        <option value="Diarrhea">Diarrhea / Loose Stool</option>
+                        <option value="Lameness">Lameness / Limping</option>
+                        <option value="Skin">Skin Wound / Rash</option>
+                        <option value="Fever">Suspected Fever</option>
+                        <option value="Other">Other — See Notes Below</option>
+                    </select>
+                </div>
+                <div>
+                    <p class="text-base font-black text-slate-900 mb-3">Additional Notes</p>
+                    <textarea id="pigNotes" rows="3" placeholder="Write any other observations here..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-5 text-slate-900 text-base font-medium focus:outline-none focus:border-green-500 transition resize-none"></textarea>
+                </div>
+                <button onclick="submitHealthLog()" class="w-full bg-green-600 text-white py-6 rounded-2xl font-black text-xl hover:shadow-[0_10px_30px_rgba(34,197,94,0.3)] transition active:scale-[0.98]">
+                    Save Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        let html5QrcodeScanner = null;
+
+        function startQRScanner() {
+            document.getElementById('qrModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            };
+
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess
+            ).catch(err => {
+                console.error("Camera access failed", err);
+                Swal.fire({ title: 'Camera Error', text: 'Unable to access your camera.', icon: 'error' });
+                stopQRScanner();
+            });
+        }
+
+        function stopQRScanner() {
+            document.getElementById('qrModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            if (html5QrcodeScanner && html5QrcodeScanner.getState() !== 1) {
+                html5QrcodeScanner.stop().catch(err => console.warn("Scanner stop error:", err));
+            }
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            try { stopQRScanner(); } catch (e) {}
+            const rawId = decodedText.trim();
+            
+            // JSON handling for format: {"type":"pig","tag":"Pen Z1-001","pen_id":"3","pen_name":"Pen Z1"}
+            if (rawId.startsWith('{')) {
+                try {
+                    const qrData = JSON.parse(rawId);
+                    const type = (qrData.type || qrData.TYPE || '').toUpperCase();
+                    
+                    if (type === 'PIG') {
+                        const tag = qrData.tag || qrData.TAG || qrData.pig_id || qrData.PIG_ID;
+                        if (tag) {
+                            openHealthModal(tag);
+                            return;
+                        }
+                    } else if (type === 'PEN') {
+                        const penId = qrData.pen_id || qrData.PEN_ID || qrData.id || qrData.ID;
+                        const penName = qrData.pen_name || qrData.PEN_NAME || '';
+                        if (penId) {
+                            openFeedingModal(penId, penName);
+                            return;
+                        }
+                    }
+                } catch (e) { console.error("JSON Parse Error", e); }
+            }
+
+            // Fallback for text format
+            let id = rawId.toUpperCase();
+            if (id.startsWith('PEN-') || id.startsWith('PEN')) {
+                openFeedingModal(id.replace('PEN-', '').replace('PEN', '').trim());
+            } else if (id.startsWith('PIG-') || id.startsWith('PIG')) {
+                openHealthModal(id.replace('PIG-', '').replace('PIG', '').trim());
+            } else {
+                openHealthModal(id); // Assume pig tag if unknown format
+            }
+        }
+
+        function openFeedingModal(penId, penName = '') {
+            document.getElementById('targetPenId').innerText = penId;
+            const nameEl = document.getElementById('targetPenName');
+            if (nameEl) nameEl.innerText = penName ? ` (${penName})` : '';
+            document.getElementById('feedingModal').classList.remove('hidden');
+            document.getElementById('feedingModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFeedingModal() {
+            document.getElementById('feedingModal').classList.add('hidden');
+            document.getElementById('feedingModal').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function submitFeedingLog() {
+            const qty = document.getElementById('feedQty').value;
+            const penId = document.getElementById('targetPenId').innerText;
+            if (!qty) {
+                Swal.fire({ title: 'Error', text: 'Enter quantity', icon: 'error' });
+                return;
+            }
+
+            // Here you would normally send to an API. For now, we'll show success.
+            Swal.fire({ title: 'Feeding Logged', text: `${qty}kg for Pen ${penId}`, icon: 'success' });
+            closeFeedingModal();
+        }
+
+        const physicalCheckItems = [
+            'Snout — No discharge',
+            'Eyes — Clear, bright',
+            'Ears — No redness',
+            'Legs — Walking normally',
+            'Skin — No wounds/rashes',
+            'Breathing — Normal',
+            'Water — Drinking adequately',
+        ];
+
+        function openHealthModal(pigId) {
+            document.getElementById('targetPigId').innerText = pigId;
+            document.getElementById('healthModal').classList.remove('hidden');
+            document.getElementById('healthModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+
+            // Reset checklist
+            const container = document.getElementById('physicalChecklist');
+            container.innerHTML = '';
+            physicalCheckItems.forEach((item, i) => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div onclick="this.querySelector('input').click()" class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition cursor-pointer">
+                        <input type="checkbox" class="w-6 h-6 rounded border-slate-300 text-green-600 focus:ring-green-500" id="pcheck-${i}">
+                        <span class="text-slate-700 text-base font-semibold">${item}</span>
+                    </div>
+                `);
+            });
+
+            // Fetch data
+            fetch(`/api/health/pig/${pigId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('pigInfoPen').innerText = data.pig.pen_name;
+                        document.getElementById('pigInfoStage').innerText = data.pig.growth_stage;
+                        document.getElementById('pigInfoLastCheck').innerText = data.pig.last_check;
+                        document.getElementById('targetPigId').dataset.pigDatabaseId = data.pig.id;
+                    }
+                });
+        }
+
+        function closeHealthModal() {
+            document.getElementById('healthModal').classList.add('hidden');
+            document.getElementById('healthModal').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function submitHealthLog() {
+            const pigId = document.getElementById('targetPigId').dataset.pigDatabaseId || document.getElementById('targetPigId').innerText;
+            const physicalChecks = [];
+            document.querySelectorAll('#physicalChecklist input[type="checkbox"]:checked').forEach(cb => {
+                physicalChecks.push(cb.nextElementSibling.innerText);
+            });
+
+            const data = {
+                pig_id: pigId,
+                symptom: document.getElementById('symptom').value,
+                weight: document.getElementById('pigWeight').value,
+                notes: document.getElementById('pigNotes').value,
+                physical_checks: physicalChecks
+            };
+
+            const response = await fetch('/api/health/report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                Swal.fire({ title: 'Report Saved', icon: 'success' });
+                closeHealthModal();
+                location.reload();
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+    </style>
 @endsection
