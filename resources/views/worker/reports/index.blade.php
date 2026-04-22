@@ -22,15 +22,19 @@
 <div class="p-5 md:p-10 max-w-full">
 
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-        <div>
-            <p class="text-sm font-semibold text-white/40 mb-1 uppercase tracking-widest">Worker Report</p>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">Weekly Report</h1>
-            <p class="text-white/40 text-sm mt-2 font-medium">
-                {{ \Carbon\Carbon::parse($thisWeek)->format('M d') }} — {{ \Carbon\Carbon::parse($thisWeek)->endOfWeek()->format('M d, Y') }}
-            </p>
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <p class="text-sm font-semibold text-white/40 mb-1 uppercase tracking-widest">Worker Report</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">Weekly Report</h1>
+                <p class="text-white/40 text-sm mt-2 font-medium">
+                    {{ \Carbon\Carbon::parse($thisWeek)->format('M d') }} — {{ \Carbon\Carbon::parse($thisWeek)->endOfWeek()->format('M d, Y') }}
+                </p>
+            </div>
         </div>
-        <div class="flex items-center gap-3 px-5 py-3 rounded-2xl border {{ $existingReport ? 'border-green-500/30 bg-green-500/10' : 'border-yellow-500/30 bg-yellow-500/10' }}">
+        
+        <!-- Status Alert Box (Moved here to avoid overlap) -->
+        <div class="mt-6 inline-flex items-center gap-3 px-5 py-3 rounded-2xl border {{ $existingReport ? 'border-green-500/30 bg-green-500/10' : 'border-yellow-500/30 bg-yellow-500/10' }} shadow-xl shadow-black/5">
             <i class='bx {{ $existingReport ? "bxs-badge-check text-green-400" : "bx-time text-yellow-400" }} text-2xl'></i>
             <div>
                 <p class="text-white font-black text-base">{{ $existingReport ? 'Submitted' : 'Pending Submission' }}</p>

@@ -244,7 +244,7 @@
 
             <!-- Global Floating Icons (Right Side - Green as requested) -->
             <div
-                class="hidden md:flex absolute top-4 right-4 md:top-8 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
+                class="hidden md:flex absolute top-4 right-4 md:top-12 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
                 <!-- Sync Status -->
                 <div id="globalSyncStatus"
                     class="flex items-center gap-2 md:gap-3 bg-[#0b1120] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#141e36] transition shadow-lg"
