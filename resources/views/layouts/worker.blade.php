@@ -88,15 +88,19 @@
 <body class="text-slate-800 antialiased min-h-screen selection:bg-green-200 overflow-x-hidden">
 
     <div class="flex h-screen w-screen overflow-hidden">
-        
+
         <!-- Backdrop Overlay (Mobile only) -->
-        <div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+        <div id="sidebarBackdrop"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] hidden md:hidden transition-opacity duration-300 opacity-0">
+        </div>
 
         <!-- Mobile Header (Green as requested) -->
-        <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0b1120] border-b border-white/5 flex items-center justify-between px-4 z-[80] shadow-md">
+        <div
+            class="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0b1120] border-b border-white/5 flex items-center justify-between px-4 z-[80] shadow-md">
             <!-- Left: Logo -->
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center shadow-lg border border-white/10">
+                <div
+                    class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center shadow-lg border border-white/10">
                     <i class='bx bx-pig text-white text-sm'></i>
                 </div>
                 <h2 class="font-bold text-white text-sm tracking-tight hidden sm:block">Porcitrack</h2>
@@ -104,16 +108,21 @@
 
             <!-- Right: Actions & Menu -->
             <div class="flex items-center gap-3">
-                <div id="mobileSyncStatus" class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/10 cursor-pointer" onclick="if(typeof syncData === 'function'){ syncData(); }">
+                <div id="mobileSyncStatus"
+                    class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/10 cursor-pointer"
+                    onclick="if(typeof syncData === 'function'){ syncData(); }">
                     <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
                     <span class="text-white text-[9px] font-bold uppercase tracking-widest leading-none">Synced</span>
                 </div>
-                <button onclick="if(typeof openNotificationsPanel === 'function'){ openNotificationsPanel(); } else { window.location.href='/worker/dashboard'; }" 
-                        class="relative text-white/80 hover:text-white p-1">
+                <button
+                    onclick="if(typeof openNotificationsPanel === 'function'){ openNotificationsPanel(); } else { window.location.href='/worker/dashboard'; }"
+                    class="relative text-white/80 hover:text-white p-1">
                     <i class='bx bx-bell text-xl'></i>
-                    <span id="mobileAlertBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-[rgba(0,0,0,0.5)] animate-pulse"></span>
+                    <span id="mobileAlertBadge"
+                        class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-[rgba(0,0,0,0.5)] animate-pulse"></span>
                 </button>
-                <button onclick="if(typeof showSearch === 'function'){ showSearch(); }" class="text-white/80 hover:text-white p-1">
+                <button onclick="if(typeof showSearch === 'function'){ showSearch(); }"
+                    class="text-white/80 hover:text-white p-1">
                     <i class='bx bx-search text-xl'></i>
                 </button>
                 <button id="mobileMenuToggle" class="text-white text-2xl ml-1 active:scale-90 transition-transform">
@@ -123,10 +132,12 @@
         </div>
 
         <!-- Sidebar Navigation -->
-        <aside id="workerSidebar" class="fixed inset-y-0 left-0 z-[100] w-72 bg-[#0b1120] backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 shadow-2xl">
+        <aside id="workerSidebar"
+            class="fixed inset-y-0 left-0 z-[100] w-72 bg-[#0b1120] backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 shadow-2xl">
             <div class="p-6 border-b border-white/10">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-inner">
+                    <div
+                        class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-inner">
                         <i class='bx bx-pig text-xl text-white font-bold'></i>
                     </div>
                     <div>
@@ -153,8 +164,9 @@
                         </div>
                         <i id="farmOpsIcon" class='bx bx-chevron-down transition-transform duration-300'></i>
                     </button>
-                    
-                    <div id="farmOpsDropdown" class="hidden pl-4 mt-1 space-y-1 overflow-hidden transition-all duration-300">
+
+                    <div id="farmOpsDropdown"
+                        class="hidden pl-4 mt-1 space-y-1 overflow-hidden transition-all duration-300">
                         <a href="{{ route('worker.tasks') }}"
                             class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.tasks') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
                             <i class='bx bx-task text-lg'></i>
@@ -163,7 +175,7 @@
                         <a href="{{ route('worker.reports') }}"
                             class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.reports') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
                             <i class='bx bx-book-content text-lg'></i>
-                            <span>Weekly Report</span>
+                            <span>Report</span>
                         </a>
                         <a href="{{ route('worker.swineDetails') }}"
                             class="flex items-center gap-3 px-4 py-3 rounded-xl {{ request()->routeIs('worker.swineDetails') ? 'bg-green-500/20 text-green-300 border border-green-500/30' : 'text-white/60 hover:bg-white/10 hover:text-white' }} font-medium transition text-sm">
@@ -188,7 +200,7 @@
                     <i class='bx bx-cog text-lg'></i>
                     <span>Settings</span>
                 </a>
-                
+
                 <div class="px-4 mt-6 mb-2">
                     <p class="text-[10px] uppercase font-bold text-white/30 tracking-widest">Quick Actions</p>
                 </div>
@@ -202,8 +214,8 @@
             <div class="p-4 border-t border-white/10">
                 <div class="flex items-center gap-3 px-4 py-3">
                     <div class="w-10 h-10 rounded-full overflow-hidden border border-white/20 shadow-inner bg-white/10">
-                        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=0b1120&color=22c55e' }}" 
-                             alt="User" class="w-full h-full object-cover">
+                        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=0b1120&color=22c55e' }}"
+                            alt="User" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
@@ -219,34 +231,43 @@
                     </button>
                 </form>
             </div>
-            
+
             <!-- Mobile Close Button -->
-            <button id="mobileMenuClose" class="md:hidden absolute top-4 right-4 text-white/60 hover:text-white text-2xl p-2 transition">
+            <button id="mobileMenuClose"
+                class="md:hidden absolute top-4 right-4 text-white/60 hover:text-white text-2xl p-2 transition">
                 <i class='bx bx-x'></i>
             </button>
         </aside>
 
         <!-- Main Content Area -->
         <main class="flex-1 overflow-y-auto overflow-x-hidden pt-16 md:pt-0 relative">
-            
+
             <!-- Global Floating Icons (Right Side - Green as requested) -->
-            <div class="hidden md:flex absolute top-4 right-4 md:top-8 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
+            <div
+                class="hidden md:flex absolute top-4 right-4 md:top-8 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
                 <!-- Sync Status -->
-                <div id="globalSyncStatus" class="flex items-center gap-2 md:gap-3 bg-[#0b1120] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#141e36] transition shadow-lg" onclick="if(typeof syncData === 'function'){ syncData(); }">
-                    <div class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
-                    <span class="text-white text-[9px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Synced</span>
+                <div id="globalSyncStatus"
+                    class="flex items-center gap-2 md:gap-3 bg-[#0b1120] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#141e36] transition shadow-lg"
+                    onclick="if(typeof syncData === 'function'){ syncData(); }">
+                    <div
+                        class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse">
+                    </div>
+                    <span
+                        class="text-white text-[9px] md:text-[10px] font-bold uppercase tracking-widest leading-none">Synced</span>
                 </div>
 
                 <!-- Notifications Bell -->
-                <button onclick="if(typeof openNotificationsPanel === 'function'){ openNotificationsPanel(); } else { window.location.href='/worker/dashboard'; }" 
-                        class="relative w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white">
+                <button
+                    onclick="if(typeof openNotificationsPanel === 'function'){ openNotificationsPanel(); } else { window.location.href='/worker/dashboard'; }"
+                    class="relative w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white">
                     <i class='bx bx-bell text-lg md:text-xl'></i>
-                    <span id="globalAlertBadge" class="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full border border-[rgba(0,0,0,0.5)] animate-pulse"></span>
+                    <span id="globalAlertBadge"
+                        class="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-2.5 h-2.5 md:w-3 md:h-3 bg-red-500 rounded-full border border-[rgba(0,0,0,0.5)] animate-pulse"></span>
                 </button>
 
                 <!-- Search -->
-                <button onclick="if(typeof showSearch === 'function'){ showSearch(); }" 
-                        class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white">
+                <button onclick="if(typeof showSearch === 'function'){ showSearch(); }"
+                    class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white">
                     <i class='bx bx-search text-lg md:text-xl'></i>
                 </button>
             </div>
@@ -256,24 +277,31 @@
     </div>
 
     <!-- Notifications / Alerts Slide Panel (Global) -->
-    <div id="notificationsBackdrop" class="fixed inset-0 z-[190] hidden bg-black/50 backdrop-blur-sm" onclick="closeNotificationsPanel()"></div>
-    <div id="notificationsPanel" class="fixed top-0 right-0 bottom-0 z-[200] w-full max-w-sm bg-[#0b1120] border-l border-white/10 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div id="notificationsBackdrop" class="fixed inset-0 z-[190] hidden bg-black/50 backdrop-blur-sm"
+        onclick="closeNotificationsPanel()"></div>
+    <div id="notificationsPanel"
+        class="fixed top-0 right-0 bottom-0 z-[200] w-full max-w-sm bg-[#0b1120] border-l border-white/10 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-6 border-b border-white/10 flex justify-between items-center shrink-0">
             <div>
                 <h2 class="text-2xl font-black text-white">Alerts</h2>
                 <p class="text-white/40 text-xs font-semibold mt-0.5">All farm notifications</p>
             </div>
-            <button onclick="closeNotificationsPanel()" class="w-12 h-12 rounded-2xl bg-white/5 text-white flex items-center justify-center hover:bg-white/10 transition">
+            <button onclick="closeNotificationsPanel()"
+                class="w-12 h-12 rounded-2xl bg-white/5 text-white flex items-center justify-center hover:bg-white/10 transition">
                 <i class='bx bx-x text-2xl'></i>
             </button>
         </div>
 
         <!-- Filter Tabs -->
         <div class="flex gap-2 px-6 py-4 border-b border-white/5 shrink-0">
-            <button onclick="filterPanel('all', this)" class="panel-filter-btn flex-1 py-2 rounded-xl bg-green-500/20 text-green-300 border border-green-500/30 text-xs font-black uppercase">All</button>
-            <button onclick="filterPanel('critical', this)" class="panel-filter-btn flex-1 py-2 rounded-xl bg-white/5 text-white/50 border border-white/10 text-xs font-black uppercase">Critical</button>
-            <button onclick="filterPanel('health', this)" class="panel-filter-btn flex-1 py-2 rounded-xl bg-white/5 text-white/50 border border-white/10 text-xs font-black uppercase">Health</button>
-            <button onclick="filterPanel('general', this)" class="panel-filter-btn flex-1 py-2 rounded-xl bg-white/5 text-white/50 border border-white/10 text-xs font-black uppercase">General</button>
+            <button onclick="filterPanel('all', this)"
+                class="panel-filter-btn flex-1 py-2 rounded-xl bg-green-500/20 text-green-300 border border-green-500/30 text-xs font-black uppercase">All</button>
+            <button onclick="filterPanel('critical', this)"
+                class="panel-filter-btn flex-1 py-2 rounded-xl bg-white/5 text-white/50 border border-white/10 text-xs font-black uppercase">Critical</button>
+            <button onclick="filterPanel('health', this)"
+                class="panel-filter-btn flex-1 py-2 rounded-xl bg-white/5 text-white/50 border border-white/10 text-xs font-black uppercase">Health</button>
+            <button onclick="filterPanel('general', this)"
+                class="panel-filter-btn flex-1 py-2 rounded-xl bg-white/5 text-white/50 border border-white/10 text-xs font-black uppercase">General</button>
         </div>
 
         <!-- Alert Items -->
@@ -290,9 +318,11 @@
                                 <p class="text-red-300 font-black text-sm">Pig #42 — Health Crisis</p>
                                 <span class="text-white/30 text-[10px]">2 min ago</span>
                             </div>
-                            <p class="text-white/60 text-xs mt-1 leading-snug">Rapid breathing and lethargy in Pen 3. Vet required.</p>
+                            <p class="text-white/60 text-xs mt-1 leading-snug">Rapid breathing and lethargy in Pen 3.
+                                Vet required.</p>
                             <div class="flex gap-2 mt-3">
-                                <span class="px-2 py-0.5 bg-red-500/20 text-red-300 rounded-md text-[9px] font-black border border-red-500/30 uppercase">Critical</span>
+                                <span
+                                    class="px-2 py-0.5 bg-red-500/20 text-red-300 rounded-md text-[9px] font-black border border-red-500/30 uppercase">Critical</span>
                             </div>
                         </div>
                     </div>
@@ -310,9 +340,11 @@
                                 <p class="text-yellow-300 font-black text-sm">Pig #17 — Check Needed</p>
                                 <span class="text-white/30 text-[10px]">1 hr ago</span>
                             </div>
-                            <p class="text-white/60 text-xs mt-1 leading-snug">Due for routine health monitoring. Last check was 4 days ago.</p>
+                            <p class="text-white/60 text-xs mt-1 leading-snug">Due for routine health monitoring. Last
+                                check was 4 days ago.</p>
                             <div class="flex gap-2 mt-3">
-                                <span class="px-2 py-0.5 bg-yellow-500/15 text-yellow-300 rounded-md text-[9px] font-black border border-yellow-500/20 uppercase">Health</span>
+                                <span
+                                    class="px-2 py-0.5 bg-yellow-500/15 text-yellow-300 rounded-md text-[9px] font-black border border-yellow-500/20 uppercase">Health</span>
                             </div>
                         </div>
                     </div>
@@ -348,7 +380,7 @@
         if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
 
         function triggerManualEntry(e) {
-            if(e) e.preventDefault();
+            if (e) e.preventDefault();
             closeSidebar();
 
             Swal.fire({
@@ -376,7 +408,8 @@
                         window.onScanSuccess(tagId, null);
                     } else {
                         // Redirect to dashboard with query param so it can be handled
-                        window.location.href = "{{ route('worker.dashboard') }}?manual_scan=" + encodeURIComponent(tagId);
+                        window.location.href = "{{ route('worker.dashboard') }}?manual_scan=" + encodeURIComponent(
+                            tagId);
                     }
                 }
             });
@@ -386,7 +419,7 @@
         function toggleDropdown(id, iconId) {
             const dropdown = document.getElementById(id);
             const icon = document.getElementById(iconId);
-            
+
             if (dropdown.classList.contains('hidden')) {
                 dropdown.classList.remove('hidden');
                 icon.classList.add('rotate-180');
@@ -414,7 +447,7 @@
             document.getElementById('notificationsPanel').classList.remove('translate-x-full');
             document.getElementById('notificationsBackdrop').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            if(window.innerWidth < 768) {
+            if (window.innerWidth < 768) {
                 closeSidebar(); // close mobile sidebar if open
             }
         }
@@ -427,11 +460,11 @@
 
         function filterPanel(type, btn) {
             document.querySelectorAll('.panel-filter-btn').forEach(b => {
-                b.classList.remove('bg-green-500/20','text-green-300','border-green-500/30');
-                b.classList.add('bg-white/5','text-white/50','border-white/10');
+                b.classList.remove('bg-green-500/20', 'text-green-300', 'border-green-500/30');
+                b.classList.add('bg-white/5', 'text-white/50', 'border-white/10');
             });
-            btn.classList.add('bg-green-500/20','text-green-300','border-green-500/30');
-            btn.classList.remove('bg-white/5','text-white/50','border-white/10');
+            btn.classList.add('bg-green-500/20', 'text-green-300', 'border-green-500/30');
+            btn.classList.remove('bg-white/5', 'text-white/50', 'border-white/10');
 
             document.querySelectorAll('.alert-item').forEach(item => {
                 if (type === 'all' || item.dataset.type === type) {

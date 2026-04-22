@@ -4,12 +4,79 @@ namespace App\Http\Controllers;
 
 use App\Models\WeeklyReport;
 use App\Models\User;
+use App\Models\Pig;
+use App\Models\Pen;
+use App\Models\Task;
+use App\Models\FeedDelivery;
+use App\Models\FeedConsumption;
+use App\Models\PigActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class ReportController extends Controller
 {
+    // Worker Dashboard
+    public function dashboard()
+    {
+        $user = Auth::user();
+        
+        // Stats
+        $pendingTasks = Task::where('assigned_to', $user->id)->where('status', 'pending')->count();
+        $totalPigs = Pig::whereNotIn('status', ['Sold', 'Disposed'])->count();
+        $sickPigsCount = Pig::where('health_status', 'Sick')->count();
+        
+        $totalDelivered = FeedDelivery::sum('quantity');
+        $totalConsumed = FeedConsumption::sum('quantity');
+        $feedStock = max($totalDelivered - $totalConsumed, 0);
+
+        $stats = [
+            ['label' => 'Active Tasks', 'val' => str_pad($pendingTasks, 2, '0', STR_PAD_LEFT), 'icon' => 'bx-list-check', 'color' => 'slate'],
+            ['label' => 'Total Animals', 'val' => str_pad($totalPigs, 2, '0', STR_PAD_LEFT), 'icon' => 'bx-pig', 'color' => 'slate'],
+            ['label' => 'Alerts', 'val' => str_pad($sickPigsCount, 2, '0', STR_PAD_LEFT), 'icon' => 'bx-bell', 'color' => 'red'],
+            ['label' => 'Feed Stock', 'val' => round($feedStock) . 'kg', 'icon' => 'bx-bowl-hot', 'color' => 'green'],
+        ];
+
+        // Critical Alerts
+        $criticalAlerts = Pig::where('health_status', 'Sick')->with('pen')->latest()->limit(1)->get();
+
+        // Pens Overview
+        $pens = Pen::with(['pigs' => function($q) {
+            $q->whereNotIn('status', ['Sold', 'Disposed']);
+        }])->get()->map(function($pen) {
+            $avgWeight = $pen->pigs->avg('weight') ?? 0;
+            $sickCount = $pen->pigs->where('health_status', 'Sick')->count();
+            
+            // Map tag and color based on status
+            $statusMap = [
+                'Good' => ['tag' => 'Good', 'color' => 'green'],
+                'Fair' => ['tag' => 'Fair', 'color' => 'amber'],
+                'Excellent' => ['tag' => 'Excellent', 'color' => 'indigo'],
+            ];
+            $statusInfo = $statusMap[$pen->status] ?? $statusMap['Good'];
+
+            return [
+                'id' => $pen->id,
+                'name' => $pen->name,
+                'type' => $pen->section ?? 'N/A',
+                'count' => $pen->pigs->count(),
+                'sick' => $sickCount,
+                'weight' => round($avgWeight),
+                'progress' => $pen->progress,
+                'tag' => $statusInfo['tag'],
+                'color' => $statusInfo['color']
+            ];
+        });
+
+        // Recent Activity
+        $recentActivities = PigActivity::with(['pig', 'user'])
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('worker.dashboard', compact('stats', 'criticalAlerts', 'pens', 'recentActivities'));
+    }
+
     // Admin View: List all workers and their submission status
     public function adminIndex()
     {
@@ -35,25 +102,45 @@ class ReportController extends Controller
     public function workerIndex()
     {
         $user = Auth::user();
-        $thisWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $thisWeekStart = Carbon::now()->startOfWeek();
+        $thisWeek = $thisWeekStart->format('Y-m-d');
         
         $existingReport = WeeklyReport::where('user_id', $user->id)
             ->where('week_start_date', $thisWeek)
             ->where('status', 'submitted')
             ->first();
 
-        // Mock Analytics Data for the Worker
+        // Real Analytics Data for the Worker
+        $activePigs = Pig::whereNotIn('status', ['Sold', 'Disposed']);
+        $totalPigs = (clone $activePigs)->count();
+        $sickPigs = (clone $activePigs)->where('health_status', 'Sick')->count();
+        $avgWeight = (clone $activePigs)->avg('weight') ?? 0;
+        
+        $totalDelivered = FeedDelivery::sum('quantity');
+        $totalConsumed = FeedConsumption::sum('quantity');
+        $availableStock = max($totalDelivered - $totalConsumed, 0);
+
+        $tasksThisWeek = Task::where('assigned_to', $user->id)
+            ->whereBetween('created_at', [$thisWeekStart, Carbon::now()->endOfWeek()]);
+        
+        $tasksDone = (clone $tasksThisWeek)->where('status', 'completed')->count();
+        $tasksPending = (clone $tasksThisWeek)->where('status', 'pending')->count();
+
         $analytics = [
-            'total_pigs' => 452,
-            'sick_pigs' => 3,
-            'avg_weight' => 68.5,
-            'feed_stock' => 78,
-            'tasks_done' => 12,
-            'tasks_pending' => 4,
-            'weekly_progress' => [65, 78, 72, 85, 80, 90, 88] // for chart
+            'total_pigs' => $totalPigs,
+            'sick_pigs' => $sickPigs,
+            'avg_weight' => round($avgWeight, 1),
+            'feed_stock' => round($availableStock, 1),
+            'tasks_done' => $tasksDone,
+            'tasks_pending' => $tasksPending,
+            'weekly_progress' => [65, 78, 72, 85, 80, 90, 88] // Keep mock for chart for now unless we have historical data
         ];
 
-        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics'));
+        $pens = Pen::with(['pigs' => function($q) {
+            $q->whereNotIn('status', ['Sold', 'Disposed']);
+        }])->get();
+
+        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics', 'pens'));
     }
 
     // Worker Action: Store weekly report

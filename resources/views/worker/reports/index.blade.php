@@ -65,50 +65,19 @@
         </div>
         <div class="glass-panel p-4 rounded-2xl">
             <p class="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Pens Active</p>
-            <p class="text-3xl font-black text-emerald-400">3</p>
+            <p class="text-3xl font-black text-emerald-400">{{ $pens->count() }}</p>
         </div>
     </div>
 
     <!-- ===== PENS & PIGS LIST ===== -->
     @php
-        $pens = [
-            [
-                'id' => 1, 'name' => 'Pen 1', 'type' => 'Piglets', 'status' => 'Good',
-                'statusColor' => 'green', 'progress' => 30,
-                'pigs' => [
-                    ['tag' => '001', 'weight' => 12, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '2 days ago'],
-                    ['tag' => '002', 'weight' => 11, 'bcs' => 2, 'condition' => 'Healthy', 'feeding' => 'Normal',  'lastCheck' => '2 days ago'],
-                    ['tag' => '003', 'weight' => 13, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '3 days ago'],
-                    ['tag' => '004', 'weight' => 10, 'bcs' => 2, 'condition' => 'Healthy', 'feeding' => 'Normal',  'lastCheck' => '1 day ago'],
-                    ['tag' => '005', 'weight' => 12, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '3 days ago'],
-                ],
-            ],
-            [
-                'id' => 5, 'name' => 'Pen 5', 'type' => 'Fattening', 'status' => 'Fair',
-                'statusColor' => 'yellow', 'progress' => 59,
-                'pigs' => [
-                    ['tag' => '021', 'weight' => 68, 'bcs' => 3, 'condition' => 'Healthy',   'feeding' => 'Active',    'lastCheck' => '1 day ago'],
-                    ['tag' => '022', 'weight' => 63, 'bcs' => 2, 'condition' => 'Lethargic', 'feeding' => 'Poor/None', 'lastCheck' => 'Today'],
-                    ['tag' => '023', 'weight' => 70, 'bcs' => 4, 'condition' => 'Healthy',   'feeding' => 'Normal',    'lastCheck' => '2 days ago'],
-                    ['tag' => '024', 'weight' => 61, 'bcs' => 2, 'condition' => 'Coughing',  'feeding' => 'Poor/None', 'lastCheck' => 'Today'],
-                    ['tag' => '025', 'weight' => 66, 'bcs' => 3, 'condition' => 'Healthy',   'feeding' => 'Active',    'lastCheck' => '1 day ago'],
-                ],
-            ],
-            [
-                'id' => 12, 'name' => 'Pen 12', 'type' => 'Breeding', 'status' => 'Excellent',
-                'statusColor' => 'emerald', 'progress' => 82,
-                'pigs' => [
-                    ['tag' => '101', 'weight' => 92, 'bcs' => 4, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '1 day ago'],
-                    ['tag' => '102', 'weight' => 89, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Normal',  'lastCheck' => '2 days ago'],
-                    ['tag' => '103', 'weight' => 91, 'bcs' => 4, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '1 day ago'],
-                ],
-            ],
-        ];
-
         $statusConfig = [
             'green'   => ['badge' => 'bg-green-500/20 text-green-300 border-green-500/30',   'bar' => 'bg-green-500',   'penBorder' => 'border-green-500/20'],
             'yellow'  => ['badge' => 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30', 'bar' => 'bg-yellow-500',  'penBorder' => 'border-yellow-500/20'],
             'emerald' => ['badge' => 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30','bar' => 'bg-emerald-500','penBorder' => 'border-emerald-500/20'],
+            'Good'    => ['badge' => 'bg-green-500/20 text-green-300 border-green-500/30',   'bar' => 'bg-green-500',   'penBorder' => 'border-green-500/20'],
+            'Fair'    => ['badge' => 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30', 'bar' => 'bg-yellow-500',  'penBorder' => 'border-yellow-500/20'],
+            'Excellent' => ['badge' => 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30','bar' => 'bg-emerald-500','penBorder' => 'border-emerald-500/20'],
         ];
     @endphp
 
@@ -117,30 +86,31 @@
 
         @foreach($pens as $pen)
         @php
-            $sc  = $statusConfig[$pen['statusColor']];
-            $sickCount = count(array_filter($pen['pigs'], fn($p) => $p['condition'] !== 'Healthy'));
+            $sc = $statusConfig[$pen->status] ?? $statusConfig['Good'];
+            $sickCount = $pen->pigs->where('health_status', 'Sick')->count();
+            $avgW = $pen->pigs->avg('weight') ?? 0;
         @endphp
 
         <div class="glass-panel rounded-2xl border {{ $sc['penBorder'] }} overflow-hidden">
 
             <!-- Pen Header (Tap to expand) -->
-            <button onclick="togglePen({{ $pen['id'] }})"
+            <button onclick="togglePen({{ $pen->id }})"
                 class="w-full flex items-center gap-4 p-5 text-left hover:bg-white/5 transition active:scale-[0.99]">
                 <div class="flex-1">
                     <div class="flex items-center gap-3 mb-1">
-                        <h3 class="text-xl font-black text-white">{{ $pen['name'] }}</h3>
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border {{ $sc['badge'] }}">{{ $pen['status'] }}</span>
+                        <h3 class="text-xl font-black text-white">{{ $pen->name }}</h3>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border {{ $sc['badge'] }}">{{ $pen->status }}</span>
                         @if($sickCount > 0)
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/20 text-red-300 border border-red-500/30">{{ $sickCount }} sick</span>
                         @endif
                     </div>
-                    <p class="text-white/40 text-xs font-semibold">{{ $pen['type'] }} · {{ count($pen['pigs']) }} pigs · Avg weight {{ round(array_sum(array_column($pen['pigs'], 'weight')) / count($pen['pigs'])) }}kg</p>
+                    <p class="text-white/40 text-xs font-semibold">{{ $pen->section }} · {{ $pen->pigs->count() }} pigs · Avg weight {{ round($avgW) }}kg</p>
                 </div>
                 <div class="text-right shrink-0 mr-2">
                     <p class="text-white/30 text-xs font-semibold mb-1">Progress</p>
-                    <p class="text-white font-black text-lg">{{ $pen['progress'] }}%</p>
+                    <p class="text-white font-black text-lg">{{ $pen->progress }}%</p>
                 </div>
-                <i class='bx bx-chevron-down text-white/40 text-2xl transition-transform duration-300' id="pen-chevron-{{ $pen['id'] }}"></i>
+                <i class='bx bx-chevron-down text-white/40 text-2xl transition-transform duration-300' id="pen-chevron-{{ $pen->id }}"></i>
             </button>
 
             <!-- Progress Bar -->
@@ -148,19 +118,18 @@
                 <div class="{{ $sc['bar'] }} h-full transition-all" style="width:{{ $pen['progress'] }}%"></div>
             </div>
 
-            <!-- Pigs List (collapsible) -->
-            <div id="pen-body-{{ $pen['id'] }}" class="hidden">
+            <div id="pen-body-{{ $pen->id }}" class="hidden">
                 <div class="p-4 space-y-3">
-                    @foreach($pen['pigs'] as $pig)
+                    @foreach($pen->pigs as $pig)
                     @php
-                        $isSick   = $pig['condition'] !== 'Healthy';
+                        $isSick   = $pig->health_status !== 'Healthy';
                         $condColor = $isSick ? 'text-red-300' : 'text-green-300';
                         $condBg    = $isSick ? 'bg-red-500/10 border-red-500/20' : 'bg-green-500/10 border-green-500/20';
-                        $feedColor = $pig['feeding'] === 'Poor/None' ? 'text-red-400' : ($pig['feeding'] === 'Active' ? 'text-green-400' : 'text-blue-400');
+                        $feedColor = $pig->feeding_status === 'Poor' ? 'text-red-400' : ($pig->feeding_status === 'Active' ? 'text-green-400' : 'text-blue-400');
                     @endphp
 
                     <!-- Individual Pig Row — tap to see full details -->
-                    <div onclick="togglePig('pig-{{ $pen['id'] }}-{{ $pig['tag'] }}')"
+                    <div onclick="togglePig('pig-{{ $pen->id }}-{{ $pig->tag }}')"
                         class="rounded-xl border {{ $condBg }} cursor-pointer hover:bg-white/5 transition active:scale-[0.99] overflow-hidden">
 
                         <div class="flex items-center gap-3 p-3">
@@ -168,40 +137,40 @@
                                 <i class='bx bxs-circle text-lg {{ $condColor }}'></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-white font-black text-sm">Ear Tag #{{ $pig['tag'] }}</p>
-                                <p class="text-white/40 text-xs">{{ $pig['condition'] }} · {{ $pig['lastCheck'] }}</p>
+                                <p class="text-white font-black text-sm">Ear Tag #{{ $pig->tag }}</p>
+                                <p class="text-white/40 text-xs">{{ $pig->health_status }} · {{ $pig->updated_at->diffForHumans() }}</p>
                             </div>
                             <div class="text-right shrink-0">
-                                <p class="text-white font-bold text-sm">{{ $pig['weight'] }}kg</p>
-                                <p class="text-white/30 text-[10px]">BCS {{ $pig['bcs'] }}</p>
+                                <p class="text-white font-bold text-sm">{{ $pig->weight }}kg</p>
+                                <p class="text-white/30 text-[10px]">BCS {{ $pig->bcs_score }}</p>
                             </div>
-                            <i class='bx bx-chevron-down text-white/30 text-lg ml-1 transition-transform duration-300' id="pig-chevron-pig-{{ $pen['id'] }}-{{ $pig['tag'] }}"></i>
+                            <i class='bx bx-chevron-down text-white/30 text-lg ml-1 transition-transform duration-300' id="pig-chevron-pig-{{ $pen->id }}-{{ $pig->tag }}"></i>
                         </div>
 
                         <!-- Expanded Pig Details -->
-                        <div id="pig-pig-{{ $pen['id'] }}-{{ $pig['tag'] }}" class="hidden border-t border-white/10">
+                        <div id="pig-pig-{{ $pen->id }}-{{ $pig->tag }}" class="hidden border-t border-white/10">
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 p-4">
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">Condition</p>
-                                    <p class="font-black text-sm {{ $condColor }}">{{ $pig['condition'] }}</p>
+                                    <p class="font-black text-sm {{ $condColor }}">{{ $pig->health_status }}</p>
                                 </div>
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">Feeding</p>
-                                    <p class="font-black text-sm {{ $feedColor }}">{{ $pig['feeding'] }}</p>
+                                    <p class="font-black text-sm {{ $feedColor }}">{{ $pig->feeding_status }}</p>
                                 </div>
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">Weight</p>
-                                    <p class="text-white font-black text-sm">{{ $pig['weight'] }} kg</p>
+                                    <p class="text-white font-black text-sm">{{ $pig->weight }} kg</p>
                                 </div>
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">BCS Score</p>
-                                    <p class="text-white font-black text-sm">{{ $pig['bcs'] }} / 5</p>
+                                    <p class="text-white font-black text-sm">{{ $pig->bcs_score }} / 5</p>
                                 </div>
                             </div>
                             @if($isSick)
                             <div class="mx-4 mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-2">
                                 <i class='bx bx-error text-red-400 text-lg shrink-0'></i>
-                                <p class="text-red-300 text-xs font-semibold">This pig has been flagged. Condition: <strong>{{ $pig['condition'] }}</strong>. Feeding: <strong>{{ $pig['feeding'] }}</strong>. Follow up required.</p>
+                                <p class="text-red-300 text-xs font-semibold">This pig has been flagged. Status: <strong>{{ $pig->health_status }}</strong>. Feeding: <strong>{{ $pig->feeding_status }}</strong>. Follow up required.</p>
                             </div>
                             @endif
                         </div>
@@ -209,7 +178,7 @@
                     @endforeach
 
                     <!-- Additional logs from localStorage for this pen -->
-                    <div id="pen-local-logs-{{ $pen['id'] }}" class="space-y-2 mt-2"></div>
+                    <div id="pen-local-logs-{{ $pen->id }}" class="space-y-2 mt-2"></div>
                 </div>
             </div>
         </div>
@@ -255,6 +224,7 @@
     </div>
     @endif
 
+</div>
 </div>
 
 <!-- ===== REPORT PREVIEW MODAL ===== -->
@@ -410,9 +380,16 @@
         const weekEnd   = '{{ \Carbon\Carbon::parse($thisWeek)->endOfWeek()->format("M d, Y") }}';
 
         const pensData = [
-            { name: 'Pen 1',  type: 'Piglets',   count: 24, avgKg: 12, sick: 0, progress: 30 },
-            { name: 'Pen 5',  type: 'Fattening', count: 48, avgKg: 65, sick: 2, progress: 59 },
-            { name: 'Pen 12', type: 'Breeding',  count: 12, avgKg: 90, sick: 0, progress: 82 },
+            @foreach($pens as $p)
+            {
+                name: '{{ $p->name }}',
+                type: '{{ $p->section }}',
+                count: {{ $p->pigs->count() }},
+                avgKg: {{ round($p->pigs->avg('weight') ?? 0) }},
+                sick: {{ $p->pigs->where('health_status', 'Sick')->count() }},
+                progress: {{ $p->progress }}
+            },
+            @endforeach
         ];
 
         const reportContent = document.getElementById('reportContent');
