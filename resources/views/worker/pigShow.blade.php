@@ -90,21 +90,21 @@
                         @forelse($pig->activities as $activity)
                             <div class="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 items-start">
                                 @php 
-                                    $icon = match($activity->action) { 
-                                        'Bathing' => 'bx-bath', 'Watering' => 'bx-droplet', 
-                                        'Vaccination' => 'bx-injection', 'Checkup' => 'bx-pulse', default => 'bx-check-circle' 
+                                    $icon = match($activity->type) { 
+                                        'Medical' => 'bx-plus-medical', 'Care' => 'bx-heart', 
+                                        'Growth' => 'bx-trending-up', default => 'bx-check-circle' 
                                     };
-                                    $iconColor = $activity->type === 'Medical' ? 'indigo' : 'blue';
+                                    $iconBg = $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green');
                                 @endphp
-                                <div class="w-10 h-10 rounded-xl bg-{{ $iconColor }}-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-{{ $iconColor }}-500/10">
+                                <div class="w-10 h-10 rounded-xl bg-{{ $iconBg }}-50 text-{{ $iconBg }}-600 flex items-center justify-center shrink-0 border border-{{ $iconBg }}-100">
                                     <i class='bx {{ $icon }} text-lg'></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start">
                                         <h4 class="font-black text-slate-900 text-xs uppercase">{{ $activity->action }}</h4>
-                                        <span class="text-[8px] font-bold text-slate-300 uppercase shrink-0">{{ $activity->created_at->format('M d') }}</span>
+                                        <span class="text-[8px] font-bold text-slate-300 uppercase shrink-0">{{ $activity->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed mt-1 line-clamp-2">{{ $activity->details ?: 'Procedure completed successfully.' }}</p>
+                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed mt-1 line-clamp-2">{{ $activity->details ?: 'Activity recorded by ' . ($activity->user->name ?? 'System') }}</p>
                                 </div>
                             </div>
                         @empty
@@ -113,6 +113,42 @@
                                 <p class="text-[10px] font-black uppercase">No logged history</p>
                             </div>
                         @endforelse
+                    </div>
+                </div>
+
+                <!-- Detailed Health Reports Section -->
+                <div class="space-y-4 pt-4 border-t border-slate-50">
+                    <div class="flex items-center justify-between">
+                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Medical Reports</p>
+                         <span class="px-2 py-0.5 bg-slate-100 rounded text-[8px] font-bold text-slate-500">{{ $pig->healthReports->count() }} Records</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        @foreach($pig->healthReports->take(5) as $report)
+                        <div class="p-4 rounded-2xl border {{ $report->symptom === 'Healthy' ? 'border-green-100 bg-green-50/30' : 'border-red-100 bg-red-50/30' }}">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-black {{ $report->symptom === 'Healthy' ? 'text-green-600' : 'text-red-600' }} uppercase tracking-wider">
+                                    {{ $report->symptom }}
+                                </span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase">{{ $report->created_at->format('M d, H:i') }}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 text-[10px] mb-2">
+                                <div>
+                                    <span class="text-slate-400">Weight:</span> 
+                                    <span class="font-black text-slate-700">{{ $report->weight ?? '—' }} kg</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400">BCS:</span> 
+                                    <span class="font-black text-slate-700">{{ $report->body_condition_score ?? '—' }}/5</span>
+                                </div>
+                            </div>
+                            @if($report->notes)
+                            <p class="text-xs text-slate-600 leading-relaxed italic border-t border-black/5 pt-2 mt-2">
+                                "{{ $report->notes }}"
+                            </p>
+                            @endif
+                        </div>
+                        @endforeach
                     </div>
                 </div>
 

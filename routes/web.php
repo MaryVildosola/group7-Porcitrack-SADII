@@ -147,6 +147,8 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 
         Route::get('/worker/pigs/{pig}', [PigController::class, 'show'])->name('worker.pigs.show');
         Route::post('/worker/pigs/{pig}/update', [PigController::class, 'updateRecord'])->name('worker.pigs.update');
+        Route::post('/worker/pigs/{pig}/log-activity', [PigController::class, 'logActivity'])->name('worker.pigs.log-activity');
+
         Route::post('/worker/sync-logs', [App\Http\Controllers\Worker\SyncController::class, 'sync'])->name('worker.sync');
         Route::get('/worker/feed-formulas', [WorkerFeedFormulaController::class, 'index'])->name('worker.feed-formulas');
     });

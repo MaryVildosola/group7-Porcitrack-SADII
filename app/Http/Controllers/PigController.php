@@ -75,7 +75,7 @@ class PigController extends Controller
 
     public function show(Pig $pig)
     {
-        $pig->load(['pen', 'activities.user']);
+        $pig->load(['pen', 'activities.user', 'healthReports.user']);
         return view('worker.pigShow', compact('pig'));
     }
 }
