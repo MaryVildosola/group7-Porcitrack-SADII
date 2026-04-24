@@ -17,7 +17,7 @@ class TaskController extends Controller
      */
     public function adminIndex()
     {
-        $tasks = Task::with(['assignee', 'pen', 'pig'])->orderBy('due_date')->get();
+        $tasks = Task::with(['assignee', 'pen', 'pig'])->latest()->get();
         $workers = User::where('role', 'farm_worker')->get();
         $pens = Pen::all();
         $pigs = Pig::all();
@@ -39,7 +39,17 @@ class TaskController extends Controller
             'pig_id' => 'nullable|exists:pigs,id',
         ]);
 
-        Task::create($validated);
+        $validated['status'] = 'pending';
+
+        $task = Task::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Task assigned successfully.',
+                'task' => $task
+            ]);
+        }
 
         return back()->with('success', 'Task assigned successfully.');
     }
@@ -49,14 +59,16 @@ class TaskController extends Controller
      */
     public function workerIndex()
     {
-        $tasks = Task::where('assigned_to', Auth::id())
+        $tasks = Task::with(['pen', 'pig'])
+            ->where('assigned_to', Auth::id())
             ->where('status', '!=', 'completed')
-            ->orderBy('due_date')
+            ->oldest() // First in, first out (oldest tasks at the top)
             ->get();
 
-        $completedTasks = Task::where('assigned_to', Auth::id())
+        $completedTasks = Task::with(['pen', 'pig'])
+            ->where('assigned_to', Auth::id())
             ->where('status', 'completed')
-            ->orderByDesc('completed_at')
+            ->latest('completed_at')
             ->limit(5)
             ->get();
 
