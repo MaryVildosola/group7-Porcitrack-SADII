@@ -1,20 +1,95 @@
 @extends('layouts.worker')
 
 @section('content')
-<div class="worker-dash min-h-screen bg-[#f1f5f9]">
+<style>
+    /* Dark Mode Overrides Engine */
+    .worker-dash.dark-mode { background: linear-gradient(to bottom right, #0a180e, #0d2214, #0a180e) !important; }
+    
+    /* Core Layouts */
+    .dark-mode .dash-card, .dark-mode .bg-white, .dark-mode .bg-white\/80 { 
+        background: rgba(255,255,255,0.08) !important; 
+        border-color: rgba(255,255,255,0.12) !important; 
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important;
+    }
+    .dark-mode .dash-inner, .dark-mode .bg-slate-50, .dark-mode .bg-slate-100, .dark-mode .bg-slate-200 { 
+        background: rgba(0,0,0,0.25) !important; 
+        border-color: rgba(255,255,255,0.04) !important; 
+        box-shadow: inset 0 4px 15px rgba(0,0,0,0.2) !important;
+    }
+    .dark-mode .border-slate-100, .dark-mode .border-slate-200, .dark-mode .border-dashed { border-color: rgba(255,255,255,0.08) !important; }
+    
+    /* Typography */
+    .dark-mode .text-slate-900, .dark-mode .text-slate-800, .dark-mode h1, .dark-mode h2, .dark-mode h3 { color: #ffffff !important; }
+    .dark-mode .text-slate-500, .dark-mode .text-slate-400, .dark-mode .text-slate-300 { color: rgba(255,255,255,0.5) !important; }
+    .dark-mode .text-slate-900.dashboard-title span { color: #4ade80 !important; }
+
+    /* Watermark background Icons */
+    .dark-mode .text-slate-50, .dark-mode .text-slate-100 { color: rgba(255,255,255,0.03) !important; }
+    .dark-mode i.text-slate-300 { color: rgba(255,255,255,0.2) !important; }
+
+    /* Dynamic Badges & Pastel Backgrounds => Translucent Neon */
+    .dark-mode .bg-red-50, .dark-mode .bg-green-50, .dark-mode .bg-blue-50, 
+    .dark-mode .bg-yellow-50, .dark-mode .bg-indigo-50, .dark-mode .bg-purple-50,
+    .dark-mode .bg-orange-50, .dark-mode .bg-teal-50 {
+        background-color: rgba(255,255,255,0.05) !important;
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+    
+    /* Dynamic Colored Texts => Brightened 300 scale */
+    .dark-mode .text-red-500, .dark-mode .text-red-600 { color: #fca5a5 !important; }
+    .dark-mode .text-blue-500, .dark-mode .text-blue-600 { color: #93c5fd !important; }
+    .dark-mode .text-green-500, .dark-mode .text-green-600 { color: #86efac !important; }
+    .dark-mode .text-yellow-500, .dark-mode .text-yellow-600 { color: #fde047 !important; }
+    .dark-mode .text-indigo-500, .dark-mode .text-indigo-600 { color: #a5b4fc !important; }
+    .dark-mode .text-purple-500, .dark-mode .text-purple-600 { color: #d8b4fe !important; }
+    .dark-mode .text-orange-500, .dark-mode .text-orange-600 { color: #fdba74 !important; }
+    
+    /* Inputs, Selects, & Textareas Customization */
+    .dark-mode input, .dark-mode select, .dark-mode textarea {
+        background-color: rgba(0,0,0,0.3) !important;
+        color: #ffffff !important;
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+    .dark-mode input option { background-color: #0b1120 !important; color: white !important; }
+    .dark-mode select option { background-color: #0b1120 !important; color: white !important; }
+    .dark-mode input::placeholder, .dark-mode textarea::placeholder { color: rgba(255,255,255,0.3) !important; }
+    
+    /* Switch/Toggle Selectors & Modals */
+    .dark-mode .bcs-btn, .dark-mode .feed-btn { 
+        background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.6) !important; 
+    }
+    .dark-mode .bcs-btn.border-green-500, .dark-mode .feed-btn.border-green-500 { 
+        background: rgba(34,197,94,0.15) !important; border-color: rgba(34,197,94,0.4) !important; color: #86efac !important; 
+    }
+    
+    .dark-mode .glass-panel { 
+        background: rgba(255,255,255,0.08) !important; 
+        border-color: rgba(255,255,255,0.12) !important; 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important;
+    }
+
+    .dark-mode #physicalChecklist > div { background: rgba(0,0,0,0.2) !important; border-color: rgba(255,255,255,0.05) !important; }
+    .dark-mode #physicalChecklist > div > span { color: rgba(255,255,255,0.6) !important; }
+    .dark-mode #physicalChecklist > div.bg-green-50\/50 { background: rgba(34,197,94,0.15) !important; border-color: rgba(34,197,94,0.3) !important; }
+    .dark-mode #physicalChecklist > div.bg-green-50\/50 > span { color: #86efac !important; }
+</style>
+<div class="worker-dash min-h-screen bg-slate-200 transition-colors duration-500">
     <div class="px-6 md:px-12 py-10 max-w-full">
 
         <!-- Header Section -->
-        <div class="mb-10 md:mb-14">
-            <p class="text-xs md:text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Operational Dashboard</p>
-            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter">Hello, <span class="text-green-600">{{ explode(' ', Auth::user()->name)[0] }}</span></h1>
+        <div class="mb-10 md:mb-14 flex justify-between items-center w-full">
+            <div>
+                <p class="text-xs md:text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Operational Dashboard</p>
+                <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter">Hello, <span class="text-green-600">{{ explode(' ', Auth::user()->name)[0] }}</span></h1>
+            </div>
         </div>
 
         <!-- Critical Alerts Banner -->
         @if($criticalAlerts->count() > 0)
         @foreach($criticalAlerts as $alert)
         <div id="criticalAlertsBanner" class="mb-10 animate-fade-in">
-            <div class="flex items-center gap-4 p-5 rounded-[2rem] bg-white border border-red-100 shadow-sm hover:shadow-md transition cursor-pointer" onclick="window.location='{{ route('worker.pigs.show', $alert->id) }}'">
+            <div class="dash-card flex items-center gap-4 p-5 rounded-[2rem] backdrop-blur-2xl bg-white/80 border border-red-100 shadow-sm hover:shadow-md transition cursor-pointer" onclick="window.location='{{ route('worker.pigs.show', $alert->id) }}'">
                 <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center shrink-0 animate-pulse">
                     <i class='bx bxs-error-circle text-2xl'></i>
                 </div>
@@ -41,7 +116,7 @@
                 </div>
             </button>
 
-            <div class="glass-panel p-8 rounded-[2.5rem] flex items-center justify-between border border-slate-200">
+            <div class="dash-card backdrop-blur-2xl bg-white/80 p-8 rounded-[2.5rem] flex items-center justify-between border border-slate-100 shadow-[0_5px_15px_rgba(0,0,0,0.05)]">
                 <div class="flex items-center gap-5">
                     <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
                         <i class='bx bx-cloud-upload text-2xl'></i>
@@ -58,7 +133,7 @@
         <!-- Stats Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             @foreach($stats as $s)
-                <div class="bg-white p-7 rounded-[2.2rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+                <div class="dash-card backdrop-blur-2xl bg-white/80 p-7 rounded-[2.2rem] border border-slate-100 shadow-[0_5px_15px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:shadow-[0_10px_25px_rgba(0,0,0,0.1)] transition-all">
                     <div class="relative z-10">
                         <span class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] block mb-2">{{ $s['label'] }}</span>
                         <span class="text-4xl font-black text-{{ $s['color'] }}-600 tracking-tighter">{{ $s['val'] }}</span>
@@ -82,7 +157,7 @@
         <!-- Pens Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             @foreach($pens as $pen)
-                <div onclick="openFeedingModal('{{ $pen['id'] }}')" class="group bg-white rounded-[2.5rem] p-8 border border-slate-100 hover:border-green-500/50 hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden shadow-sm">
+                <div onclick="openFeedingModal('{{ $pen['id'] }}')" class="dash-card group backdrop-blur-2xl bg-white/80 rounded-[2.5rem] p-8 border border-slate-100 hover:border-green-500/50 hover:shadow-[0_15px_30px_rgba(0,0,0,0.1)] transition-all cursor-pointer relative overflow-hidden shadow-[0_5px_15px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-start mb-6">
                         <div>
                             <h3 class="text-2xl font-black text-slate-900 tracking-tighter">{{ $pen['name'] }}</h3>
@@ -92,15 +167,15 @@
                     </div>
 
                     <div class="grid grid-cols-3 gap-3 mb-8">
-                        <div class="bg-slate-50 rounded-2xl p-4 text-center group-hover:bg-green-50 transition-colors">
+                        <div class="dash-inner bg-slate-50 shadow-sm border border-slate-100 rounded-2xl p-4 text-center group-hover:bg-green-50 transition-colors">
                             <p class="text-slate-400 text-[8px] uppercase font-black mb-1">Pigs</p>
                             <p class="text-slate-900 font-black text-xl tracking-tight">{{ $pen['count'] }}</p>
                         </div>
-                        <div class="bg-slate-50 rounded-2xl p-4 text-center">
+                        <div class="dash-inner bg-slate-50 shadow-sm border border-slate-100 rounded-2xl p-4 text-center">
                             <p class="text-slate-400 text-[8px] uppercase font-black mb-1">Sick</p>
                             <p class="{{ $pen['sick'] > 0 ? 'text-red-500' : 'text-slate-900' }} font-black text-xl tracking-tight">{{ $pen['sick'] }}</p>
                         </div>
-                        <div class="bg-slate-50 rounded-2xl p-4 text-center">
+                        <div class="dash-inner bg-slate-50 shadow-sm border border-slate-100 rounded-2xl p-4 text-center">
                             <p class="text-slate-400 text-[8px] uppercase font-black mb-1">Avg Kg</p>
                             <p class="text-slate-900 font-black text-xl tracking-tight">{{ $pen['weight'] }}</p>
                         </div>
@@ -130,8 +205,8 @@
 
         <div id="recentMonitoringList" class="space-y-4 pb-20">
             @forelse($recentActivities as $activity)
-            <div class="bg-white rounded-[2rem] p-6 flex gap-5 items-center border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer" onclick="window.location='{{ route('worker.pigs.show', $activity->pig_id) }}'">
-                <div class="w-14 h-14 rounded-2xl bg-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-50 flex items-center justify-center shrink-0 border border-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-100 text-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-600">
+            <div class="dash-card backdrop-blur-2xl bg-white/80 rounded-[2rem] p-6 flex gap-5 items-center border border-slate-100 shadow-[0_5px_15px_rgba(0,0,0,0.03)] hover:shadow-md transition cursor-pointer" onclick="window.location='{{ route('worker.pigs.show', $activity->pig_id) }}'">
+                <div class="w-14 h-14 rounded-2xl bg-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-50 flex items-center justify-center shrink-0 border border-slate-100 text-{{ $activity->type === 'Medical' ? 'red' : ($activity->type === 'Growth' ? 'blue' : 'green') }}-600">
                     <i class='bx {{ $activity->type === 'Medical' ? 'bx-plus-medical' : ($activity->type === 'Growth' ? 'bx-trending-up' : 'bx-check-double') }} text-2xl'></i>
                 </div>
                 <div class="flex-1">
@@ -308,6 +383,16 @@
 
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
+        // --- Page specific theme listener ---
+        window.applyPageTheme = function(theme) {
+            const dash = document.querySelector('.worker-dash');
+            if(theme === 'dark') {
+                dash.classList.add('dark-mode');
+            } else {
+                dash.classList.remove('dark-mode');
+            }
+        };
+
         let html5QrcodeScanner = null;
 
         function startQRScanner() {
