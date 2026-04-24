@@ -46,6 +46,11 @@ class Pig extends Model
         return $this->hasMany(PigHealthReport::class)->latest();
     }
 
+    public function tasks()
+    {
+        return $this->hasMany(Task::class)->latest();
+    }
+
     public function latestHealthReport()
     {
         return $this->hasOne(PigHealthReport::class)->latestOfMany();
