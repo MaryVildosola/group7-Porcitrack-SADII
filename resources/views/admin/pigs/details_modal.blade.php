@@ -34,147 +34,222 @@
     </style>
     @endif
 
-    <!-- Header with Background -->
-    <div style="background: linear-gradient(135deg, #111827 0%, #1f2937 100%); padding: 32px; border-radius: 24px; color: white; margin-bottom: 24px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; background: rgba(34, 197, 94, 0.1); border-radius: 50%; blur: 40px;"></div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1;">
-            <div>
-                <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #9ca3af; margin-bottom: 8px;">Individual Record</p>
-                <h2 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -0.05em; margin: 0;">#{{ $pig->tag }}</h2>
-                <div style="display: flex; gap: 12px; margin-top: 12px;">
-                    <span style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 700;">{{ $pig->health_status }}</span>
-                    <span style="background: rgba(255, 255, 255, 0.1); color: #f3f4f6; padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 700;">{{ $pig->breed ?? 'Standard' }}</span>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
-                <div style="width: 56px; height: 56px; background: rgba(255, 255, 255, 0.05); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
-                    <i class='bx bx-pig'></i>
-                </div>
-                <!-- Quick Assign Task Trigger -->
-                <button onclick="window.quickAssignTask(event, {{ $pig->id }}, '{{ $pig->tag }}', {{ $pig->pen_id }})" data-workers="{{ json_encode($workers) }}" style="background: #22c55e; color: #fff; border: none; padding: 8px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); transition: transform 0.2s;">
-                    <i class='bx bx-task'></i> Quick Assign Task
-                </button>
-            </div>
-        </div>
-    </div>
+    <form id="admin-edit-pig-form">
+        @csrf
+        <!-- Header with Background -->
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px; border-radius: 24px; color: white; margin-bottom: 24px; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);">
+            <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; background: rgba(34, 197, 94, 0.15); border-radius: 50%; blur: 40px;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1;">
+                <div style="flex: 1;">
+                    <p style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 8px;">Individual Record</p>
+                    <h2 class="view-mode" style="font-size: 2.8rem; font-weight: 900; letter-spacing: -0.05em; margin: 0; color: #ffffff;">#{{ $pig->tag }}</h2>
+                    <div class="edit-mode" style="display:none; margin-bottom: 12px;">
+                        <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Ear Tag ID</label>
+                        <input type="text" name="tag" value="{{ $pig->tag }}" style="font-size: 1.8rem; font-weight: 900; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.2); color: white; border-radius: 14px; padding: 10px 16px; width: 85%; outline: none; transition: border-color 0.2s;">
+                    </div>
 
-    <!-- Stats Grid -->
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px;">
-        <div style="background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9;">
-            <p style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Weight</p>
-            <div style="display: flex; align-items: baseline; gap: 4px;">
-                <span style="font-size: 1.5rem; font-weight: 900; color: #0f172a;">{{ $pig->weight ?: '0' }}</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8;">KG</span>
-            </div>
-        </div>
-        <div style="background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9;">
-            <p style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Age</p>
-            <div style="display: flex; align-items: baseline; gap: 4px;">
-                <span style="font-size: 1.5rem; font-weight: 900; color: #0f172a;">{{ round($pig->age_in_days / 7, 1) }}</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8;">WEEKS</span>
-            </div>
-        </div>
-        <div style="background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9;">
-            <p style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">BCS</p>
-            <div style="display: flex; align-items: baseline; gap: 4px;">
-                <span style="font-size: 1.5rem; font-weight: 900; color: #0f172a;">{{ $pig->bcs_score ?: '3' }}</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8;">/ 5</span>
-            </div>
-        </div>
-    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 16px;">
+                        @php
+                            $healthColor = match($pig->health_status) {
+                                'Healthy' => '#22c55e',
+                                'Warning' => '#f59e0b',
+                                'Sick' => '#ef4444',
+                                default => '#64748b'
+                            };
+                        @endphp
+                        <span class="view-mode" style="background: {{ $healthColor }}; color: #ffffff; padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">{{ $pig->health_status }}</span>
+                        <div class="edit-mode" style="display:none;">
+                            <select name="health_status" style="background: {{ $healthColor }}; color: #ffffff; border: none; padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                                <option value="Healthy" {{ $pig->health_status == 'Healthy' ? 'selected' : '' }}>Healthy</option>
+                                <option value="Warning" {{ $pig->health_status == 'Warning' ? 'selected' : '' }}>Warning</option>
+                                <option value="Sick" {{ $pig->health_status == 'Sick' ? 'selected' : '' }}>Sick</option>
+                            </select>
+                        </div>
 
-    <!-- Mixture & Feeding Section -->
-    <div style="margin-bottom: 32px;">
-        <h3 style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #475569; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bx-bowl-hot' style="color: #22c55e;"></i> Feeding & Mixture
-        </h3>
-        <div style="background: #fff; border: 1px solid #f1f5f9; border-radius: 20px; padding: 20px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem;">
-                <span style="color: #64748b;">Feed Stage:</span>
-                <span style="font-weight: 800; color: #1e293b;">{{ $pig->growth_stage }}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem;">
-                <span style="color: #64748b;">Feeding Activity:</span>
-                <span style="font-weight: 800; color: #1e293b;">{{ $pig->feeding_status ?: 'Normal' }}</span>
-            </div>
-            <div style="padding-top: 12px; border-top: 1px dashed #e2e8f0; font-size: 0.75rem; color: #64748b;">
-                <p style="font-weight: 800; color: #475569; margin-bottom: 8px;">Recommended Mixture Components (approx):</p>
-                @php
-                    $mix = match($pig->growth_stage) {
-                        'Piglet' => 'Pre-starter high protein crumbles',
-                        'Starter' => '60% Corn, 25% Soya, 5% Fishmeal, 10% Rice Bran',
-                        'Grower' => '65% Corn, 20% Soya, 15% Rice Bran + Minerals',
-                        'Finisher' => '70% Corn, 10% Soya, 20% Rice Bran',
-                        default => 'Standard Ration'
-                    };
-                @endphp
-                <div style="background: #f1f5f9; padding: 10px; border-radius: 8px; color: #334155; font-family: monospace;">
-                    {{ $mix }}
+                        <span class="view-mode" style="background: rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; backdrop-filter: blur(4px);">{{ $pig->breed ?? 'Standard' }}</span>
+                        <div class="edit-mode" style="display:none;">
+                            <input type="text" name="breed" value="{{ $pig->breed }}" placeholder="Breed" style="background: rgba(255, 255, 255, 0.15); color: #f8fafc; border: 1.5px solid rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; outline: none; width: 120px;">
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 14px;">
+                    <button type="button" id="edit-pig-toggle-btn" onclick="togglePigEdit()" style="background: rgba(255,255,255,0.1); color: #ffffff; border: 1.5px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s;">
+                        <i class='bx bx-edit-alt'></i> Edit Details
+                    </button>
+                    <!-- Quick Assign Task Trigger -->
+                    <button type="button" class="view-mode" onclick="window.quickAssignTask(event, {{ $pig->id }}, '{{ $pig->tag }}', {{ $pig->pen_id }})" data-workers="{{ json_encode($workers) }}" style="background: #22c55e; color: #ffffff; border: none; padding: 10px 18px; border-radius: 14px; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 8px 16px rgba(34, 197, 94, 0.3); transition: transform 0.2s;">
+                        <i class='bx bx-task'></i> Quick Assign
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px;">
+            <div style="background: #ffffff; padding: 24px; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <p style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Weight</p>
+                <div class="view-mode" style="display: flex; align-items: baseline; gap: 6px;">
+                    <span style="font-size: 1.8rem; font-weight: 900; color: #1e293b;">{{ $pig->weight ?: '0' }}</span>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: #94a3b8;">KG</span>
+                </div>
+                <div class="edit-mode" style="display:none;">
+                    <input type="number" step="0.01" name="weight" value="{{ $pig->weight }}" style="width: 100%; font-size: 1.4rem; font-weight: 800; border: 2px solid #f1f5f9; border-radius: 12px; padding: 10px; color: #1e293b; outline: none; background: #f8fafc;">
+                </div>
+            </div>
+            <div style="background: #ffffff; padding: 24px; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <p class="view-mode" style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Age</p>
+                <p class="edit-mode" style="display:none; font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">Birth Date</p>
+                <div class="view-mode" style="display: flex; align-items: baseline; gap: 6px;">
+                    <span style="font-size: 1.8rem; font-weight: 900; color: #1e293b;">{{ round($pig->age_in_days / 7, 1) }}</span>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: #94a3b8;">WEEKS</span>
+                </div>
+                <div class="edit-mode" style="display:none;">
+                    <input type="date" name="birth_date" value="{{ $pig->birth_date ? $pig->birth_date->format('Y-m-d') : '' }}" style="width: 100%; font-size: 1rem; font-weight: 800; border: 2px solid #f1f5f9; border-radius: 12px; padding: 10px; color: #1e293b; outline: none; background: #f8fafc;">
+                </div>
+            </div>
+            <div style="background: #ffffff; padding: 24px; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <p style="font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.05em;">BCS</p>
+                <div class="view-mode" style="display: flex; align-items: baseline; gap: 6px;">
+                    <span style="font-size: 1.8rem; font-weight: 900; color: #1e293b;">{{ $pig->bcs_score ?: '3' }}</span>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: #94a3b8;">/ 5</span>
+                </div>
+                <div class="edit-mode" style="display:none;">
+                    <select name="bcs_score" style="width: 100%; font-size: 1.4rem; font-weight: 800; border: 2px solid #f1f5f9; border-radius: 12px; padding: 10px; color: #1e293b; outline: none; background: #f8fafc; cursor: pointer;">
+                        @for($i=1; $i<=5; $i++)
+                            <option value="{{ $i }}" {{ ($pig->bcs_score ?: 3) == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mixture & Feeding Section -->
+        <div style="margin-bottom: 32px;">
+            <h3 style="font-size: 0.9rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #1e293b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: #dcfce7; color: #22c55e; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class='bx bx-bowl-hot'></i>
+                </div>
+                Feeding & Mixture
+            </h3>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 0.9rem; align-items: center;">
+                    <span style="color: #475569; font-weight: 600;">Feeding Activity:</span>
+                    <span class="view-mode" style="font-weight: 800; color: #1e293b;">{{ $pig->feeding_status ?: 'Normal' }}</span>
+                    <div class="edit-mode" style="display:none;">
+                        <select name="feeding_status" style="font-size: 0.9rem; font-weight: 800; border: 2px solid #f1f5f9; border-radius: 10px; padding: 6px 14px; color: #1e293b; outline: none; background: #f8fafc; cursor: pointer;">
+                            <option value="Normal" {{ ($pig->feeding_status ?: 'Normal') == 'Normal' ? 'selected' : '' }}>Normal</option>
+                            <option value="Active" {{ $pig->feeding_status == 'Active' ? 'selected' : '' }}>Active</option>
+                            <option value="Poor" {{ $pig->feeding_status == 'Poor' ? 'selected' : '' }}>Poor</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 0.9rem; align-items: center;">
+                    <span style="color: #475569; font-weight: 600;">Target Market Weight:</span>
+                    <span class="view-mode" style="font-weight: 800; color: #1e293b;">{{ $pig->target_weight ?: '0' }} KG</span>
+                    <div class="edit-mode" style="display:none;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="number" step="0.01" name="target_weight" value="{{ $pig->target_weight }}" style="width: 100px; font-size: 0.9rem; font-weight: 800; border: 2px solid #f1f5f9; border-radius: 10px; padding: 6px 12px; color: #1e293b; outline: none; background: #f8fafc;">
+                            <span style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">KG</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="edit-mode" style="display:none; margin-top: 16px; border-top: 1px dashed #e2e8f0; padding-top: 16px;">
+                    <label style="display:block; font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.05em;">Admin Remarks / Clinical Notes</label>
+                    <textarea name="remarks" style="width: 100%; border: 2px solid #f1f5f9; border-radius: 16px; padding: 16px; font-size: 0.9rem; height: 100px; outline: none; resize: none; background: #f8fafc; color: #1e293b;" placeholder="Add specific observation notes for workers or vet staff...">{{ $pig->remarks }}</textarea>
+                </div>
+                <div class="view-mode" style="padding-top: 16px; border-top: 1px dashed #e2e8f0; font-size: 0.85rem; color: #475569;">
+                    <p style="font-weight: 800; color: #1e293b; margin-bottom: 10px;">Recommended Mixture Component:</p>
+                    @php
+                        $mix = match($pig->growth_stage) {
+                            'Piglet' => 'Pre-starter high protein crumbles',
+                            'Starter' => '60% Corn, 25% Soya, 5% Fishmeal, 10% Rice Bran',
+                            'Grower' => '65% Corn, 20% Soya, 15% Rice Bran + Minerals',
+                            'Finisher' => '70% Corn, 10% Soya, 20% Rice Bran',
+                            default => 'Standard Ration'
+                        };
+                    @endphp
+                    <div style="background: #f8fafc; padding: 14px; border-radius: 14px; color: #334155; font-family: 'Outfit', sans-serif; font-weight: 600; border: 1px solid #f1f5f9;">
+                        <i class='bx bx-info-circle' style="color: #22c55e; margin-right: 6px;"></i> {{ $mix }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="edit-actions-hud" class="edit-mode" style="display: none; gap: 12px; margin-top: 24px; align-items: center; justify-content: stretch;">
+            <button type="button" onclick="saveAdminPigChanges({{ $pig->id }})" style="flex: 2; background: #22c55e; color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);">Save Changes</button>
+            <button type="button" onclick="togglePigEdit()" style="flex: 1; background: #f1f5f9; color: #64748b; border: none; padding: 16px; border-radius: 16px; font-weight: 700; cursor: pointer;">Cancel</button>
+        </div>
+    </form>
 
     <!-- Tabs for History -->
-    <div style="display: flex; gap: 8px; margin-bottom: 16px; padding: 4px; background: #f1f5f9; border-radius: 12px; width: fit-content;">
-        <button class="mini-tab-btn active" onclick="switchMiniTab(event, 'th-activities')" style="padding: 6px 16px; border-radius: 8px; border: none; background: white; font-size: 0.7rem; font-weight: 800; cursor: pointer;">Activities</button>
-        <button class="mini-tab-btn" onclick="switchMiniTab(event, 'th-tasks')" style="padding: 6px 16px; border-radius: 8px; border: none; background: transparent; font-size: 0.7rem; font-weight: 800; cursor: pointer; color: #64748b;">Worker Tasks</button>
+    <div class="view-mode" style="display: flex; gap: 8px; margin-bottom: 20px; padding: 6px; background: #e2e8f0; border-radius: 14px; width: fit-content; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+        <button class="mini-tab-btn active" onclick="switchMiniTab(event, 'th-activities')" style="padding: 8px 20px; border-radius: 10px; border: none; background: #ffffff; font-size: 0.75rem; font-weight: 800; cursor: pointer; color: #1e293b; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.2s;">Activities</button>
+        <button class="mini-tab-btn" onclick="switchMiniTab(event, 'th-tasks')" style="padding: 8px 20px; border-radius: 10px; border: none; background: transparent; font-size: 0.75rem; font-weight: 800; cursor: pointer; color: #64748b; transition: all 0.2s;">Worker Tasks</button>
     </div>
 
     <!-- Tab Contents -->
-    <div id="th-activities" class="mini-tab-content" style="max-height: 250px; overflow-y: auto; padding-right: 8px;">
+    <div id="th-activities" class="mini-tab-content view-mode" style="max-height: 280px; overflow-y: auto; padding-right: 10px;">
         @forelse($pig->activities as $activity)
-        <div style="display: flex; gap: 12px; padding: 12px; background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; margin-bottom: 8px; align-items: flex-start;">
-            <div style="width: 32px; height: 32px; border-radius: 10px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+        <div style="display: flex; gap: 16px; padding: 16px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; margin-bottom: 12px; align-items: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div style="width: 40px; height: 40px; border-radius: 12px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; border: 1px solid #dcfce7;">
                 <i class='bx {{ $activity->type === "Medical" ? "bx-plus-medical" : "bx-check" }}'></i>
             </div>
-            <div>
+            <div style="flex: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <h4 style="font-size: 0.75rem; font-weight: 800; color: #0f172a; margin: 0;">{{ $activity->action }}</h4>
-                    <span style="font-size: 0.6rem; color: #94a3b8;">{{ $activity->created_at->diffForHumans() }}</span>
+                    <h4 style="font-size: 0.85rem; font-weight: 800; color: #1e293b; margin: 0;">{{ $activity->action }}</h4>
+                    <span style="font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">{{ $activity->created_at->diffForHumans() }}</span>
                 </div>
-                <p style="font-size: 0.7rem; color: #64748b; margin-top: 2px;">{{ $activity->details ?: 'Recorded by worker' }}</p>
+                <p style="font-size: 0.8rem; color: #475569; margin-top: 4px; line-height: 1.4;">{{ $activity->details ?: 'Recorded by worker' }}</p>
                 
                 @if($activity->admin_response)
-                <div style="margin-top: 8px; padding: 10px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7;">
-                    <p style="font-size: 0.65rem; font-weight: 800; color: #166534; margin: 0; text-transform: uppercase;">Admin Response:</p>
-                    <p style="font-size: 0.7rem; color: #15803d; margin: 4px 0 0;">{{ $activity->admin_response }}</p>
-                    <div style="margin-top: 6px; display: flex; gap: 8px;">
-                        <span style="font-size: 0.6rem; color: #166534; font-weight: 700;">Health: {{ $activity->new_health_status }}</span>
-                        <span style="font-size: 0.6rem; color: #166534; font-weight: 700;">Feeding: {{ $activity->new_feeding_status }}</span>
+                <div style="margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                        <i class='bx bxs-badge-check' style="color: #22c55e;"></i>
+                        <p style="font-size: 0.65rem; font-weight: 900; color: #475569; margin: 0; text-transform: uppercase; letter-spacing: 0.05em;">Admin Response</p>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #1e293b; margin: 0; font-weight: 500;">{{ $activity->admin_response }}</p>
+                    <div style="margin-top: 8px; display: flex; gap: 10px;">
+                        <span style="font-size: 0.65rem; color: #166534; font-weight: 800; background: #dcfce7; padding: 2px 8px; border-radius: 6px;">Health: {{ $activity->new_health_status }}</span>
+                        <span style="font-size: 0.65rem; color: #166534; font-weight: 800; background: #dcfce7; padding: 2px 8px; border-radius: 6px;">Feeding: {{ $activity->new_feeding_status }}</span>
                     </div>
                 </div>
                 @endif
 
-                <div style="font-size: 0.6rem; color: #94a3b8; margin-top: 8px; display: flex; align-items: center; gap: 4px;">
-                    <i class='bx bx-user'></i> {{ $activity->user->name ?? 'System' }}
+                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 10px; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                    <i class='bx bx-user-circle'></i> {{ $activity->user->name ?? 'System' }}
                 </div>
             </div>
         </div>
         @empty
-        <p style="text-align: center; font-size: 0.75rem; color: #94a3b8; padding: 20px;">No activities recorded.</p>
+        <div style="text-align: center; padding: 40px 20px; background: #ffffff; border-radius: 24px; border: 1px dashed #cbd5e1;">
+            <i class='bx bx-history' style="font-size: 2rem; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin: 0;">No activities recorded yet.</p>
+        </div>
         @endforelse
     </div>
 
-    <div id="th-tasks" class="mini-tab-content" style="display: none; max-height: 250px; overflow-y: auto; padding-right: 8px;">
+    <div id="th-tasks" class="mini-tab-content view-mode" style="display: none; max-height: 280px; overflow-y: auto; padding-right: 10px;">
         @forelse($pig->tasks as $task)
-        <div style="padding: 12px; background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; margin-bottom: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-                <h4 style="font-size: 0.75rem; font-weight: 800; color: #0f172a; margin: 0;">{{ $task->title }}</h4>
-                <span style="padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; background: {{ $task->status === 'completed' ? '#dcfce7' : '#fef9c3' }}; color: {{ $task->status === 'completed' ? '#166534' : '#854d0e' }};">
-                    {{ ucfirst($task->status) }}
+        <div style="padding: 16px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <h4 style="font-size: 0.85rem; font-weight: 800; color: #1e293b; margin: 0;">{{ $task->title }}</h4>
+                <span style="padding: 4px 12px; border-radius: 99px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; background: {{ $task->status === 'completed' ? '#dcfce7' : '#fef9c3' }}; color: {{ $task->status === 'completed' ? '#166534' : '#854d0e' }}; border: 1px solid {{ $task->status === 'completed' ? '#bbf7d0' : '#fef08a' }};">
+                    {{ $task->status }}
                 </span>
             </div>
-            <p style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">{{ $task->description }}</p>
-            <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.6rem; color: #94a3b8;"><i class='bx bx-user'></i> {{ $task->assignee->name ?? 'Unassigned' }}</span>
-                <span style="font-size: 0.6rem; color: #94a3b8;"><i class='bx bx-time'></i> {{ $task->completed_at ? $task->completed_at->format('M d') : 'Pending' }}</span>
+            <p style="font-size: 0.8rem; color: #64748b; margin-top: 4px; line-height: 1.4;">{{ $task->description }}</p>
+            <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;"><i class='bx bx-user'></i> {{ $task->assignee->name ?? 'Unassigned' }}</span>
+                <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;"><i class='bx bx-calendar'></i> {{ $task->completed_at ? $task->completed_at->format('M d, Y') : 'Pending' }}</span>
             </div>
         </div>
         @empty
-        <p style="text-align: center; font-size: 0.75rem; color: #94a3b8; padding: 20px;">No tasks linked to this pig.</p>
+        <div style="text-align: center; padding: 40px 20px; background: #ffffff; border-radius: 24px; border: 1px dashed #cbd5e1;">
+            <i class='bx bx-list-check' style="font-size: 2rem; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
+            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin: 0;">No tasks assigned to this animal.</p>
+        </div>
         @endforelse
     </div>
-</div>
 
 </div>
+
