@@ -39,12 +39,12 @@
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" id="navLogoutForm">
                             @csrf
 
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
-                                                if(confirm('Are you sure you want to log out?')) { this.closest('form').submit(); }">
+                                                confirmNavLogout();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
@@ -85,15 +85,40 @@
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" id="navLogoutFormMobile">
                     @csrf
 
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
-                                        if(confirm('Are you sure you want to log out?')) { this.closest('form').submit(); }">
+                                        confirmNavLogout();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
+
+                <script>
+                function confirmNavLogout() {
+                    const formId = document.getElementById('navLogoutFormMobile') ? 'navLogoutFormMobile' : 'navLogoutForm';
+                    Swal.fire({
+                        title: '<span style="font-weight:900;color:#1e293b;">Log Out?</span>',
+                        html: '<p style="color:#64748b;font-size:0.88rem;margin:0;">Are you sure you want to log out of PorciTrack?</p>',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, log out',
+                        cancelButtonText: 'Stay',
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#94a3b8',
+                        customClass: {
+                            popup: 'rounded-3xl border-none shadow-2xl',
+                            confirmButton: 'px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-xs',
+                            cancelButton: 'px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-xs'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById(formId).submit();
+                        }
+                    });
+                }
+                </script>
             </div>
         </div>
     </div>
