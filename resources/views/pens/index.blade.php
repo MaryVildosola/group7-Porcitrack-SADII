@@ -447,8 +447,10 @@
                         <div
                             style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                             <div>
-                                <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--deep-slate); margin: 0;"
-                                    id="side-pen-name">{{ $firstPen->name }}</h2>
+                                <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--deep-slate); margin: 0; display: flex; align-items: center; gap: 8px;">
+                                    <span id="side-pen-name">{{ $firstPen->name }}</span>
+                                    <span id="side-pen-id" style="font-size: 0.65rem; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 6px; font-weight: 800;">#{{ $firstPen->id }}</span>
+                                </h2>
                                 <p style="color: #64748b; font-weight: 500; margin: 4px 0 0;" id="side-pen-section">
                                     {{ $firstPen->section ?: 'Unassigned' }}</p>
                             </div>
@@ -583,6 +585,49 @@
         </div>
     </div>
 
+    <!-- MODAL: EDIT PEN -->
+    <div id="editPenModal" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <i class='bx bx-x modal-close' onclick="closeModal('editPenModal')"></i>
+            <h2 style="font-weight: 900; margin-bottom: 4px;">Edit Pen</h2>
+            <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 28px;">Update pen details and financial parameters.</p>
+            <form id="edit-pen-form">
+                @csrf
+                @method('PUT')
+                <input type="hidden" id="edit-pen-id" name="id">
+                <div class="form-group">
+                    <label class="form-label">Pen Identifier / Name</label>
+                    <input id="edit-pen-name" name="name" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Section / Classification</label>
+                    <input id="edit-pen-section" name="section" class="form-input">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Batch Investment (₱)</label>
+                        <input id="edit-pen-batch-cost" name="batch_cost" class="form-input" placeholder="0.00">
+                    </div>  
+                    <div class="form-group">
+                        <label class="form-label">Daily Feed Cost (Avg)</label>
+                        <input id="edit-pen-feed-cons" name="feed_cons" class="form-input" placeholder="0.00">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Avg Start Weight (kg)</label>
+                        <input id="edit-pen-avg-weight" name="avg_weight" class="form-input" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Weight (kg)</label>
+                        <input id="edit-pen-target-weight" name="target_weight" class="form-input" placeholder="0.00">
+                    </div>
+                </div>
+                <button type="submit" id="edit-pen-submit-btn" style="width: 100%; background: var(--accent-green); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; margin-top: 10px; cursor: pointer;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: ADD PIG -->
     <div id="addPigModal" class="custom-modal-overlay">
         <div class="custom-modal">
@@ -697,6 +742,7 @@
                 this.currentPen = data;
 
                 document.getElementById('side-pen-name').innerText = data.name;
+                document.getElementById('side-pen-id').innerText = '#' + data.id;
                 document.getElementById('side-pen-section').innerText = data.section || 'Unassigned';
 
                 var rev = parseFloat(data.revenue || 0);
@@ -799,29 +845,15 @@
 
             editPen: function(id) {
                 var pen = this.currentPen;
-                Swal.fire({
-                    title: 'Edit Pen',
-                    html: '<input id="en" class="swal2-input" value="' + pen.name +
-                        '"><input id="es" class="swal2-input" value="' + (pen.section || '') + '">',
-                    showCancelButton: true,
-                    preConfirm: function() {
-                        return {
-                            name: document.getElementById('en').value,
-                            section: document.getElementById('es').value
-                        };
-                    }
-                }).then(function(r) {
-                    if (r.isConfirmed) fetch('/pens/' + id, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify(r.value)
-                    }).then(function() {
-                        location.reload();
-                    });
-                });
+                document.getElementById('edit-pen-id').value = pen.id;
+                document.getElementById('edit-pen-name').value = pen.name;
+                document.getElementById('edit-pen-section').value = pen.section || '';
+                document.getElementById('edit-pen-batch-cost').value = pen.batch_cost || '';
+                document.getElementById('edit-pen-feed-cons').value = pen.feed_cons || '';
+                document.getElementById('edit-pen-avg-weight').value = pen.avg_weight || '';
+                document.getElementById('edit-pen-target-weight').value = pen.target_weight || '';
+                
+                window.openModal('editPenModal');
             },
 
             deletePen: function(id) {
@@ -1031,6 +1063,40 @@
                 } else {
                     btn.disabled = false;
                     btn.innerText = 'Assign Task';
+                    Swal.fire('Error', data.message || 'Something went wrong.', 'error');
+                }
+            });
+
+            // --- EDIT PEN FORM SUBMIT ---
+            document.getElementById('edit-pen-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                var id = document.getElementById('edit-pen-id').value;
+                var btn = document.getElementById('edit-pen-submit-btn');
+                btn.disabled = true;
+                btn.innerText = 'Saving...';
+
+                var res = await fetch('/pens/' + id, {
+                    method: 'PUT',
+                    body: JSON.stringify(Object.fromEntries(new FormData(e.target))),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                var data = await res.json();
+                if (data.success) {
+                    closeModal('editPenModal');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#22c55e'
+                    }).then(function() {
+                        location.reload();
+                    });
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = 'Save Changes';
                     Swal.fire('Error', data.message || 'Something went wrong.', 'error');
                 }
             });
