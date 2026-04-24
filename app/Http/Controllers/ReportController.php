@@ -136,9 +136,18 @@ class ReportController extends Controller
             'weekly_progress' => [65, 78, 72, 85, 80, 90, 88] // Keep mock for chart for now unless we have historical data
         ];
 
-        $pens = Pen::with(['pigs' => function($q) {
-            $q->whereNotIn('status', ['Sold', 'Disposed']);
-        }])->get();
+        $userId = $user->id;
+        $pens = Pen::with(['pigs' => function($q) use ($userId) {
+            $q->whereNotIn('status', ['Sold', 'Disposed'])
+              ->orderByRaw("CASE health_status WHEN 'Sick' THEN 0 WHEN 'Warning' THEN 1 ELSE 2 END")
+              ->with(['tasks' => function($tq) use ($userId) {
+                  $tq->where('assigned_to', $userId)->where('status', '!=', 'completed');
+              }, 'activities' => function($aq) {
+                  $aq->where('is_critical_alert', true)->whereNull('acknowledged_at');
+              }]);
+        }])->get()->sortByDesc(function($pen) {
+            return $pen->pigs->where('health_status', '!=', 'Healthy')->count();
+        });
 
         return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics', 'pens'));
     }
