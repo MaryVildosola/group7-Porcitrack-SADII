@@ -795,24 +795,102 @@
                 if (event) event.stopPropagation();
                 var workerOptions = '';
                 this.workers.forEach(function(w) {
-                    workerOptions += '<option value="' + w.id + '">' + w.name + '</option>';
+                    workerOptions += `<option value="${w.id}">${w.name}</option>`;
                 });
+
                 Swal.fire({
-                    title: 'Assign Monitoring Task',
-                    html: '<div style="text-align: left;"><p>Task for <strong>Pig #' + pigTag +
-                        '</strong></p><div class="form-group"><label>Description</label><textarea id="task-desc" class="form-input"></textarea></div><div class="form-group"><label>Assign To</label><select id="task-worker" class="form-input">' +
-                        workerOptions + '</select></div></div>',
+                    title: '<span style="font-weight: 900; color: #0f172a;">ASSIGN PROTOCOL</span>',
+                    width: '500px',
+                    padding: '2rem',
+                    background: '#f8fafc',
+                    html: `
+                        <div style="text-align: left; padding-top: 10px;">
+                            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 24px;">Tasking for <span style="font-weight: 800; color: var(--deep-slate);">Pig #${pigTag}</span></p>
+                            
+                            <div class="form-group" style="margin-bottom: 20px; position: relative;">
+                                <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Task Objective</label>
+                                <input id="swal-task-title" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" placeholder="e.g. Health Inspection">
+                                <div id="swal-task-suggestions" style="display:none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; padding: 8px; max-height: 150px; overflow-y: auto; margin-top: 5px;"></div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Instructions</label>
+                                <textarea id="swal-task-desc" class="swal2-textarea" style="width: 100%; margin: 0; border-radius: 12px; height: 100px; font-size: 14px; padding: 12px;" placeholder="Specific instructions for the worker..."></textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Assign To</label>
+                                    <select id="swal-task-worker" class="swal2-select" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;">
+                                        ${workerOptions}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Due Date</label>
+                                    <input type="date" id="swal-task-date" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${new Date().toISOString().split('T')[0]}">
+                                </div>
+                            </div>
+                        </div>
+                    `,
                     showCancelButton: true,
+                    confirmButtonText: 'Deploy Task',
+                    confirmButtonColor: '#0f172a',
+                    cancelButtonText: 'Cancel',
+                    customClass: {
+                        popup: 'rounded-3xl border-none shadow-2xl',
+                        confirmButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs',
+                        cancelButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs'
+                    },
+                    didOpen: () => {
+                        const titleInput = document.getElementById('swal-task-title');
+                        const suggestionBox = document.getElementById('swal-task-suggestions');
+                        const descArea = document.getElementById('swal-task-desc');
+                        const suggestions = [
+                            { t: 'Vaccination', d: 'Administer scheduled vaccines. Verify dosage.' },
+                            { t: 'Deworming', d: 'Apply oral deworming treatment.' },
+                            { t: 'Weight In', d: 'Record current body weight.' },
+                            { t: 'Clinic Referral', d: 'Isolate animal and wait for vet inspection.' },
+                            { t: 'Special Feeding', d: 'Apply high-protein supplement ration.' }
+                        ];
+
+                        titleInput.addEventListener('input', (e) => {
+                            const val = e.target.value.toLowerCase();
+                            suggestionBox.innerHTML = '';
+                            if (!val) { suggestionBox.style.display = 'none'; return; }
+                            const filtered = suggestions.filter(s => s.t.toLowerCase().includes(val));
+                            if (filtered.length > 0) {
+                                filtered.forEach(s => {
+                                    const div = document.createElement('div');
+                                    div.style.padding = '8px 12px';
+                                    div.style.cursor = 'pointer';
+                                    div.style.fontSize = '12px';
+                                    div.style.fontWeight = '700';
+                                    div.style.borderRadius = '8px';
+                                    div.innerHTML = s.t;
+                                    div.onclick = () => {
+                                        titleInput.value = s.t;
+                                        descArea.value = s.d;
+                                        suggestionBox.style.display = 'none';
+                                    };
+                                    div.onmouseover = () => div.style.background = '#f0fdf4';
+                                    div.onmouseout = () => div.style.background = 'transparent';
+                                    suggestionBox.appendChild(div);
+                                });
+                                suggestionBox.style.display = 'block';
+                            } else {
+                                suggestionBox.style.display = 'none';
+                            }
+                        });
+                    },
                     preConfirm: function() {
-                        var d = document.getElementById('task-desc').value;
-                        if (!d) {
-                            Swal.showValidationMessage('Required');
-                            return false;
-                        }
+                        const title = document.getElementById('swal-task-title').value;
+                        if (!title) return Swal.showValidationMessage('Title is required');
+                        
                         return {
-                            title: 'Monitor Pig #' + pigTag,
-                            description: d,
-                            assigned_to: document.getElementById('task-worker').value,
+                            title: title,
+                            description: document.getElementById('swal-task-desc').value,
+                            assigned_to: document.getElementById('swal-task-worker').value,
+                            due_date: document.getElementById('swal-task-date').value,
                             pig_id: pigId,
                             pen_id: penId,
                             status: 'pending'
@@ -820,44 +898,118 @@
                     }
                 }).then(function(result) {
                     if (result.isConfirmed) {
+                        Swal.fire({ title: 'Deploying...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                         fetch('{{ route('admin.tasks.store') }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
                             },
                             body: JSON.stringify(result.value)
-                        }).then(function() {
-                            Swal.fire('Success', 'Task assigned', 'success');
+                        }).then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Deployed!', text: data.message, timer: 1500, showConfirmButton: false });
+                            } else {
+                                Swal.fire('Error', data.message || 'Failed to deploy task', 'error');
+                            }
                         });
                     }
                 });
             },
 
             editPen: function(id) {
-                var pen = this.currentPen;
+                const pen = this.currentPen;
+                if (!pen) return;
+
                 Swal.fire({
-                    title: 'Edit Pen',
-                    html: '<input id="en" class="swal2-input" value="' + pen.name +
-                        '"><input id="es" class="swal2-input" value="' + (pen.section || '') + '">',
+                    title: '<span style="font-weight: 900; color: #0f172a;">EDIT PEN DETAILS</span>',
+                    width: '600px',
+                    padding: '2rem',
+                    background: '#f8fafc',
+                    html: `
+                        <div style="text-align: left; padding-top: 10px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Pen Identifier</label>
+                                    <input id="swal-pen-name" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.name}" placeholder="e.g. Pen Alpha-1">
+                                </div>
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Section / Classification</label>
+                                    <input id="swal-pen-section" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.section || ''}" placeholder="e.g. Nursery">
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Batch Investment (₱)</label>
+                                    <input id="swal-pen-cost" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.batch_cost || ''}" placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Daily Feed Cons. (KG)</label>
+                                    <input id="swal-pen-feed" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.feed_cons || ''}" placeholder="0">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Current Avg. Weight (KG)</label>
+                                    <input id="swal-pen-avg" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.avg_weight || ''}" placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Market Target Weight (KG)</label>
+                                    <input id="swal-pen-target" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.target_weight || ''}" placeholder="100.00">
+                                </div>
+                            </div>
+                        </div>
+                    `,
                     showCancelButton: true,
+                    confirmButtonText: 'Save Changes',
+                    confirmButtonColor: '#0f172a',
+                    cancelButtonText: 'Cancel',
+                    customClass: {
+                        popup: 'rounded-3xl border-none shadow-2xl',
+                        confirmButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs',
+                        cancelButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs'
+                    },
                     preConfirm: function() {
+                        const name = document.getElementById('swal-pen-name').value;
+                        if (!name) return Swal.showValidationMessage('Pen identifier is required');
+                        
                         return {
-                            name: document.getElementById('en').value,
-                            section: document.getElementById('es').value
+                            name: name,
+                            section: document.getElementById('swal-pen-section').value,
+                            batch_cost: document.getElementById('swal-pen-cost').value,
+                            feed_cons: document.getElementById('swal-pen-feed').value,
+                            avg_weight: document.getElementById('swal-pen-avg').value,
+                            target_weight: document.getElementById('swal-pen-target').value
                         };
                     }
                 }).then(function(r) {
-                    if (r.isConfirmed) fetch('/pens/' + id, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify(r.value)
-                    }).then(function() {
-                        location.reload();
-                    });
+                    if (r.isConfirmed) {
+                        Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                        
+                        fetch('/pens/' + id, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(r.value)
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Success', text: data.message, timer: 1500, showConfirmButton: false })
+                                .then(() => location.reload());
+                            } else {
+                                Swal.fire('Error', data.message || 'Update failed', 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error', 'Network error', 'error'));
+                    }
                 });
             },
 
