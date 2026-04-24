@@ -1,6 +1,23 @@
 @extends('layouts.worker')
 
 @section('content')
+<style>
+    .worker-dash .text-white          { color: #1e293b !important; }
+    .worker-dash .text-white\/30,
+    .worker-dash .text-white\/40,
+    .worker-dash .text-white\/50,
+    .worker-dash .text-white\/60,
+    .worker-dash .text-white\/70,
+    .worker-dash .text-white\/80      { color: #64748b !important; }
+    .worker-dash .bg-white\/5,
+    .worker-dash .bg-white\/10,
+    .worker-dash .bg-white\/15        { background-color: rgba(0,0,0,0.05) !important; }
+    .worker-dash .border-white\/10,
+    .worker-dash .border-white\/5     { border-color: rgba(0,0,0,0.1) !important; }
+    .worker-dash .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.07) !important; }
+    .worker-dash .glass-panel         { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; }
+</style>
+<div class="worker-dash min-h-screen bg-[#f8fafc]">
 <div class="p-6 md:p-12 max-w-full">
 
     {{-- Header --}}
@@ -206,6 +223,16 @@ function openFormula(id) {
         </div>
 
         ${f.notes ? `<div class="mb-6 p-4 rounded-2xl bg-white/5 border border-white/10 text-white/60 text-sm leading-relaxed"><i class='bx bx-note mr-1'></i> ${f.notes}</div>` : ''}
+
+        <div class="mb-6 p-4 rounded-2xl border" style="background:rgba(14,165,233,0.08);border-color:rgba(14,165,233,0.2);">
+            <p class="text-[10px] font-black uppercase tracking-[0.18em] mb-2" style="color:rgba(56,189,248,0.7);">📋 About This Formula</p>
+            <p class="text-white/60 text-xs leading-relaxed mb-1">
+                A <strong class="text-white/80">feed mixing formula</strong> defines the exact blend of raw ingredients (corn, soybean meal, fishmeal, etc.) needed per batch to meet a pig's nutritional requirements at a specific life stage. Quantities are in <strong class="text-white/80">50 kg sacks</strong>.
+            </p>
+            <p class="text-white/35 text-[11px] leading-relaxed">
+                📚 Nutrient targets are based on <em>NRC</em> &amp; <em>PCAARRD</em> Philippine swine guidelines — covering CP, ME, Fat, Fiber, Ca, and P per life stage.
+            </p>
+        </div>
 
         <div class="mb-6">
             <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">🧂 Mixing Instructions (per batch)</p>

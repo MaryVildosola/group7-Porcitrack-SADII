@@ -1,18 +1,40 @@
 @extends('layouts.worker')
 
 @section('content')
+<style>
+    .worker-dash .text-white          { color: #1e293b !important; }
+    .worker-dash .text-white\/30,
+    .worker-dash .text-white\/40,
+    .worker-dash .text-white\/50,
+    .worker-dash .text-white\/60,
+    .worker-dash .text-white\/70,
+    .worker-dash .text-white\/80      { color: #64748b !important; }
+    .worker-dash .bg-white\/5,
+    .worker-dash .bg-white\/10,
+    .worker-dash .bg-white\/15        { background-color: rgba(0,0,0,0.05) !important; }
+    .worker-dash .border-white\/10,
+    .worker-dash .border-white\/5     { border-color: rgba(0,0,0,0.1) !important; }
+    .worker-dash .hover\:bg-white\/5:hover,
+    .worker-dash .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.07) !important; }
+    .worker-dash .glass-panel         { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; }
+</style>
+<div class="worker-dash min-h-screen bg-[#f8fafc]">
 <div class="p-5 md:p-10 max-w-full">
 
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-        <div>
-            <p class="text-sm font-semibold text-white/40 mb-1 uppercase tracking-widest">Worker Report</p>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">Weekly Report</h1>
-            <p class="text-white/40 text-sm mt-2 font-medium">
-                {{ \Carbon\Carbon::parse($thisWeek)->format('M d') }} — {{ \Carbon\Carbon::parse($thisWeek)->endOfWeek()->format('M d, Y') }}
-            </p>
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <p class="text-sm font-semibold text-white/40 mb-1 uppercase tracking-widest">Worker Report</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">Weekly Report</h1>
+                <p class="text-white/40 text-sm mt-2 font-medium">
+                    {{ \Carbon\Carbon::parse($thisWeek)->format('M d') }} — {{ \Carbon\Carbon::parse($thisWeek)->endOfWeek()->format('M d, Y') }}
+                </p>
+            </div>
         </div>
-        <div class="flex items-center gap-3 px-5 py-3 rounded-2xl border {{ $existingReport ? 'border-green-500/30 bg-green-500/10' : 'border-yellow-500/30 bg-yellow-500/10' }}">
+        
+        <!-- Status Alert Box (Moved here to avoid overlap) -->
+        <div class="mt-6 inline-flex items-center gap-3 px-5 py-3 rounded-2xl border {{ $existingReport ? 'border-green-500/30 bg-green-500/10' : 'border-yellow-500/30 bg-yellow-500/10' }} shadow-xl shadow-black/5">
             <i class='bx {{ $existingReport ? "bxs-badge-check text-green-400" : "bx-time text-yellow-400" }} text-2xl'></i>
             <div>
                 <p class="text-white font-black text-base">{{ $existingReport ? 'Submitted' : 'Pending Submission' }}</p>
@@ -47,50 +69,19 @@
         </div>
         <div class="glass-panel p-4 rounded-2xl">
             <p class="text-white/40 text-xs font-bold uppercase tracking-widest mb-1">Pens Active</p>
-            <p class="text-3xl font-black text-emerald-400">3</p>
+            <p class="text-3xl font-black text-emerald-400">{{ $pens->count() }}</p>
         </div>
     </div>
 
     <!-- ===== PENS & PIGS LIST ===== -->
     @php
-        $pens = [
-            [
-                'id' => 1, 'name' => 'Pen 1', 'type' => 'Piglets', 'status' => 'Good',
-                'statusColor' => 'green', 'progress' => 30,
-                'pigs' => [
-                    ['tag' => '001', 'weight' => 12, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '2 days ago'],
-                    ['tag' => '002', 'weight' => 11, 'bcs' => 2, 'condition' => 'Healthy', 'feeding' => 'Normal',  'lastCheck' => '2 days ago'],
-                    ['tag' => '003', 'weight' => 13, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '3 days ago'],
-                    ['tag' => '004', 'weight' => 10, 'bcs' => 2, 'condition' => 'Healthy', 'feeding' => 'Normal',  'lastCheck' => '1 day ago'],
-                    ['tag' => '005', 'weight' => 12, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '3 days ago'],
-                ],
-            ],
-            [
-                'id' => 5, 'name' => 'Pen 5', 'type' => 'Fattening', 'status' => 'Fair',
-                'statusColor' => 'yellow', 'progress' => 59,
-                'pigs' => [
-                    ['tag' => '021', 'weight' => 68, 'bcs' => 3, 'condition' => 'Healthy',   'feeding' => 'Active',    'lastCheck' => '1 day ago'],
-                    ['tag' => '022', 'weight' => 63, 'bcs' => 2, 'condition' => 'Lethargic', 'feeding' => 'Poor/None', 'lastCheck' => 'Today'],
-                    ['tag' => '023', 'weight' => 70, 'bcs' => 4, 'condition' => 'Healthy',   'feeding' => 'Normal',    'lastCheck' => '2 days ago'],
-                    ['tag' => '024', 'weight' => 61, 'bcs' => 2, 'condition' => 'Coughing',  'feeding' => 'Poor/None', 'lastCheck' => 'Today'],
-                    ['tag' => '025', 'weight' => 66, 'bcs' => 3, 'condition' => 'Healthy',   'feeding' => 'Active',    'lastCheck' => '1 day ago'],
-                ],
-            ],
-            [
-                'id' => 12, 'name' => 'Pen 12', 'type' => 'Breeding', 'status' => 'Excellent',
-                'statusColor' => 'emerald', 'progress' => 82,
-                'pigs' => [
-                    ['tag' => '101', 'weight' => 92, 'bcs' => 4, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '1 day ago'],
-                    ['tag' => '102', 'weight' => 89, 'bcs' => 3, 'condition' => 'Healthy', 'feeding' => 'Normal',  'lastCheck' => '2 days ago'],
-                    ['tag' => '103', 'weight' => 91, 'bcs' => 4, 'condition' => 'Healthy', 'feeding' => 'Active',  'lastCheck' => '1 day ago'],
-                ],
-            ],
-        ];
-
         $statusConfig = [
             'green'   => ['badge' => 'bg-green-500/20 text-green-300 border-green-500/30',   'bar' => 'bg-green-500',   'penBorder' => 'border-green-500/20'],
             'yellow'  => ['badge' => 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30', 'bar' => 'bg-yellow-500',  'penBorder' => 'border-yellow-500/20'],
             'emerald' => ['badge' => 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30','bar' => 'bg-emerald-500','penBorder' => 'border-emerald-500/20'],
+            'Good'    => ['badge' => 'bg-green-500/20 text-green-300 border-green-500/30',   'bar' => 'bg-green-500',   'penBorder' => 'border-green-500/20'],
+            'Fair'    => ['badge' => 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30', 'bar' => 'bg-yellow-500',  'penBorder' => 'border-yellow-500/20'],
+            'Excellent' => ['badge' => 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30','bar' => 'bg-emerald-500','penBorder' => 'border-emerald-500/20'],
         ];
     @endphp
 
@@ -99,30 +90,31 @@
 
         @foreach($pens as $pen)
         @php
-            $sc  = $statusConfig[$pen['statusColor']];
-            $sickCount = count(array_filter($pen['pigs'], fn($p) => $p['condition'] !== 'Healthy'));
+            $sc = $statusConfig[$pen->status] ?? $statusConfig['Good'];
+            $sickCount = $pen->pigs->where('health_status', 'Sick')->count();
+            $avgW = $pen->pigs->avg('weight') ?? 0;
         @endphp
 
         <div class="glass-panel rounded-2xl border {{ $sc['penBorder'] }} overflow-hidden">
 
             <!-- Pen Header (Tap to expand) -->
-            <button onclick="togglePen({{ $pen['id'] }})"
+            <button onclick="togglePen({{ $pen->id }})"
                 class="w-full flex items-center gap-4 p-5 text-left hover:bg-white/5 transition active:scale-[0.99]">
                 <div class="flex-1">
                     <div class="flex items-center gap-3 mb-1">
-                        <h3 class="text-xl font-black text-white">{{ $pen['name'] }}</h3>
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border {{ $sc['badge'] }}">{{ $pen['status'] }}</span>
+                        <h3 class="text-xl font-black text-white">{{ $pen->name }}</h3>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border {{ $sc['badge'] }}">{{ $pen->status }}</span>
                         @if($sickCount > 0)
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500/20 text-red-300 border border-red-500/30">{{ $sickCount }} sick</span>
                         @endif
                     </div>
-                    <p class="text-white/40 text-xs font-semibold">{{ $pen['type'] }} · {{ count($pen['pigs']) }} pigs · Avg weight {{ round(array_sum(array_column($pen['pigs'], 'weight')) / count($pen['pigs'])) }}kg</p>
+                    <p class="text-white/40 text-xs font-semibold">{{ $pen->section }} · {{ $pen->pigs->count() }} pigs · Avg weight {{ round($avgW) }}kg</p>
                 </div>
                 <div class="text-right shrink-0 mr-2">
                     <p class="text-white/30 text-xs font-semibold mb-1">Progress</p>
-                    <p class="text-white font-black text-lg">{{ $pen['progress'] }}%</p>
+                    <p class="text-white font-black text-lg">{{ $pen->progress }}%</p>
                 </div>
-                <i class='bx bx-chevron-down text-white/40 text-2xl transition-transform duration-300' id="pen-chevron-{{ $pen['id'] }}"></i>
+                <i class='bx bx-chevron-down text-white/40 text-2xl transition-transform duration-300' id="pen-chevron-{{ $pen->id }}"></i>
             </button>
 
             <!-- Progress Bar -->
@@ -130,60 +122,142 @@
                 <div class="{{ $sc['bar'] }} h-full transition-all" style="width:{{ $pen['progress'] }}%"></div>
             </div>
 
-            <!-- Pigs List (collapsible) -->
-            <div id="pen-body-{{ $pen['id'] }}" class="hidden">
+            <div id="pen-body-{{ $pen->id }}" class="hidden">
                 <div class="p-4 space-y-3">
-                    @foreach($pen['pigs'] as $pig)
+                    @foreach($pen->pigs as $pig)
                     @php
-                        $isSick   = $pig['condition'] !== 'Healthy';
+                        $isSick   = $pig->health_status !== 'Healthy';
                         $condColor = $isSick ? 'text-red-300' : 'text-green-300';
                         $condBg    = $isSick ? 'bg-red-500/10 border-red-500/20' : 'bg-green-500/10 border-green-500/20';
-                        $feedColor = $pig['feeding'] === 'Poor/None' ? 'text-red-400' : ($pig['feeding'] === 'Active' ? 'text-green-400' : 'text-blue-400');
+                        $feedColor = $pig->feeding_status === 'Poor' ? 'text-red-400' : ($pig->feeding_status === 'Active' ? 'text-green-400' : 'text-blue-400');
                     @endphp
 
                     <!-- Individual Pig Row — tap to see full details -->
-                    <div onclick="togglePig('pig-{{ $pen['id'] }}-{{ $pig['tag'] }}')"
-                        class="rounded-xl border {{ $condBg }} cursor-pointer hover:bg-white/5 transition active:scale-[0.99] overflow-hidden">
+                    <div class="rounded-xl border {{ $condBg }} cursor-pointer overflow-hidden">
 
-                        <div class="flex items-center gap-3 p-3">
+                        <div class="flex items-center gap-3 p-3 hover:bg-white/5 transition active:scale-[0.99]" onclick="togglePig('pig-{{ $pen->id }}-{{ $pig->tag }}')">
                             <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                                 <i class='bx bxs-circle text-lg {{ $condColor }}'></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-white font-black text-sm">Ear Tag #{{ $pig['tag'] }}</p>
-                                <p class="text-white/40 text-xs">{{ $pig['condition'] }} · {{ $pig['lastCheck'] }}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-white font-black text-sm">Ear Tag #{{ $pig->tag }}</p>
+                    @php $pendingAlert = $pig->activities->where('is_critical_alert', true)->whereNull('acknowledged_at')->first(); @endphp
+                    @if($pendingAlert)
+                    <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[9px] font-black uppercase tracking-tighter rounded border border-red-500/30 animate-pulse">Waiting for Update</span>
+                    @endif
+                                </div>
+                                <p class="text-white/40 text-xs">{{ $pig->health_status }} · {{ $pig->updated_at->diffForHumans() }}</p>
                             </div>
                             <div class="text-right shrink-0">
-                                <p class="text-white font-bold text-sm">{{ $pig['weight'] }}kg</p>
-                                <p class="text-white/30 text-[10px]">BCS {{ $pig['bcs'] }}</p>
+                                <p class="text-white font-bold text-sm">{{ $pig->weight }}kg</p>
+                                <p class="text-white/30 text-[10px]">BCS {{ $pig->bcs_score }}</p>
                             </div>
-                            <i class='bx bx-chevron-down text-white/30 text-lg ml-1 transition-transform duration-300' id="pig-chevron-pig-{{ $pen['id'] }}-{{ $pig['tag'] }}"></i>
+                            <i class='bx bx-chevron-down text-white/30 text-lg ml-1 transition-transform duration-300' id="pig-chevron-pig-{{ $pen->id }}-{{ $pig->tag }}"></i>
                         </div>
 
                         <!-- Expanded Pig Details -->
-                        <div id="pig-pig-{{ $pen['id'] }}-{{ $pig['tag'] }}" class="hidden border-t border-white/10">
+                        <div id="pig-pig-{{ $pen->id }}-{{ $pig->tag }}" class="hidden border-t border-white/10">
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 p-4">
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">Condition</p>
-                                    <p class="font-black text-sm {{ $condColor }}">{{ $pig['condition'] }}</p>
+                                    <p class="font-black text-sm {{ $condColor }}">{{ $pig->health_status }}</p>
                                 </div>
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">Feeding</p>
-                                    <p class="font-black text-sm {{ $feedColor }}">{{ $pig['feeding'] }}</p>
+                                    <p class="font-black text-sm {{ $feedColor }}">{{ $pig->feeding_status }}</p>
                                 </div>
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">Weight</p>
-                                    <p class="text-white font-black text-sm">{{ $pig['weight'] }} kg</p>
+                                    <p class="text-white font-black text-sm">{{ $pig->weight }} kg</p>
                                 </div>
                                 <div class="bg-white/5 rounded-xl p-3 text-center">
                                     <p class="text-white/30 text-[9px] uppercase font-black mb-1">BCS Score</p>
-                                    <p class="text-white font-black text-sm">{{ $pig['bcs'] }} / 5</p>
+                                    <p class="text-white font-black text-sm">{{ $pig->bcs_score }} / 5</p>
                                 </div>
                             </div>
                             @if($isSick)
-                            <div class="mx-4 mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-2">
-                                <i class='bx bx-error text-red-400 text-lg shrink-0'></i>
-                                <p class="text-red-300 text-xs font-semibold">This pig has been flagged. Condition: <strong>{{ $pig['condition'] }}</strong>. Feeding: <strong>{{ $pig['feeding'] }}</strong>. Follow up required.</p>
+                            <div class="mx-4 mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <i class='bx bx-error text-red-400 text-lg shrink-0 mt-0.5'></i>
+                                    <p class="text-red-500 text-xs font-semibold">This pig has been flagged. Status: <strong>{{ $pig->health_status }}</strong>. Feeding: <strong>{{ $pig->feeding_status }}</strong>.</p>
+                                </div>
+                                @php 
+                                    $recentAck = $pig->activities->where('is_critical_alert', true)
+                                                                ->whereNotNull('acknowledged_at')
+                                                                ->sortByDesc('acknowledged_at')
+                                                                ->first();
+                                @endphp
+
+                                @if($recentAck && $recentAck->admin_response)
+                                    <div class="mb-3 p-3 rounded-xl bg-green-950/20 border border-green-500/20">
+                                        <div class="flex items-start gap-2 mb-1">
+                                            <i class='bx bxs-info-circle text-green-400 text-xs mt-0.5'></i>
+                                            <p class="text-[9px] font-black uppercase text-green-400">Admin Response:</p>
+                                        </div>
+                                        <p class="text-white/80 text-xs italic">"{{ $recentAck->admin_response }}"</p>
+                                        <div class="mt-2 flex gap-2">
+                                            <span class="text-[8px] px-1.5 py-0.5 bg-green-500/10 text-green-300 rounded border border-green-500/20 font-bold uppercase">{{ $recentAck->new_health_status ?? 'Updated' }}</span>
+                                            <span class="text-[8px] px-1.5 py-0.5 bg-blue-500/10 text-blue-300 rounded border border-blue-500/20 font-bold uppercase">Feed: {{ $recentAck->new_feeding_status ?? 'Updated' }}</span>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if($pendingAlert)
+                                    <div class="mb-3 p-3 rounded-xl bg-red-950/20 border border-red-500/20">
+                                        <p class="text-[9px] font-black uppercase text-red-400 mb-1">Last Sent to Admin:</p>
+                                        <p class="text-white/60 text-xs italic">"{{ $pendingAlert->details }}"</p>
+                                        <p class="text-[9px] text-red-500/60 mt-2 font-bold uppercase">Reported {{ $pendingAlert->created_at->diffForHumans() }}</p>
+                                    </div>
+                                    <button type="button" disabled
+                                        class="w-full flex items-center justify-center gap-2 bg-red-600/20 text-white/30 py-3 rounded-xl border border-red-900/30 font-black text-xs uppercase tracking-widest cursor-not-allowed">
+                                        <i class='bx bxs-time text-base'></i> Alert Pending Update
+                                    </button>
+                                @else
+                                    <button type="button" 
+                                        onclick="event.stopPropagation(); togglePig('{{ $pig->id }}')"
+                                        class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl transition-all border border-white/10">
+                                        <i id="pig-chevron-{{ $pig->id }}" class='bx bx-history text-blue-400'></i>
+                                        <span class="text-white font-bold text-xs uppercase">History</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pig Detail / History (Collapsible) -->
+                        <div id="pig-{{ $pig->id }}" class="hidden px-5 pb-5 animate-slide-down">
+                            <div class="space-y-3 pt-3 border-t border-white/5">
+                                <p class="text-[9px] font-black uppercase text-blue-400 tracking-widest pl-1 mb-2">Pig Lifecycle & History</p>
+                                
+                                @forelse($pig->activities->sortByDesc('created_at')->take(5) as $activity)
+                                    <div class="p-3 rounded-2xl bg-white/5 border border-white/10">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div class="flex items-center gap-2">
+                                                <i class='bx {{ $activity->type === "Medical" ? "bx-plus-medical text-red-400" : "bx-check-circle text-green-400" }} text-xs'></i>
+                                                <span class="text-white font-bold text-[10px] uppercase">{{ $activity->action }}</span>
+                                            </div>
+                                            <span class="text-white/30 text-[8px]">{{ $activity->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="text-white/60 text-xs italic">"{{ $activity->details }}"</p>
+                                        
+                                        @if($activity->admin_response)
+                                            <div class="mt-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20">
+                                                <p class="text-[8px] font-black text-green-400 uppercase mb-1">Admin Response</p>
+                                                <p class="text-white/80 text-[10px]">{{ $activity->admin_response }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @empty
+                                    <p class="text-white/20 text-[10px] italic py-2">No recent activities found.</p>
+                                @endforelse
+                                
+                                <div class="p-4 rounded-2xl bg-white/5 border border-white/10 mt-4">
+                                    <button type="button"
+                                        onclick="event.stopPropagation(); openCareAlertModal('{{ $pig->id }}', '{{ $pig->tag }}')"
+                                        class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white py-3 rounded-xl border border-red-700 transition font-black text-xs uppercase tracking-widest shadow-[0_4px_15px_rgba(220,38,38,0.4)] hover:shadow-[0_6px_20px_rgba(220,38,38,0.6)]">
+                                        <i class='bx bxs-bell-ring text-base'></i> 🚨 Alert Admin &amp; Log Care
+                                    </button>
+                                @endif
                             </div>
                             @endif
                         </div>
@@ -191,7 +265,7 @@
                     @endforeach
 
                     <!-- Additional logs from localStorage for this pen -->
-                    <div id="pen-local-logs-{{ $pen['id'] }}" class="space-y-2 mt-2"></div>
+                    <div id="pen-local-logs-{{ $pen->id }}" class="space-y-2 mt-2"></div>
                 </div>
             </div>
         </div>
@@ -238,6 +312,7 @@
     @endif
 
 </div>
+</div>
 
 <!-- ===== REPORT PREVIEW MODAL ===== -->
 <div id="reportModal" class="fixed inset-0 z-[220] hidden bg-black/80 backdrop-blur-md flex items-start justify-center p-4 overflow-y-auto">
@@ -271,6 +346,62 @@
                 Go Back & Edit
             </button>
         </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Alert & Care Modal -->
+<div id="careAlertModal" class="fixed inset-0 z-[230] hidden bg-black/80 backdrop-blur-md items-center justify-center p-4 overflow-y-auto">
+    <div class="w-full max-w-lg bg-[#0a0f0b] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden my-auto" onclick="event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-black text-white flex items-center gap-2"><i class='bx bxs-shield-x text-red-400'></i> Care & Alert Log</h2>
+                <p class="text-white/40 text-xs mt-0.5">Pig #<span id="carePigTag" class="text-red-300 font-bold"></span></p>
+            </div>
+            <button onclick="closeCareModal()" class="w-10 h-10 rounded-xl bg-white/5 text-white/50 hover:bg-white/10 transition flex items-center justify-center"><i class='bx bx-x text-xl'></i></button>
+        </div>
+
+        <!-- Section 1: Assigned Tasks for this pig -->
+        <div class="p-5 border-b border-white/10">
+            <p class="text-[10px] font-black uppercase tracking-widest text-white/40 mb-3">Assigned Tasks for This Pig</p>
+            <div id="pigTaskList" class="space-y-2 max-h-36 overflow-y-auto pr-1">
+                <p id="pigTaskEmpty" class="text-white/30 text-xs italic">No pending tasks assigned to you for this pig.</p>
+            </div>
+        </div>
+
+        <!-- Section 2: Status & Care Log -->
+        <div class="p-5 border-b border-white/10">
+            <input type="hidden" id="carePigId">
+            <p class="text-[10px] font-black uppercase tracking-widest text-white/40 mb-3">Current Status</p>
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <button type="button" id="statusActionTaken" onclick="selectStatus('action_taken')"
+                    class="status-btn flex flex-col items-center gap-2 py-4 px-3 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-green-500 transition">
+                    <i class='bx bxs-check-shield text-3xl text-green-400'></i>
+                    <span class="font-black text-sm text-white">Action Taken</span>
+                    <span class="text-white/40 text-[10px] text-center">Care already given, logging for records</span>
+                </button>
+                <button type="button" id="statusInDanger" onclick="selectStatus('in_danger')"
+                    class="status-btn flex flex-col items-center gap-2 py-4 px-3 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-red-500 transition">
+                    <i class='bx bxs-error text-3xl text-red-400'></i>
+                    <span class="font-black text-sm text-white">Health In Danger</span>
+                    <span class="text-white/40 text-[10px] text-center">Critical — alert admin immediately</span>
+                </button>
+            </div>
+
+            <label class="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Details / Care Provided</label>
+            <textarea id="careDetails" rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-red-500 transition resize-none" placeholder="Describe symptoms, medication given, or observations..."></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="p-5 flex gap-3">
+            <button type="button" onclick="closeCareModal()" class="flex-1 py-3 rounded-xl bg-white/5 text-white/50 font-bold hover:bg-white/10 transition">Cancel</button>
+            <button type="button" onclick="submitCareAlert()" id="sendAlertBtn"
+                class="flex-[2] py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black transition shadow-[0_4px_15px_rgba(220,38,38,0.4)] disabled:opacity-50">
+                Submit
+            </button>
+        </div>
     </div>
 </div>
 
@@ -286,6 +417,133 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // ---- Pig Task Data (from server) ----
+    const pigTaskData = {};
+    @foreach($pens as $pen)
+        @foreach($pen->pigs as $pig)
+        pigTaskData['{{ $pig->id }}'] = [
+            @foreach($pig->tasks as $task)
+            { id: {{ $task->id }}, title: {!! json_encode($task->title) !!}, due: {!! json_encode($task->due_date ? $task->due_date->format('M d') : 'No due date') !!}, status: {!! json_encode($task->status) !!} },
+            @endforeach
+        ];
+        @endforeach
+    @endforeach
+
+    let selectedStatus = null;
+
+    // ---- Care Alert Modal ----
+    function openCareAlertModal(pigId, pigTag) {
+        selectedStatus = null;
+        document.getElementById('carePigId').value = pigId;
+        document.getElementById('carePigTag').innerText = pigTag;
+        document.getElementById('careDetails').value = '';
+        // Reset status buttons
+        document.querySelectorAll('.status-btn').forEach(b => {
+            b.classList.remove('border-green-500','bg-green-500/10','border-red-500','bg-red-500/10');
+            b.classList.add('border-white/10','bg-white/5');
+        });
+        // Populate tasks
+        const list = document.getElementById('pigTaskList');
+        const empty = document.getElementById('pigTaskEmpty');
+        const tasks = pigTaskData[pigId] || [];
+        list.querySelectorAll('.task-item').forEach(el => el.remove());
+        if(tasks.length > 0) {
+            empty.classList.add('hidden');
+            tasks.forEach(t => {
+                list.insertAdjacentHTML('beforeend', `
+                <div class="task-item flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+                    <i class='bx bx-task text-blue-400 text-lg shrink-0 mt-0.5'></i>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white text-xs font-bold truncate">${t.title}</p>
+                        <p class="text-white/40 text-[10px]">${t.status} · Due: ${t.due}</p>
+                    </div>
+                </div>`);
+            });
+        } else {
+            empty.classList.remove('hidden');
+        }
+        const modal = document.getElementById('careAlertModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function selectStatus(status) {
+        selectedStatus = status;
+        const btnAction = document.getElementById('statusActionTaken');
+        const btnDanger = document.getElementById('statusInDanger');
+        // Reset both
+        [btnAction, btnDanger].forEach(b => {
+            b.classList.remove('border-green-500','bg-green-500/10','border-red-500','bg-red-500/10');
+            b.classList.add('border-white/10','bg-white/5');
+        });
+        if(status === 'action_taken') {
+            btnAction.classList.remove('border-white/10','bg-white/5');
+            btnAction.classList.add('border-green-500','bg-green-500/10');
+            document.getElementById('sendAlertBtn').textContent = 'Log Care Record';
+            document.getElementById('sendAlertBtn').className = document.getElementById('sendAlertBtn').className
+                .replace('bg-red-600 hover:bg-red-700','bg-green-600 hover:bg-green-700');
+        } else {
+            btnDanger.classList.remove('border-white/10','bg-white/5');
+            btnDanger.classList.add('border-red-500','bg-red-500/10');
+            document.getElementById('sendAlertBtn').textContent = '🚨 Send Critical Alert to Admin';
+            document.getElementById('sendAlertBtn').className = document.getElementById('sendAlertBtn').className
+                .replace('bg-green-600 hover:bg-green-700','bg-red-600 hover:bg-red-700');
+        }
+    }
+
+    function closeCareModal() {
+        const modal = document.getElementById('careAlertModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    async function submitCareAlert() {
+        const pigId   = document.getElementById('carePigId').value;
+        const details = document.getElementById('careDetails').value.trim();
+
+        if(!selectedStatus) {
+            Swal.fire({ title: 'Select Status', text: 'Please select either "Action Taken" or "Health In Danger".', icon: 'warning', background: '#0a0f0b', color: '#fff', confirmButtonColor: '#ef4444' });
+            return;
+        }
+        if(!details) {
+            Swal.fire({ title: 'Add Details', text: 'Please describe the care provided or the current situation.', icon: 'warning', background: '#0a0f0b', color: '#fff', confirmButtonColor: '#ef4444' });
+            return;
+        }
+
+        const isAlert  = selectedStatus === 'in_danger';
+        const action   = isAlert ? '🚨 CRITICAL ALERT — Health In Danger' : '✅ Action Taken — Immediate Care Administered';
+        const logType  = 'Medical';
+        const btn = document.getElementById('sendAlertBtn');
+
+        try {
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            const res = await fetch(`/worker/pigs/${pigId}/log-activity`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                body: JSON.stringify({ type: logType, action, details, is_critical_alert: isAlert })
+            });
+
+            if(!res.ok) throw new Error();
+
+            closeCareModal();
+            Swal.fire({
+                title: isAlert ? '🚨 Admin Alerted!' : '✅ Care Logged!',
+                text: isAlert
+                    ? 'Admin has received a critical alert. The care details are now permanently logged.'
+                    : 'Care record has been saved to the pig\'s activity history.',
+                icon: 'success',
+                background: '#0a0f0b', color: '#fff', confirmButtonColor: '#22c55e'
+            }).then(() => {
+                location.reload(); // Refresh to show "Waiting for update" badge
+            });
+        } catch (e) {
+            Swal.fire({ title: 'Error', text: 'Could not submit. Please try again.', icon: 'error', background: '#0a0f0b', color: '#fff', confirmButtonColor: '#ef4444' });
+        } finally {
+            btn.disabled = false;
+        }
+    }
     // ---- Pen Accordion ----
     function togglePen(id) {
         const body    = document.getElementById(`pen-body-${id}`);
@@ -392,9 +650,16 @@
         const weekEnd   = '{{ \Carbon\Carbon::parse($thisWeek)->endOfWeek()->format("M d, Y") }}';
 
         const pensData = [
-            { name: 'Pen 1',  type: 'Piglets',   count: 24, avgKg: 12, sick: 0, progress: 30 },
-            { name: 'Pen 5',  type: 'Fattening', count: 48, avgKg: 65, sick: 2, progress: 59 },
-            { name: 'Pen 12', type: 'Breeding',  count: 12, avgKg: 90, sick: 0, progress: 82 },
+            @foreach($pens as $p)
+            {
+                name: '{{ $p->name }}',
+                type: '{{ $p->section }}',
+                count: {{ $p->pigs->count() }},
+                avgKg: {{ round($p->pigs->avg('weight') ?? 0) }},
+                sick: {{ $p->pigs->where('health_status', 'Sick')->count() }},
+                progress: {{ $p->progress }}
+            },
+            @endforeach
         ];
 
         const reportContent = document.getElementById('reportContent');

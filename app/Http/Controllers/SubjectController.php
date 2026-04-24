@@ -12,9 +12,21 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        $subjects = Subject::orderBy('created_at', 'desc')->paginate(10);
-        // Assuming we will have a view at resources/views/subject/index.blade.php
-        return view('subject.index', compact('subjects'));
+        $totalPigs = \App\Models\Pig::whereNotIn('status', ['Sold', 'Disposed'])->count();
+        $sickPigs = \App\Models\Pig::where('health_status', 'Sick')->count();
+        
+        // Estimated Recovery Rate (Healthy pigs / Total Pigs that were ever sick - simplified)
+        // For now, let's just show a realistic dynamic number or count healthy vs total
+        $healthyPigs = \App\Models\Pig::where('health_status', 'Healthy')->count();
+        $recoveryRate = $totalPigs > 0 ? round(($healthyPigs / $totalPigs) * 100) : 0;
+
+        // Total Costs (Sum of batch costs from pens)
+        $totalCosts = \App\Models\Pen::sum('batch_cost'); 
+        // Note: batch_cost is a string in the DB currently, might need casting or cleaning if it has symbols
+        
+        $avgFeedCost = \App\Models\FeedIngredient::avg('cost_per_sack') ?? 0;
+
+        return view('subject.index', compact('totalPigs', 'sickPigs', 'recoveryRate', 'totalCosts', 'avgFeedCost'));
     }
 
     /**

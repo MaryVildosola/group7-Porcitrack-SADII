@@ -1,24 +1,46 @@
 @extends('layouts.worker')
 
 @section('content')
+<style>
+    .worker-dash.light-mode           { background: #f8fafc !important; }
+    .light-mode .text-white           { color: #1e293b !important; }
+    .light-mode .text-white\/30,
+    .light-mode .text-white\/40,
+    .light-mode .text-white\/50,
+    .light-mode .text-white\/60,
+    .light-mode .text-white\/70,
+    .light-mode .text-white\/80       { color: #64748b !important; }
+    .light-mode .bg-white\/5,
+    .light-mode .bg-white\/10,
+    .light-mode .bg-white\/15         { background-color: rgba(0,0,0,0.05) !important; }
+    .light-mode .border-white\/10,
+    .light-mode .border-white\/5      { border-color: rgba(0,0,0,0.1) !important; }
+    .light-mode .hover\:bg-white\/10:hover,
+    .light-mode .hover\:bg-white\/15:hover { background-color: rgba(0,0,0,0.07) !important; }
+    .light-mode .backdrop-blur-xl,
+    .light-mode .backdrop-blur-3xl    { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; backdrop-filter: blur(10px); }
+</style>
+<div class="worker-dash min-h-screen bg-gradient-to-br from-[#0a180e] via-[#0d2214] to-[#0a180e] transition-colors duration-500">
     <div class="p-6 md:p-12 max-w-full">
 
         <!-- Header Section -->
-        <div class="mb-8 md:mb-10 w-full md:w-2/3 lg:w-1/2">
-            <p class="text-sm md:text-base font-medium text-white/70 mb-1 md:mb-2">Your Daily Goals</p>
-            <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight">Farm Tasks</h1>
+        <div class="mb-8 md:mb-10 flex justify-between items-center w-full">
+            <div>
+                <p class="text-sm md:text-base font-medium text-white/70 mb-1 md:mb-2">Your Daily Goals</p>
+                <h1 class="text-3xl md:text-5xl font-bold text-white tracking-tight">Farm Tasks</h1>
+            </div>
         </div>
 
         <!-- Task Summary -->
         <div class="flex flex-row gap-4 mb-8 overflow-x-auto pb-2 no-scrollbar">
-            <div class="glass-panel min-w-[140px] rounded-2xl p-4 shadow-sm border border-white/10 bg-white/5">
+            <div class="backdrop-blur-xl min-w-[140px] rounded-2xl p-4 shadow-sm border border-white/10 bg-white/5">
                 <p class="text-[9px] font-bold text-white/40 mb-1 uppercase tracking-[0.2em]">Pending</p>
                 <div class="flex items-end gap-2">
                     <h3 class="text-3xl font-black text-white leading-none">{{ $tasks->count() }}</h3>
                     <span class="text-[9px] text-white/40 mb-1 font-bold">Tasks</span>
                 </div>
             </div>
-            <div class="glass-panel min-w-[140px] rounded-2xl p-4 shadow-sm border border-white/10 bg-white/5">
+            <div class="backdrop-blur-xl min-w-[140px] rounded-2xl p-4 shadow-sm border border-white/10 bg-white/5">
                 <p class="text-[9px] font-bold text-white/40 mb-1 uppercase tracking-[0.2em]">Recently</p>
                 <div class="flex items-end gap-2">
                     <h3 class="text-3xl font-black text-emerald-400 leading-none">{{ $completedTasks->count() }}</h3>
@@ -49,8 +71,8 @@
         <!-- Task Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             @forelse($tasks as $task)
-                <div onclick="openTaskDetail('{{ $task->title }}', '{{ $task->description }}', '{{ route('worker.tasks.complete', $task) }}')" 
-                     class="glass-panel rounded-2xl p-5 hover:bg-white/10 transition cursor-pointer group shadow-sm border border-white/10 active:scale-[0.98]">
+                <div onclick="openTaskDetail('{{ addslashes($task->title) }}', '{{ addslashes($task->description) }}', '{{ route('worker.tasks.complete', $task) }}')" 
+                     class="backdrop-blur-xl bg-white/5 rounded-2xl p-5 hover:bg-white/10 transition cursor-pointer group shadow-sm border border-white/10 active:scale-[0.98]">
                     <div class="flex justify-between items-start mb-3">
                         <div>
                             <h3 class="text-lg font-bold text-white mb-1">{{ $task->title }}</h3>
@@ -88,7 +110,7 @@
         <h2 class="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-4">Recently Completed</h2>
         <div class="space-y-3 mb-8">
             @foreach($completedTasks as $completed)
-            <div class="glass-panel rounded-3xl p-5 md:p-6 border-l-4 border-green-500 hover:bg-white/10 transition cursor-pointer shadow-lg group">
+            <div class="backdrop-blur-xl bg-white/5 rounded-3xl p-5 md:p-6 border-l-4 border-green-500 hover:bg-white/10 transition cursor-pointer shadow-lg group">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
@@ -109,7 +131,7 @@
 
     <!-- Create Task Modal -->
     <div id="taskModal" class="fixed inset-0 z-[200] hidden bg-[#0a180e]/90 backdrop-blur-2xl flex items-center justify-center p-4 overflow-y-auto">
-        <div class="glass-panel w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 animate-fade-in my-auto">
+        <div class="backdrop-blur-3xl bg-[#112a18]/90 w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 animate-fade-in my-auto">
             <div class="p-8 pb-4 flex justify-between items-center border-b border-white/5">
                 <div>
                     <h2 class="text-2xl font-black text-white">Create New Task</h2>
@@ -147,7 +169,7 @@
 
     <!-- Task Detail & Checklist Modal -->
     <div id="taskDetailModal" class="fixed inset-0 z-[210] hidden bg-[#0a180e]/95 backdrop-blur-3xl flex items-center justify-center p-4 overflow-y-auto">
-        <div class="glass-panel w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 animate-fade-in my-auto">
+        <div class="backdrop-blur-3xl bg-[#112a18]/90 w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 animate-fade-in my-auto">
             <!-- Modal Header -->
             <div class="p-8 pb-6 border-b border-white/5 relative">
                 <div class="flex justify-between items-start mb-4">
@@ -277,6 +299,16 @@
         function actionTask(name, action) {
             Swal.fire({ title: 'Task Update', text: 'Task "' + name + '" ' + action + '.', icon: 'success', background: '#0a180e', color: '#fff', confirmButtonColor: '#22c55e' });
         }
+
+        // --- Page specific theme listener ---
+        window.applyPageTheme = function(theme) {
+            const dash = document.querySelector('.worker-dash');
+            if(theme === 'light') {
+                dash.classList.add('light-mode');
+            } else {
+                dash.classList.remove('light-mode');
+            }
+        };
 
         // Sync Logic
         function updateSyncStatus() {

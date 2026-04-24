@@ -1,6 +1,24 @@
 @extends('layouts.worker')
 
 @section('content')
+<style>
+    .worker-dash .text-white          { color: #1e293b !important; }
+    .worker-dash .text-white\/30,
+    .worker-dash .text-white\/40,
+    .worker-dash .text-white\/50,
+    .worker-dash .text-white\/60,
+    .worker-dash .text-white\/70,
+    .worker-dash .text-white\/80      { color: #64748b !important; }
+    .worker-dash .bg-white\/5,
+    .worker-dash .bg-white\/10,
+    .worker-dash .bg-white\/15        { background-color: rgba(0,0,0,0.05) !important; }
+    .worker-dash .border-white\/10,
+    .worker-dash .border-white\/5     { border-color: rgba(0,0,0,0.1) !important; }
+    .worker-dash .hover\:bg-white\/10:hover,
+    .worker-dash .hover\:bg-white\/20:hover { background-color: rgba(0,0,0,0.07) !important; }
+    .worker-dash .glass-panel         { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; }
+</style>
+<div class="worker-dash min-h-screen bg-[#f8fafc]">
     <div class="p-6 md:p-12 max-w-full">
 
         <!-- Header Section -->

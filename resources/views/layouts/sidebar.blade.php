@@ -22,6 +22,10 @@
                 <a href="{{ route('dashboard') }}" class="side-menu__item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm2-8h4v6H5V5zm8 16h8V11h-8v10zm2-8h4v6h-4v-6zM13 3v6h8V3h-8zm6 4h-4V5h4v2zM3 21h8v-6H3v6zm2-4h4v2H5v-2z" /></svg>
                     <span class="side-menu__label">Dashboard</span>
+                    @php $alertCount = \App\Models\PigActivity::unacknowledgedAlerts()->count(); @endphp
+                    @if($alertCount > 0)
+                        <span class="badge bg-red-500 text-white rounded-full px-2 py-1 text-[10px] ml-auto animate-pulse">{{ $alertCount }}</span>
+                    @endif
                 </a>
             </li>
 
@@ -30,11 +34,19 @@
                 <a href="javascript:void(0);" class="side-menu__item">
                     <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor"/></svg>
                     <span class="side-menu__label">Operations</span>
+                    @if($alertCount > 0)
+                        <span class="w-2 h-2 bg-red-500 rounded-full ml-1 animate-ping"></span>
+                    @endif
                     <i class="fe fe-chevron-right side-menu__angle"></i>
                 </a>
                 <ul class="slide-menu child1">
                     <li class="slide {{ request()->routeIs('pens.*') ? 'active' : '' }}">
-                        <a href="{{ route('pens.index') }}" class="side-menu__item">Pens & Pigs</a>
+                        <a href="{{ route('pens.index') }}" class="side-menu__item">
+                            Pens & Pigs
+                            @if($alertCount > 0)
+                                <span class="badge bg-red-500/20 text-red-300 text-[9px] px-1.5 py-0.5 rounded ml-auto">{{ $alertCount }} alert{{ $alertCount > 1 ? 's' : '' }}</span>
+                            @endif
+                        </a>
                     </li>
                     <li class="slide {{ request()->routeIs('admin.tasks.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.tasks.index') }}" class="side-menu__item">Farmer Tasks</a>
