@@ -12,7 +12,7 @@
         </a>
 
         <!-- THE ANIMAL RECORD CARD -->
-        <div class="bg-white rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden">
+        <div id="pig-record-card" class="bg-white rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden">
             
             <!-- Card Header: Identity -->
             <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-8 md:p-10 relative overflow-hidden">
