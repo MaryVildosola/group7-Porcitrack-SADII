@@ -3,717 +3,645 @@
 
 @section('contents')
 <style>
-/* Custom Styles for Pens & Pigs Dashboard */
-.pens-pigs-container {
-    padding: 16px 32px 32px 32px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-.page-header {
-    margin-bottom: 24px;
-}
-.page-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 4px;
-}
-.page-subtitle {
-    color: #6b7280;
-    font-size: 0.875rem;
+/* Premium Soft UI Design Tokens */
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --accent-green: #22c55e;
+    --deep-slate: #0f172a;
+    --soft-gray: #f8fafc;
 }
 
-/* Grid Layout */
-.pens-grid {
+.report-container {
+    padding: 24px 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.report-grid {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
     gap: 32px;
+    align-items: start;
 }
 
-/* Pen Card List */
-.pens-list {
+.pen-list-wrapper {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
-.pen-card {
+
+.pen-accordion {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pen-accordion.active-row {
+    border-color: var(--accent-green);
+    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.05);
+}
+
+.pen-header-row {
+    padding: 20px 24px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    background: #fff;
+    transition: background 0.2s;
+}
+
+.pen-header-row:hover {
+    background: #f8fafc;
+}
+
+.pen-identity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pen-icon-circle {
+    width: 44px;
+    height: 44px;
+    background: #f1f5f9;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #64748b;
+    transition: all 0.3s;
+}
+
+.pen-accordion.active-row .pen-icon-circle {
+    background: #f0fdf4;
+    color: var(--accent-green);
+}
+
+.pen-name-text {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--deep-slate);
+}
+
+.pen-section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.mini-pigs-summary {
+    display: flex;
+    gap: 24px;
+    margin-right: 20px;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-label { font-size: 0.55rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+.summary-val { font-size: 0.85rem; font-weight: 700; color: #475569; }
+.summary-val.danger { color: #ef4444; }
+
+.pig-accordion-content {
+    display: none;
+    background: #fcfdfe;
+    border-top: 1px solid #f1f5f9;
+    padding: 20px 24px;
+}
+
+.pen-accordion.expanded .pig-accordion-content {
+    display: block;
+}
+
+.pig-list-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pig-row-item {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     cursor: pointer;
     transition: all 0.2s;
 }
-.pen-card:hover {
-    border-color: #22c55e;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-.pen-card.active {
-    border-color: #22c55e;
-    box-shadow: 0 0 0 1px #22c55e;
+
+.pig-row-item:hover {
+    border-color: var(--accent-green);
+    background: #f0fdf4;
+    transform: translateX(4px);
 }
 
-/* Badges */
-.badge-fair { background: #fef9c3; color: #a16207; padding: 2px 8px; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; }
-.badge-excellent { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; }
-.badge-poor { background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; }
-.badge-good { background: #f0fdf4; color: #16a34a; padding: 2px 8px; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; }
+.status-indicator { width: 10px; height: 10px; border-radius: 50%; }
+.status-indicator.healthy { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+.status-indicator.sick { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+.status-indicator.warning { background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
 
-.pen-info { display: flex; flex-direction: column; gap: 4px; }
-.pen-name-row { display: flex; align-items: center; gap: 8px; }
-.pen-name { font-weight: 700; color: #111827; }
-
-.pen-stats-row {
-    display: flex;
-    gap: 24px;
-    margin-top: 12px;
-}
-.stat-item { display: flex; flex-direction: column; }
-.stat-label { color: #9ca3af; font-size: 0.75rem; }
-.stat-value { font-weight: 600; color: #4b5563; font-size: 0.85rem; }
-.stat-value.danger { color: #ef4444; }
-
-.pen-chevron { color: #d1d5db; }
-
-/* Details Panel */
 .details-panel {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 32px;
     padding: 32px;
-    height: fit-content;
     position: sticky;
-    top: 32px;
+    top: 100px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.02);
 }
-.details-header { margin-bottom: 24px; }
-.details-title { font-size: 1.25rem; font-weight: 700; color: #111827; mb-1; }
-.details-section { margin-top: 24px; }
-.section-label { font-size: 0.85rem; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 
-/* Health Blocks */
-.health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.health-card { border-radius: 12px; padding: 16px; }
-.health-card.healthy { background: #f0fdf4; }
-.health-card.sick { background: #fef2f2; }
-.health-label { font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; }
-.health-value { font-size: 1.25rem; font-weight: 700; }
-.health-card.healthy .health-value { color: #16a34a; }
-.health-card.sick .health-value { color: #dc2626; }
+.panel-section { margin-top: 28px; }
+.section-hdr { font-size: 0.7rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 
-/* Progress Bar */
-.progress-container { margin-top: 8px; }
-.progress-bar-bg { background: #f3f4f6; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
-.progress-bar-fill { background: #22c55e; height: 100%; border-radius: 4px; }
-.progress-meta { display: flex; justify-content: center; font-size: 0.75rem; color: #6b7280; margin-top: 8px; }
+.health-status-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.h-card { padding: 20px; border-radius: 20px; border: 1px solid transparent; }
+.h-card.h-green { background: #f0fdf4; border-color: #dcfce7; }
+.h-card.h-red { background: #fef2f2; border-color: #fee2e2; }
 
-/* Financial Table */
-.financial-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.875rem; }
-.financial-row:last-child { border-bottom: none; }
-.financial-label { color: #6b7280; }
-.financial-value { font-weight: 600; color: #111827; }
-.financial-value.success { color: #16a34a; }
+.h-val { font-size: 1.5rem; font-weight: 900; margin-top: 4px; }
+.h-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
 
-.btn-report {
-    width: 100%;
-    background: #22c55e;
-    color: white;
-    border: none;
-    padding: 14px;
-    border-radius: 12px;
-    font-weight: 600;
-    margin-top: 32px;
-    cursor: pointer;
-    transition: background 0.2s;
+.btn-action-edit:hover { color: var(--accent-green); border-color: var(--accent-green); background: #f0fdf4; }
+.btn-action-delete:hover { color: #ef4444; border-color: #fee2e2; background: #fef2f2; }
+
+.progress-bar-bg { background: #f1f5f9; height: 10px; border-radius: 5px; margin: 12px 0; overflow: hidden; }
+.progress-bar-fill { background: var(--accent-green); height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+
+.finance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.finance-item { background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #f1f5f9; }
+.fin-label { font-size: 0.6rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.fin-val { font-size: 0.9rem; font-weight: 800; color: #0f172a; }
+
+.custom-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center; z-index: 1000;
 }
-.btn-report:hover { background: #16a34a; }
-.btn-action-edit:hover { border-color: #22c55e !important; color: #16a34a !important; background: #f0fdf4 !important; }
-.btn-action-delete:hover { border-color: #ef4444 !important; background: #fee2e2 !important; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1); }
+.custom-modal {
+    background: #fff; width: 90%; max-width: 550px; border-radius: 32px;
+    padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+    position: relative;
+}
+.modal-close { position: absolute; top: 24px; right: 24px; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; }
+.form-input { width: 100%; padding: 14px 18px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 0.9rem; transition: all 0.2s; }
+.form-input:focus { border-color: var(--accent-green); outline: none; background: #fcfdfe; }
+
 </style>
 
-<div class="pens-pigs-container">
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+<div class="report-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
         <div>
-            <h1 class="page-title">Pens & Pigs Report</h1>
-            <p class="page-subtitle">Track batch performance and profitability</p>
+            <h1 style="font-size: 2rem; font-weight: 900; color: var(--deep-slate); margin: 0; letter-spacing: -0.04em;">Pens & Pigs Report</h1>
+            <p style="color: #64748b; font-weight: 500; margin-top: 4px;">Detailed batch summary and animal health oversight</p>
         </div>
-        <button class="btn-add-pen" style="background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
-            <i class='bx bx-plus'></i> Add Pen
-        </button>
+        <div style="display: flex; gap: 12px;">
+            <button onclick="openModal('addPenModal')" style="background: var(--deep-slate); color: white; border: none; padding: 14px 28px; border-radius: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                <i class='bx bx-plus-circle' style="font-size: 1.2rem;"></i> New Pen
+            </button>
+        </div>
     </div>
 
-    <div class="pens-grid">
-        <!-- List side -->
-        <div class="pens-list">
+    <div class="report-grid">
+        <div class="pen-list-wrapper" id="pens-list-container">
             @forelse($pens as $pen)
-            <div class="pen-card {{ $loop->first ? 'active' : '' }}" data-id="{{ $pen->id }}">
-                <div class="pen-info">
-                    <div class="pen-name-row">
-                        <span class="pen-name">{{ $pen->name }}</span>
-                        <span class="badge-{{ strtolower($pen->status) }}">{{ $pen->status }}</span>
+            <div class="pen-accordion {{ $loop->first ? 'active-row' : '' }}" data-id="{{ $pen->id }}">
+                <div class="pen-header-row" onclick='handlePenClick(this, {!! json_encode($pen) !!})'>
+                    <div class="pen-identity">
+                        <div class="pen-icon-circle"><i class='bx bx-grid-alt'></i></div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="pen-name-text">{{ $pen->name }}</span>
+                            <span class="pen-section-label">{{ $pen->section ?: 'Batch Unassigned' }}</span>
+                        </div>
                     </div>
-                    <div class="pen-stats-row">
-                        <div class="stat-item">
-                            <span class="stat-label">Total Pigs</span>
-                            <span class="stat-value">{{ $pen->healthy_pigs + $pen->sick_pigs }}</span>
+                    <div style="display: flex; align-items: center;">
+                        <div class="mini-pigs-summary">
+                            <div class="summary-item"><span class="summary-label">Total</span><span class="summary-val">{{ $pen->pigs->count() }}</span></div>
+                            <div class="summary-item"><span class="summary-label">Sick</span><span class="summary-val {{ $pen->pigs->where('health_status', 'Sick')->count() > 0 ? 'danger' : '' }}">{{ $pen->pigs->where('health_status', 'Sick')->count() }}</span></div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Sick Pigs</span>
-                            <span class="stat-value {{ $pen->sick_pigs > 0 ? 'danger' : '' }}">{{ $pen->sick_pigs }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Avg Weight</span>
-                            <span class="stat-value">{{ $pen->avg_weight }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Progress</span>
-                            <span class="stat-value">{{ $pen->progress }}%</span>
-                        </div>
+                        <button onclick="toggleAccordion(event, {{ $pen->id }})" style="background: #f8fafc; border: none; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <i class='bx bx-chevron-down' style="font-size: 1.25rem; color: #94a3b8;"></i>
+                        </button>
                     </div>
                 </div>
-                <i class="bx bx-chevron-right pen-chevron"></i>
+                <div class="pig-accordion-content" id="pig-list-{{ $pen->id }}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <span style="font-size: 0.7rem; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 0.1em;">Individual Pigs</span>
+                        <button onclick="openAddPigModal({{ $pen->id }})" style="background: #f0fdf4; color: #16a34a; border: none; padding: 6px 14px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; cursor: pointer;">+ Register Animal</button>
+                    </div>
+                    <div class="pig-list-vertical">
+                        @foreach($pen->pigs as $pig)
+                        <div class="pig-row-item" onclick="viewPig({{ $pig->id }})">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div class="status-indicator {{ strtolower($pig->health_status === 'Sick' ? 'sick' : ($pig->health_status === 'Warning' ? 'warning' : 'healthy')) }}"></div>
+                                <span style="font-weight: 800; font-size: 0.9rem; color: #1e293b;">#{{ $pig->tag }}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div style="text-align: right;">
+                                    <div style="font-size: 0.6rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Weight</div>
+                                    <div style="font-size: 0.8rem; font-weight: 700; color: #475569;">{{ $pig->weight ?: 0 }} kg</div>
+                                </div>
+                                <i class='bx bx-chevron-right' style="color: #cbd5e1;"></i>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
             @empty
-            <div class="p-8 text-center text-gray-500">
-                No pens found. Click "Add Pen" to create one.
-            </div>
+            <div style="padding: 40px; text-align: center; color: #94a3b8;">No pens found.</div>
             @endforelse
         </div>
 
-        <!-- Details Column -->
-        <div class="details-column">
-            <div class="details-panel">
+        <div class="summary-column">
+            <div class="details-panel" id="pen-summary-panel">
                 @if($pens->isNotEmpty())
                     @php $firstPen = $pens->first(); @endphp
-                    <div class="details-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                         <div>
-                            <h2 class="details-title">{{ $firstPen->name }} Details</h2>
-                            <p class="page-subtitle">{{ $firstPen->section ?? 'Unassigned Section' }}</p>
+                            <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--deep-slate); margin: 0;" id="side-pen-name">{{ $firstPen->name }}</h2>
+                            <p style="color: #64748b; font-weight: 500; margin: 4px 0 0;" id="side-pen-section">{{ $firstPen->section ?: 'Unassigned' }}</p>
                         </div>
                         <div style="display: flex; gap: 8px;">
-                            <button onclick="editPen({{ $firstPen->id }})" class="btn-action-edit" style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; color: #4b5563; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
-                                <i class='bx bx-edit-alt' style="font-size: 1.25rem;"></i>
-                            </button>
-                            <button onclick="deletePen({{ $firstPen->id }})" class="btn-action-delete" style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #fee2e2; background: #fef2f2; color: #dc2626; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
-                                <i class='bx bx-trash' style="font-size: 1.25rem;"></i>
-                            </button>
+                            <button id="side-edit-btn" onclick="editPen({{ $firstPen->id }})" class="btn-action-edit" style="width: 38px; height: 38px; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; transition: all 0.2s;"><i class='bx bx-edit-alt'></i></button>
+                            <button id="side-del-btn" onclick="deletePen({{ $firstPen->id }})" class="btn-action-delete" style="width: 38px; height: 38px; border-radius: 10px; border: 1px solid #fee2e2; background: #fef2f2; cursor: pointer; transition: all 0.2s;"><i class='bx bx-trash'></i></button>
                         </div>
                     </div>
-
-                    <!-- Health Status -->
-                    <div class="details-section">
-                        <div class="section-label">
-                            <i class="bx bx-error-alt"></i> Health Status
-                        </div>
-                        <div class="health-grid">
-                            <div class="health-card healthy">
-                                <div class="health-label">Healthy</div>
-                                <div class="health-value">{{ $firstPen->pigs->where('health_status', 'Healthy')->count() }}</div>
+                    <div class="panel-section">
+                        <div class="section-hdr"><i class='bx bx-plus-medical'></i> Population Health</div>
+                        <div class="health-status-cards">
+                            <div class="h-card h-green">
+                                <div class="h-label" style="color: #16a34a;">Healthy</div>
+                                <div class="h-val" style="color: #15803d;" id="side-healthy-count">{{ $firstPen->pigs->where('health_status', 'Healthy')->count() }}</div>
                             </div>
-                            <div class="health-card sick">
-                                <div class="health-label">Sick</div>
-                                <div class="health-value text-red-600">{{ $firstPen->pigs->where('health_status', 'Sick')->count() }}</div>
+                            <div class="h-card h-red">
+                                <div class="h-label" style="color: #ef4444;">Sick / Alert</div>
+                                <div class="h-val" style="color: #b91c1c;" id="side-sick-count">{{ $firstPen->pigs->where('health_status', 'Sick')->count() }}</div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Weight Progress -->
-                    <div class="details-section">
-                        <div class="section-label">
-                            <i class="bx bx-line-chart"></i> Weight Progress
+                    <div class="panel-section">
+                        <div class="section-hdr"><i class='bx bx-dollar-circle'></i> Financial Performance</div>
+                        <div class="finance-grid">
+                            <div class="finance-item"><span class="fin-label">Revenue</span><span class="fin-val" id="side-revenue">₱{{ number_format($firstPen->revenue, 2) }}</span></div>
+                            <div class="finance-item"><span class="fin-label">Est. Income</span><span class="fin-val" id="side-income" style="color: {{ $firstPen->income >= 0 ? '#16a34a' : '#ef4444' }};">₱{{ number_format($firstPen->income, 2) }}</span></div>
                         </div>
-                        <div class="flex justify-between text-xs mb-2">
-                            <span class="text-gray-500">Current Average</span>
-                            <span class="font-bold">{{ $firstPen->avg_weight ?: '0 kg' }}</span>
-                        </div>
-                        <div class="flex justify-between text-xs mb-4">
-                            <span class="text-gray-500">Target Weight</span>
-                            <span class="font-bold">{{ $firstPen->target_weight ?: '0 kg' }}</span>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar-fill" style="width: {{ $firstPen->progress ?: 0 }}%;"></div>
-                            </div>
-                            <div class="progress-meta">{{ $firstPen->progress ?: 0 }}% to target</div>
+                        <div style="margin-top: 16px; background: #fcfdfe; border: 1px solid #f1f5f9; padding: 12px; border-radius: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 0.65rem; font-weight: 700; color: #94a3b8;">Batch Investment</span><span style="font-size: 0.75rem; font-weight: 800; color: #475569;" id="side-batch-cost">{{ $firstPen->batch_cost ?: '₱0' }}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="font-size: 0.65rem; font-weight: 700; color: #94a3b8;">Daily Feed Cost (Avg)</span><span style="font-size: 0.75rem; font-weight: 800; color: #475569;" id="side-feed-cons">{{ $firstPen->feed_cons ?: '0 kg' }}</span></div>
                         </div>
                     </div>
-
-                    <!-- Financial Overview -->
-                    <div class="details-section">
-                        <div class="section-label">
-                            <i class="bx bx-dollar"></i> Financial Overview
+                    <div class="panel-section">
+                        <div class="section-hdr"><i class='bx bx-line-chart'></i> Growth Progress</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #64748b;">Avg: <span style="color: #0f172a;" id="side-avg-weight">{{ $firstPen->avg_weight ?: '0 kg' }}</span></span>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #64748b;">Target: <span style="color: #0f172a;" id="side-target-weight">{{ $firstPen->target_weight ?: '0 kg' }}</span></span>
                         </div>
-                        <div class="financial-row">
-                            <span class="financial-label">Batch Cost</span>
-                            <span class="financial-value">{{ $firstPen->batch_cost ?: '₱0' }}</span>
-                        </div>
-                        <div class="financial-row">
-                            <span class="financial-label">Feed Consumption/Day</span>
-                            <span class="financial-value">{{ $firstPen->feed_cons ?: '0 kg' }}</span>
-                        </div>
-                        <div class="financial-row">
-                            <span class="financial-label">Profit Margin</span>
-                            <span class="financial-value success">{{ $firstPen->profit_margin ?: '0%' }}</span>
-                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="side-progress-fill" style="width: {{ $firstPen->progress ?: 0 }}%;"></div></div>
+                        <p style="text-align: center; font-size: 0.65rem; font-weight: 800; color: #94a3b8; margin: 0;" id="side-progress-text">{{ $firstPen->progress ?: 0 }}% of market target</p>
                     </div>
-
-                    <!-- Pigs in this Pen -->
-                    <div class="details-section">
-                        <div class="section-label">
-                            <i class="bx bxs-pig"></i> Pigs in this Pen
-                        </div>
-                        <div id="pigs-list-container" style="max-height: 250px; overflow-y: auto; border: 1px solid #f3f4f6; border-radius: 12px; padding: 8px;">
-                            @forelse($firstPen->pigs as $pig)
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #f9fafb; font-size: 0.8rem;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <i class="bx bx-purchase-tag" style="color: #22c55e;"></i>
-                                    <span class="font-bold text-gray-700">{{ $pig->tag }}</span>
-                                </div>
-                                <span class="badge-{{ $pig->health_status === 'Sick' ? 'poor' : 'good' }}">{{ $pig->health_status }}</span>
-                            </div>
-                            @empty
-                            <p class="text-xs text-center text-gray-400 py-4">No individual pigs registered.</p>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <a href="{{ route('admin.qr.index') }}" class="btn-report" style="display: block; text-align: center; text-decoration: none; background: #111827; margin-top: 16px;">Go to QR Generator</a>
-                    <button class="btn-report">Generate Full Report</button>
-                @else
-                    <div class="text-center py-20">
-                        <i class='bx bx-info-circle text-4xl text-gray-300 mb-4'></i>
-                        <p class="text-gray-500">Select a pen to view details</p>
-                    </div>
+                    <button onclick="previewReport()" class="btn-full-report" style="width: 100%; background: var(--deep-slate); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 0.9rem; margin-top: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);"><i class='bx bx-file-find' style="font-size: 1.2rem;"></i> Generate & View Report</button>
                 @endif
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- MODAL: ADD PEN -->
+<div id="addPenModal" class="custom-modal-overlay">
+  <div class="custom-modal">
+    <i class='bx bx-x modal-close' onclick="closeModal('addPenModal')"></i>
+    <h2 style="font-weight: 900; margin-bottom: 4px;">Create New Pen</h2>
+    <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 28px;">Ear tags are auto-generated from the pen name and pig count.</p>
+    <form id="add-pen-form">
+      @csrf
+      <div class="form-group">
+        <label class="form-label">Pen Identifier / Name</label>
+        <input id="pen-name-input" name="name" class="form-input" placeholder="e.g. Pen Alpha-1" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Section / Classification</label>
+        <input name="section" class="form-input" placeholder="e.g. Nursery, Fattening">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <label class="form-label">Initial Pig Count</label>
+          <input id="pen-pig-count-input" name="pig_count" type="number" min="0" max="200" class="form-input" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Batch Investment (₱)</label>
+          <input name="batch_cost" class="form-input" placeholder="0.00">
+        </div>
+      </div>
+      <!-- Live Ear Tag Preview -->
+      <div id="pen-tag-preview" style="display:none; background: #f0fdf4; border: 1.5px solid #dcfce7; border-radius: 16px; padding: 16px; margin-bottom: 20px;">
+        <div style="font-size: 0.65rem; font-weight: 900; color: #16a34a; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;">
+          <i class='bx bx-purchase-tag-alt'></i> Auto-Generated Ear Tags Preview
+        </div>
+        <div id="pen-tag-badges" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+        <p id="pen-tag-overflow" style="font-size: 0.7rem; color: #64748b; margin: 8px 0 0; display:none;"></p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <label class="form-label">Avg Start Weight (kg)</label>
+          <input name="avg_weight" class="form-input" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Weight (kg)</label>
+          <input name="target_weight" class="form-input" placeholder="0.00">
+        </div>
+      </div>
+      <button type="submit" id="pen-submit-btn" style="width: 100%; background: var(--accent-green); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; margin-top: 10px; cursor: pointer;">Register Pen</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: ADD PIG -->
+<div id="addPigModal" class="custom-modal-overlay">
+  <div class="custom-modal">
+    <i class='bx bx-x modal-close' onclick="closeModal('addPigModal')"></i>
+    <h2 style="font-weight: 900; margin-bottom: 4px;">Register Individual Animal</h2>
+    <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 28px;">Adding to <span id="add-pig-pen-name" style="font-weight: 800; color: var(--deep-slate);"></span></p>
+    <form id="add-pig-form">
+      @csrf
+      <input type="hidden" name="pen_id" id="add-pig-pen-id">
+      <input type="hidden" name="status" value="Active">
+      <div class="form-group">
+        <label class="form-label" style="display:flex; align-items:center; justify-content:space-between;">
+          <span>Ear Tag / Identifier</span>
+          <span id="pig-tag-auto-badge" style="font-size: 0.6rem; background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; padding: 2px 8px; border-radius: 20px; font-weight: 800;">Auto</span>
+        </label>
+        <div style="position: relative;">
+          <input id="pig-tag-input" name="tag" class="form-input" placeholder="Loading auto-tag..." autocomplete="off" style="padding-left: 44px;">
+          <i class='bx bx-purchase-tag-alt' style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color: #94a3b8; font-size: 1.1rem;"></i>
+        </div>
+        <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 6px;">Auto-filled from pen sequence. You can override this manually.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group">
+          <label class="form-label">Initial Weight (kg)</label>
+          <input name="weight" type="number" step="0.01" class="form-input" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Health Status</label>
+          <select name="health_status" class="form-input">
+            <option value="Healthy">Healthy</option>
+            <option value="Warning">Observation</option>
+            <option value="Sick">Sick</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Breed / Variant</label>
+        <input name="breed" class="form-input" placeholder="e.g. Large White">
+      </div>
+      <button type="submit" style="width: 100%; background: var(--accent-green); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; margin-top: 10px; cursor: pointer;">Add Animal to Pen</button>
+    </form>
+  </div>
+</div>
+<div id="reportPreviewModal" class="custom-modal-overlay"><div class="custom-modal" style="max-width: 800px;"><i class='bx bx-x modal-close' onclick="closeModal('reportPreviewModal')"></i><h2 style="font-weight: 900; margin-bottom: 24px;">Report Preview</h2><div id="report-content" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 20px; padding: 32px; max-height: 500px; overflow-y: auto;"></div><div style="display: flex; gap: 16px; margin-top: 24px;"><button onclick="closeModal('reportPreviewModal')" style="flex: 1; padding: 14px; border-radius: 14px; border: 1.5px solid #e2e8f0; background: #fff; font-weight: 700; cursor: pointer;">Cancel</button><button onclick="printReportContent()" style="flex: 2; padding: 14px; border-radius: 14px; background: var(--deep-slate); color: #fff; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><i class='bx bx-printer'></i> Confirm & Print</button></div></div></div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- CSRF Setup for AJAX ---
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+// Use a single global object to avoid pollution and ease debugging
+window.PT_APP = {
+    workers: {!! json_encode($workers) !!},
+    currentPen: {!! json_encode($pens->first()) !!},
+    
+    handlePenClick: function(element, data) {
+        document.querySelectorAll('.pen-accordion').forEach(function(r) { r.classList.remove('active-row'); });
+        element.closest('.pen-accordion').classList.add('active-row');
+        this.currentPen = data;
+        
+        document.getElementById('side-pen-name').innerText = data.name;
+        document.getElementById('side-pen-section').innerText = data.section || 'Unassigned';
+        
+        var rev = parseFloat(data.revenue || 0);
+        var inc = parseFloat(data.income || 0);
+        document.getElementById('side-revenue').innerText = '\u20B1' + rev.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('side-income').innerText = '\u20B1' + inc.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('side-income').style.color = inc >= 0 ? '#16a34a' : '#ef4444';
 
-        // --- Interactive Pen Cards Logic ---
-        let penDetails = @json($pens->keyBy('name'));
+        var healthy = data.pigs ? data.pigs.filter(function(p){ return p.health_status === 'Healthy'; }).length : 0;
+        var sick = data.pigs ? data.pigs.filter(function(p){ return p.health_status === 'Sick'; }).length : 0;
+        document.getElementById('side-healthy-count').innerText = healthy;
+        document.getElementById('side-sick-count').innerText = sick;
+        document.getElementById('side-avg-weight').innerText = (data.avg_weight || 0) + ' kg';
+        document.getElementById('side-target-weight').innerText = (data.target_weight || 0) + ' kg';
+        document.getElementById('side-progress-fill').style.width = (data.progress || 0) + '%';
+        document.getElementById('side-progress-text').innerText = (data.progress || 0) + '% of market target';
+        document.getElementById('side-batch-cost').innerText = '\u20B1' + (data.batch_cost || 0);
+        document.getElementById('side-feed-cons').innerText = (data.feed_cons || 0) + ' kg';
 
-        const pensList = document.querySelector('.pens-list');
-        pensList.addEventListener('click', (e) => {
-            const card = e.target.closest('.pen-card');
-            if (!card) return;
+        document.getElementById('side-edit-btn').setAttribute('onclick', 'window.PT_APP.editPen(' + data.id + ')');
+        document.getElementById('side-del-btn').setAttribute('onclick', 'window.PT_APP.deletePen(' + data.id + ')');
+    },
 
-            // Update active selection state visually
-            document.querySelectorAll('.pen-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-
-            // Retrieve clicked pen Name and Data
-            const penId = card.getAttribute('data-id');
-            const penName = card.querySelector('.pen-name').innerText.trim();
-            
-            // Find in details
-            const data = Object.values(penDetails).find(p => p.id == penId);
-
-            if (data) {
-                document.querySelector('.details-title').innerText = `${data.name} Details`;
-                document.querySelector('.details-header .page-subtitle').innerText = data.section || 'Unassigned';
-
-                const healthValues = document.querySelectorAll('.health-grid .health-value');
-                const healthyCount = data.pigs ? data.pigs.filter(p => p.health_status === 'Healthy').length : 0;
-                const sickCount = data.pigs ? data.pigs.filter(p => p.health_status === 'Sick').length : 0;
-                healthValues[0].innerText = healthyCount;
-                healthValues[1].innerText = sickCount;
-
-                const detailSections = document.querySelectorAll('.details-section');
-                const weightValues = detailSections[1].querySelectorAll('.font-bold');
-                weightValues[0].innerText = data.avg_weight || '0 kg';
-                weightValues[1].innerText = data.target_weight || '0 kg';
-                document.querySelector('.progress-bar-fill').style.width = `${data.progress || 0}%`;
-                document.querySelector('.progress-meta').innerText = `${data.progress || 0}% to target`;
-
-                const financialValues = detailSections[2].querySelectorAll('.financial-value');
-                financialValues[0].innerText = data.batch_cost || '₱0';
-                financialValues[1].innerText = data.feed_cons || '0 kg';
-                financialValues[2].innerText = data.profit_margin || '0%';
-
-                const timelineValues = detailSections[3].querySelectorAll('.financial-value');
-                timelineValues[0].innerText = data.start_date || 'N/A';
-                timelineValues[1].innerText = data.end_date || 'N/A';
-
-                // --- NEW: Update Pigs List ---
-                const pigsContainer = document.getElementById('pigs-list-container');
-                if (data.pigs && data.pigs.length > 0) {
-                    pigsContainer.innerHTML = data.pigs.map(pig => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #f9fafb; font-size: 0.8rem;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <i class="bx bx-purchase-tag" style="color: #22c55e;"></i>
-                                <span class="font-bold text-gray-700">${pig.tag}</span>
-                            </div>
-                            <span class="badge-${pig.health_status === 'Sick' ? 'poor' : 'good'}">${pig.health_status}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    pigsContainer.innerHTML = `<p class="text-xs text-center text-gray-400 py-4">No individual pigs registered.</p>`;
-                }
-
-                const editBtn = document.querySelector('.btn-action-edit');
-                const deleteBtn = document.querySelector('.btn-action-delete');
-                if (editBtn) editBtn.setAttribute('onclick', `editPen(${data.id})`);
-                if (deleteBtn) deleteBtn.setAttribute('onclick', `deletePen(${data.id})`);
+    toggleAccordion: function(event, id) {
+        if(event) event.stopPropagation();
+        var row = document.querySelector('.pen-accordion[data-id="' + id + '"]');
+        if(!row) return;
+        var isExpanded = row.classList.contains('expanded');
+        document.querySelectorAll('.pen-accordion').forEach(function(r) {
+            if(r !== row) {
+                r.classList.remove('expanded');
+                var btn = r.querySelector('button i');
+                if (btn) btn.classList.replace('bx-chevron-up', 'bx-chevron-down');
             }
         });
-
-        // --- Add Pen Logic ---
-        const addPenBtn = document.querySelector('.btn-add-pen');
-        if (addPenBtn) {
-            addPenBtn.addEventListener('click', () => {
-                Swal.fire({
-                    title: 'Add New Pen',
-                    width: 600,
-                    html: `
-                        <style>
-                            .custom-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
-                            .custom-input:focus { border-color: #22c55e; outline: none; }
-                            .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
-                            .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }
-                        </style>
-                        <div class="form-grid">
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label class="form-label">Pen Name</label>
-                                <input id="pen-name" class="custom-input" placeholder="e.g. Pen D1">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Section</label>
-                                <input id="pen-section" class="custom-input" placeholder="e.g. Section D">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Status</label>
-                                <select id="pen-status" class="custom-input">
-                                    <option value="Excellent">Excellent</option>
-                                    <option value="Good">Good</option>
-                                    <option value="Fair">Fair</option>
-                                    <option value="Poor">Poor</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="grid-column: span 2; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px dashed #22c55e;">
-                                <label class="form-label" style="color: #15803d;">Auto-Generate Pigs</label>
-                                <input id="pen-pig-count" type="number" class="custom-input" placeholder="How many pigs to add in this batch? (e.g. 20)" style="margin-bottom: 0;">
-                                <p style="font-size: 0.7rem; color: #16a34a; margin-top: 4px;">System will automatically create unique tags for each pig.</p>
-                            </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label class="form-label">Starting Healthy Count (Display Only)</label>
-                                <input id="pen-healthy" type="number" class="custom-input" placeholder="0">
-                            </div>
-                            <input id="pen-sick" type="hidden" value="0">
-                            <div class="form-group">
-                                <label class="form-label">Current Avg Weight</label>
-                                <input id="pen-avg-weight" class="custom-input" placeholder="e.g. 50 kg">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Target Weight</label>
-                                <input id="pen-target-weight" class="custom-input" placeholder="e.g. 110 kg">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Batch Cost</label>
-                                <input id="pen-batch-cost" class="custom-input" placeholder="e.g. ₱500,000">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Feed Cons/Day</label>
-                                <input id="pen-feed-cons" class="custom-input" placeholder="e.g. 100 kg">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Profit Margin</label>
-                                <input id="pen-profit" class="custom-input" placeholder="e.g. 20%">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Progress (%)</label>
-                                <input id="pen-progress" type="number" class="custom-input" placeholder="e.g. 45">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Start Date</label>
-                                <input id="pen-start" type="date" class="custom-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Est. Finish Date</label>
-                                <input id="pen-finish" type="date" class="custom-input">
-                            </div>
-                        </div>
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: 'Save Pen & Generate Pigs',
-                    confirmButtonColor: '#22c55e',
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        const payload = {
-                            name: document.getElementById('pen-name').value,
-                            section: document.getElementById('pen-section').value,
-                            status: document.getElementById('pen-status').value,
-                            healthy_pigs: document.getElementById('pen-healthy').value,
-                            sick_pigs: document.getElementById('pen-sick').value,
-                            avg_weight: document.getElementById('pen-avg-weight').value,
-                            target_weight: document.getElementById('pen-target-weight').value,
-                            batch_cost: document.getElementById('pen-batch-cost').value,
-                            feed_cons: document.getElementById('pen-feed-cons').value,
-                            profit_margin: document.getElementById('pen-profit').value,
-                            progress: document.getElementById('pen-progress').value,
-                            start_date: document.getElementById('pen-start').value,
-                            end_date: document.getElementById('pen-finish').value,
-                            pig_count: document.getElementById('pen-pig-count').value,
-                        };
-
-                        if (!payload.name) {
-                            Swal.showValidationMessage('Pen Name is required!');
-                            return false;
-                        }
-
-                        return fetch('{{ route("pens.store") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        })
-                        .then(response => {
-                            if (!response.ok) throw new Error(response.statusText);
-                            return response.json();
-                        })
-                        .catch(error => {
-                            Swal.showValidationMessage(`Request failed: ${error}`);
-                        });
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Pen Added!',
-                            text: result.value.message,
-                            confirmButtonColor: '#22c55e'
-                        }).then(() => window.location.reload());
-                    }
-                });
-            });
+        if (!isExpanded) {
+            row.classList.add('expanded');
+            var icon = row.querySelector('button i');
+            if(icon) icon.classList.replace('bx-chevron-down', 'bx-chevron-up');
+        } else {
+            row.classList.remove('expanded');
+            var icon = row.querySelector('button i');
+            if(icon) icon.classList.replace('bx-chevron-up', 'bx-chevron-down');
         }
+    },
 
-        // --- Edit Pen Logic ---
-        window.editPen = function(id) {
-            const data = Object.values(penDetails).find(p => p.id == id);
-            if (!data) return;
-
-            Swal.fire({
-                title: `Edit ${data.name}`,
-                width: 600,
-                html: `
-                    <style>
-                        .custom-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
-                        .custom-input:focus { border-color: #22c55e; outline: none; }
-                        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
-                        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: #4b5563; margin-bottom: 4px; text-transform: uppercase; }
-                    </style>
-                    <div class="form-grid">
-                        <div class="form-group" style="grid-column: span 2;">
-                            <label class="form-label">Pen Name</label>
-                            <input id="edit-name" class="custom-input" value="${data.name}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Section</label>
-                            <input id="edit-section" class="custom-input" value="${data.section || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Status</label>
-                            <select id="edit-status" class="custom-input">
-                                <option value="Excellent" ${data.status == 'Excellent' ? 'selected' : ''}>Excellent</option>
-                                <option value="Good" ${data.status == 'Good' ? 'selected' : ''}>Good</option>
-                                <option value="Fair" ${data.status == 'Fair' ? 'selected' : ''}>Fair</option>
-                                <option value="Poor" ${data.status == 'Poor' ? 'selected' : ''}>Poor</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Healthy Pigs</label>
-                            <input id="edit-healthy" type="number" class="custom-input" value="${data.healthy_pigs || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Sick Pigs</label>
-                            <input id="edit-sick" type="number" class="custom-input" value="${data.sick_pigs || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Current Avg Weight</label>
-                            <input id="edit-avg-weight" class="custom-input" value="${data.avg_weight || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Target Weight</label>
-                            <input id="edit-target-weight" class="custom-input" value="${data.target_weight || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Batch Cost</label>
-                            <input id="edit-batch-cost" class="custom-input" value="${data.batch_cost || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Feed Cons/Day</label>
-                            <input id="edit-feed-cons" class="custom-input" value="${data.feed_cons || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Profit Margin</label>
-                            <input id="edit-profit" class="custom-input" value="${data.profit_margin || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Progress (%)</label>
-                            <input id="edit-progress" type="number" class="custom-input" value="${data.progress || 0}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Start Date</label>
-                            <input id="edit-start" type="date" class="custom-input" value="${data.start_date || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Est. Finish Date</label>
-                            <input id="edit-finish" type="date" class="custom-input" value="${data.end_date || ''}">
-                        </div>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Update Pen',
-                confirmButtonColor: '#22c55e',
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    const payload = {
-                        name: document.getElementById('edit-name').value,
-                        section: document.getElementById('edit-section').value,
-                        status: document.getElementById('edit-status').value,
-                        healthy_pigs: document.getElementById('edit-healthy').value,
-                        sick_pigs: document.getElementById('edit-sick').value,
-                        avg_weight: document.getElementById('edit-avg-weight').value,
-                        target_weight: document.getElementById('edit-target-weight').value,
-                        batch_cost: document.getElementById('edit-batch-cost').value,
-                        feed_cons: document.getElementById('edit-feed-cons').value,
-                        profit_margin: document.getElementById('edit-profit').value,
-                        progress: document.getElementById('edit-progress').value,
-                        start_date: document.getElementById('edit-start').value,
-                        end_date: document.getElementById('edit-finish').value,
-                    };
-
-                    return fetch(`/pens/${id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error(response.statusText);
-                        return response.json();
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(`Update failed: ${error}`);
-                    });
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Updated!',
-                        text: result.value.message,
-                        confirmButtonColor: '#22c55e'
-                    }).then(() => window.location.reload());
-                }
-            });
-        };
-
-        // --- Delete Pen Logic ---
-        window.deletePen = function(id) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "All associated pig data will be lost!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#9ca3af',
-                confirmButtonText: 'Yes, delete it!',
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    return fetch(`/pens/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error(response.statusText);
-                        return response.json();
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(`Delete failed: ${error}`);
-                    });
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        text: result.value.message,
-                        confirmButtonColor: '#22c55e'
-                    }).then(() => window.location.reload());
-                }
-            });
-        };
-
-        // --- Alert Highlight Logic ---
-        const urlParams = new URLSearchParams(window.location.search);
-        const highlightParam = urlParams.get('highlight');
-        
-        if (highlightParam) {
-            const style = document.createElement('style');
-            style.innerHTML = `
-                @keyframes flashRed {
-                    0%, 100% { background-color: #ffffff; border-color: #e5e7eb; box-shadow: none; }
-                    50% { background-color: #fee2e2; border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-                }
-                .highlight-flash { animation: flashRed 1s ease-in-out 3; }
-            `;
-            document.head.appendChild(style);
-
-            const allPenCards = document.querySelectorAll('.pen-card');
-            allPenCards.forEach(card => {
-                const penName = card.querySelector('.pen-name').innerText.trim();
-                if (penName === highlightParam) {
-                    card.click();
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    card.classList.add('highlight-flash');
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-            });
-        }
-
-        // --- Report Generation Logic ---
-        const reportBtn = document.querySelector('.btn-report');
-        if (reportBtn) {
-            reportBtn.addEventListener('click', () => {
-                const penName = document.querySelector('.details-title').innerText.replace(' Details', '').trim();
-                Swal.fire({
-                    title: 'Generating Report...',
-                    html: `Compiling data for <b>${penName}</b>...`,
-                    timer: 1500,
-                    didOpen: () => Swal.showLoading()
-                }).then(() => {
-                    Swal.fire({
-                        title: 'Report Ready!',
-                        icon: 'success',
-                        showCancelButton: true,
-                        confirmButtonText: 'Print',
-                        cancelButtonText: 'Download',
-                        confirmButtonColor: '#22c55e'
-                    }).then((result) => {
-                        if (result.isConfirmed) window.print();
-                    });
+    viewPig: function(pigId) {
+        Swal.fire({
+            title: 'Gathering Record...',
+            width: 700, padding: '0', background: '#f8fafc', showConfirmButton: false, showCloseButton: true, customClass: { popup: 'rounded-3xl overflow-hidden' },
+            didOpen: function() {
+                Swal.showLoading();
+                fetch('/admin/pigs/' + pigId).then(function(res){ return res.text(); }).then(function(html) {
+                    Swal.fire({ html: html, width: 700, padding: '0', background: '#f8fafc', showConfirmButton: false, showCloseButton: true, customClass: { popup: 'rounded-3xl overflow-hidden' } });
                 });
-            });
+            }
+        });
+    },
+
+    quickAssignTask: function(event, pigId, pigTag, penId) {
+        if(event) event.stopPropagation();
+        var workerOptions = '';
+        this.workers.forEach(function(w) { workerOptions += '<option value="' + w.id + '">' + w.name + '</option>'; });
+        Swal.fire({
+            title: 'Assign Monitoring Task',
+            html: '<div style="text-align: left;"><p>Task for <strong>Pig #' + pigTag + '</strong></p><div class="form-group"><label>Description</label><textarea id="task-desc" class="form-input"></textarea></div><div class="form-group"><label>Assign To</label><select id="task-worker" class="form-input">' + workerOptions + '</select></div></div>',
+            showCancelButton: true,
+            preConfirm: function() {
+                var d = document.getElementById('task-desc').value;
+                if(!d) { Swal.showValidationMessage('Required'); return false; }
+                return { title: 'Monitor Pig #' + pigTag, description: d, assigned_to: document.getElementById('task-worker').value, pig_id: pigId, pen_id: penId, status: 'pending' };
+            }
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                fetch('{{ route("admin.tasks.store") }}', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify(result.value)
+                }).then(function(){ Swal.fire('Success', 'Task assigned', 'success'); });
+            }
+        });
+    },
+
+    editPen: function(id) {
+        var pen = this.currentPen;
+        Swal.fire({
+            title: 'Edit Pen',
+            html: '<input id="en" class="swal2-input" value="' + pen.name + '"><input id="es" class="swal2-input" value="' + (pen.section||'') + '">',
+            showCancelButton: true,
+            preConfirm: function() { return { name: document.getElementById('en').value, section: document.getElementById('es').value }; }
+        }).then(function(r) {
+            if(r.isConfirmed) fetch('/pens/'+id, { method:'PUT', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{csrf_token()}}'}, body:JSON.stringify(r.value) }).then(function(){ location.reload(); });
+        });
+    },
+
+    deletePen: function(id) {
+        Swal.fire({ title:'Delete?', showCancelButton:true }).then(function(r){ if(r.isConfirmed) fetch('/pens/'+id, { method:'DELETE', headers:{'X-CSRF-TOKEN':'{{csrf_token()}}'} }).then(function(){ location.reload(); }); });
+    }
+};
+
+// Map global functions for compatibility with existing onclick attributes
+window.handlePenClick = window.PT_APP.handlePenClick.bind(window.PT_APP);
+window.toggleAccordion = window.PT_APP.toggleAccordion.bind(window.PT_APP);
+window.viewPig = window.PT_APP.viewPig.bind(window.PT_APP);
+window.quickAssignTask = window.PT_APP.quickAssignTask.bind(window.PT_APP);
+window.editPen = window.PT_APP.editPen.bind(window.PT_APP);
+window.deletePen = window.PT_APP.deletePen.bind(window.PT_APP);
+
+window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; };
+window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
+
+window.openAddPigModal = function(penId) {
+    var row = document.querySelector('.pen-accordion[data-id="' + penId + '"]');
+    var penName = row.querySelector('.pen-name-text').innerText;
+    var pigCount = row.querySelectorAll('.pig-row-item').length;
+    document.getElementById('add-pig-pen-name').innerText = penName;
+    document.getElementById('add-pig-pen-id').value = penId;
+    // Reset the tag input while loading
+    var tagInput = document.getElementById('pig-tag-input');
+    var badge = document.getElementById('pig-tag-auto-badge');
+    tagInput.value = '';
+    tagInput.placeholder = 'Loading...';
+    badge.innerText = 'Auto';
+    badge.style.background = '#f0fdf4';
+    badge.style.color = '#16a34a';
+    window.openModal('addPigModal');
+    // Fetch the next available tag from server
+    fetch('/api/pens/next-tag?pen_name=' + encodeURIComponent(penName) + '&existing_count=' + pigCount)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            tagInput.placeholder = data.tag;
+            tagInput.value = data.tag;
+            badge.innerText = 'Auto-Generated';
+        })
+        .catch(function() { tagInput.placeholder = 'Enter manually'; });
+
+    // When user types their own tag, mark as manual
+    tagInput.oninput = function() {
+        if (tagInput.value && tagInput.value !== tagInput.getAttribute('data-auto')) {
+            badge.innerText = 'Manual';
+            badge.style.background = '#fef9c3';
+            badge.style.color = '#a16207';
+        } else {
+            badge.innerText = 'Auto-Generated';
+            badge.style.background = '#f0fdf4';
+            badge.style.color = '#16a34a';
+        }
+    };
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // --- NEW PEN FORM: live ear-tag preview ---
+    var penNameInput = document.getElementById('pen-name-input');
+    var penCountInput = document.getElementById('pen-pig-count-input');
+    var tagPreviewBox = document.getElementById('pen-tag-preview');
+    var tagBadgesEl = document.getElementById('pen-tag-badges');
+    var tagOverflowEl = document.getElementById('pen-tag-overflow');
+    var BADGE_MAX = 12; // Show max 12 badges, indicate overflow after
+
+    function buildPrefix(name) {
+        return (name.replace(/[^A-Za-z0-9]/g, '').substring(0, 6) || 'PIG').toUpperCase();
+    }
+
+    function updateTagPreview() {
+        var name = penNameInput ? penNameInput.value : '';
+        var count = parseInt((penCountInput ? penCountInput.value : '') || 0);
+        if (!name || count <= 0) {
+            tagPreviewBox.style.display = 'none';
+            return;
+        }
+        tagPreviewBox.style.display = 'block';
+        var prefix = buildPrefix(name);
+        var show = Math.min(count, BADGE_MAX);
+        var html = '';
+        for (var i = 1; i <= show; i++) {
+            html += '<span style="background:#dcfce7;color:#15803d;font-size:0.7rem;font-weight:800;padding:4px 10px;border-radius:20px;">' + prefix + '-' + String(i).padStart(3, '0') + '</span>';
+        }
+        tagBadgesEl.innerHTML = html;
+        if (count > BADGE_MAX) {
+            tagOverflowEl.style.display = 'block';
+            tagOverflowEl.innerText = '+ ' + (count - BADGE_MAX) + ' more tags (e.g. ' + prefix + '-' + String(count).padStart(3, '0') + ')';
+        } else {
+            tagOverflowEl.style.display = 'none';
+        }
+    }
+
+    if (penNameInput) penNameInput.addEventListener('input', updateTagPreview);
+    if (penCountInput) penCountInput.addEventListener('input', updateTagPreview);
+
+    // --- PEN FORM SUBMIT ---
+    document.getElementById('add-pen-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var btn = document.getElementById('pen-submit-btn');
+        btn.disabled = true;
+        btn.innerText = 'Registering...';
+        var res = await fetch('{{ route("pens.store") }}', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))), headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
+        var data = await res.json();
+        if (data.success) {
+            closeModal('addPenModal');
+            Swal.fire({ title: 'Pen Registered!', text: data.message, icon: 'success', confirmButtonColor: '#22c55e' }).then(function() { location.reload(); });
+        } else {
+            btn.disabled = false;
+            btn.innerText = 'Register Pen';
+            Swal.fire('Error', data.message || 'Something went wrong.', 'error');
         }
     });
+
+    // --- PIG FORM SUBMIT ---
+    document.getElementById('add-pig-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var res = await fetch('{{ route("admin.pigs.store") }}', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))), headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
+        var data = await res.json();
+        if (data.success) {
+            closeModal('addPigModal');
+            Swal.fire({ title: 'Pig Added!', text: data.message, icon: 'success', confirmButtonColor: '#22c55e' }).then(function() { location.reload(); });
+        } else {
+            Swal.fire('Error', data.message || 'Could not save pig.', 'error');
+        }
+    });
+});
 </script>
 @endsection
