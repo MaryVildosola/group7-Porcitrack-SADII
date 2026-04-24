@@ -71,6 +71,8 @@ class PigController extends Controller
     public function updateRecord(Request $request, Pig $pig)
     {
         $validated = $request->validate([
+            'tag' => 'required|string|max:255|unique:pigs,tag,' . $pig->id,
+            'birth_date' => 'nullable|date',
             'weight' => 'nullable|numeric|min:0',
             'target_weight' => 'nullable|numeric|min:0',
             'health_status' => 'required|in:Healthy,Warning,Sick',
