@@ -26,6 +26,31 @@
 .form-input::placeholder { color: #94a3b8; font-weight: 400; }
 .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #1e293b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.025em; }
 .btn-save { width: 100%; padding: 12px; background: #22c55e; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+.suggestion-box {
+    position: absolute;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 100;
+    display: none;
+    margin-top: -8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.suggestion-item {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.suggestion-item:last-child { border-bottom: none; }
+.suggestion-item:hover { background: #f8fafc; color: #22c55e; }
+.suggestion-tag { font-size: 0.65rem; font-weight: 800; background: #f0fdf4; color: #16a34a; padding: 2px 8px; border-radius: 99px; }
 </style>
 
 <div class="task-wrap">
@@ -102,9 +127,10 @@
             <h2 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px;">Create New Task</h2>
             <form action="{{ route('admin.tasks.store') }}" method="POST">
                 @csrf
-                <div class="form-group">
+                <div class="form-group" style="position: relative;">
                     <label class="form-label">Task Title</label>
-                    <input type="text" name="title" class="form-input" placeholder="e.g. Vaccinate Pen 1" required>
+                    <input type="text" name="title" id="task-title" class="form-input" placeholder="e.g. Vaccinate Pen 1" autocomplete="off" required>
+                    <div id="suggestion-list" class="suggestion-box custom-scrollbar"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Description (Instruction)</label>
@@ -146,3 +172,63 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    const taskSuggestions = [
+        { title: 'Vaccination Batch', desc: 'Perform scheduled vaccinations for all pigs in this pen. Ensure correct dosage.', tag: 'HEALTH' },
+        { title: 'Deworming Session', desc: 'Administer dewormer as per the veterinarian schedule.', tag: 'HEALTH' },
+        { title: 'Weight Monitoring', desc: 'Record the current weight of all pigs for growth analysis.', tag: 'GROWTH' },
+        { title: 'Pen Sanitation', desc: 'Thoroughly clean and disinfect the pen floor and feeding troughs.', tag: 'CLEANING' },
+        { title: 'Feed Inventory Check', desc: 'Check available feed stocks and report if low.', tag: 'STOCK' },
+        { title: 'Iron Injection', desc: 'Administer iron supplements to the piglets.', tag: 'HEALTH' },
+        { title: 'Withdrawal Check', desc: 'Check if pigs are ready for withdrawal based on their weight and age.', tag: 'LOGISTICS' },
+        { title: 'Water System Audit', desc: 'Ensure all drinkers are clean and functioning correctly.', tag: 'MAINTENANCE' }
+    ];
+
+    const titleInput = document.getElementById('task-title');
+    const suggestionBox = document.getElementById('suggestion-list');
+    const descTextarea = document.querySelector('textarea[name="description"]');
+
+    titleInput.addEventListener('input', function() {
+        const value = this.value.toLowerCase();
+        suggestionBox.innerHTML = '';
+        
+        if (!value) {
+            suggestionBox.style.display = 'none';
+            return;
+        }
+
+        const filtered = taskSuggestions.filter(s => 
+            s.title.toLowerCase().includes(value) || s.tag.toLowerCase().includes(value)
+        );
+
+        if (filtered.length > 0) {
+            filtered.forEach(s => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.innerHTML = `
+                    <span>${s.title}</span>
+                    <span class="suggestion-tag">${s.tag}</span>
+                `;
+                item.addEventListener('click', () => {
+                    titleInput.value = s.title;
+                    descTextarea.value = s.desc;
+                    suggestionBox.style.display = 'none';
+                });
+                suggestionBox.appendChild(item);
+            });
+            suggestionBox.style.display = 'block';
+        } else {
+            suggestionBox.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!suggestionBox.contains(e.target) && e.target !== titleInput) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+</script>
+@endpush
+
