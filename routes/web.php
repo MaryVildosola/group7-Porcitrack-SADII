@@ -55,6 +55,14 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::post('/pens/store', [PenController::class, 'store'])->name('pens.store');
         Route::put('/pens/{pen}', [PenController::class, 'update'])->name('pens.update');
         Route::delete('/pens/{pen}', [PenController::class, 'destroy'])->name('pens.destroy');
+        Route::get('/pens/{pen}', [PenController::class, 'show'])->name('pens.show');
+        Route::get('/api/pens/next-tag', [PenController::class, 'nextTag'])->name('pens.next-tag');
+
+        // Individual Pig management for Admin
+        Route::get('/admin/pigs/{pig}', [PigController::class, 'adminShow'])->name('admin.pigs.show');
+        Route::post('/admin/pigs/store', [PigController::class, 'store'])->name('admin.pigs.store');
+        Route::post('/admin/pigs/{pig}/move-pen', [PigController::class, 'movePen'])->name('admin.pigs.move-pen');
+        Route::delete('/admin/pigs/{pig}', [PigController::class, 'destroy'])->name('admin.pigs.destroy');
 
         // User Management
         Route::get('users/index', [ProfileController::class, 'getAllUsers'])->name('users.index');
@@ -83,6 +91,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         // Enrollment & Subjects (Legacy or other features)
         Route::resource('enrollments', EnrollmentController::class);
         Route::resource('subject', SubjectController::class);
+        Route::post('/admin/pigs/activities/{activity}/acknowledge', [PigController::class, 'acknowledgeActivity'])->name('admin.pigs.activities.acknowledge');
     });
 
 // --- WORKER ZONE ---
@@ -157,6 +166,23 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('profile/edit', [ProfileController::class, 'editOwnProfile'])->name('profile.edit');
     Route::put('profile/update', [ProfileController::class, 'updateOwnProfile'])->name('profile.update');
+
+    // TEST ROUTE: Generate a critical alert for the first pig found
+    Route::get('/admin/medical-emergency-test', function() {
+        $pig = \App\Models\Pig::first();
+        if(!$pig) return "No pigs found in database.";
+        
+        \App\Models\PigActivity::create([
+            'pig_id' => $pig->id,
+            'type' => 'Medical',
+            'action' => '🚨 CRITICAL ALERT — Health In Danger',
+            'details' => 'TEST ALERT: This is a simulated emergency for testing the notification system.',
+            'is_critical_alert' => true,
+            'created_at' => now(),
+        ]);
+        
+        return redirect()->back()->with('success', 'Critical alert generated for Pig #' . $pig->tag);
+    })->name('admin.test-alert');
 });
 
 require __DIR__ . '/auth.php';
