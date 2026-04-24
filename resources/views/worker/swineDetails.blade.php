@@ -106,7 +106,7 @@
             .then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                const card = doc.querySelector('.bg-white.rounded-\\[3rem\\]'); 
+                const card = doc.querySelector('#pig-record-card'); 
                 if(card) {
                     content.innerHTML = card.innerHTML;
                 }
