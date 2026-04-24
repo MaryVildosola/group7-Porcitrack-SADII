@@ -108,6 +108,9 @@
 
             <!-- Right: Actions & Menu -->
             <div class="flex items-center gap-3">
+                <button onclick="toggleWorkerTheme()" class="text-white/80 hover:text-white p-1">
+                    <i class='bx bx-sun text-xl global-theme-icon'></i>
+                </button>
                 <div id="mobileSyncStatus"
                     class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/10 cursor-pointer"
                     onclick="if(typeof syncData === 'function'){ syncData(); }">
@@ -245,6 +248,11 @@
             <!-- Global Floating Icons (Right Side - Green as requested) -->
             <div
                 class="hidden md:flex absolute top-4 right-4 md:top-12 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
+                <!-- Theme Toggle -->
+                <button onclick="toggleWorkerTheme()"
+                    class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white active:scale-95">
+                    <i class='bx bx-sun text-lg md:text-xl global-theme-icon'></i>
+                </button>
                 <!-- Sync Status -->
                 <div id="globalSyncStatus"
                     class="flex items-center gap-2 md:gap-3 bg-[#0b1120] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#141e36] transition shadow-lg"
@@ -474,6 +482,38 @@
                 }
             });
         }
+        
+        // --- Global Theme Engine ---
+        function toggleWorkerTheme() {
+            let currentTheme = localStorage.getItem('porcitrack-worker-theme');
+            if(!currentTheme) {
+                currentTheme = window.location.pathname.includes('dashboard') ? 'light' : 'dark';
+            }
+            let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('porcitrack-worker-theme', newTheme);
+            syncThemeIcon(newTheme);
+            
+            if (typeof window.applyPageTheme === 'function') {
+                window.applyPageTheme(newTheme);
+            }
+        }
+        
+        function syncThemeIcon(theme) {
+            document.querySelectorAll('.global-theme-icon').forEach(icon => {
+                icon.className = theme === 'dark' ? 'bx bx-sun text-xl md:text-xl global-theme-icon' : 'bx bx-moon text-xl md:text-xl global-theme-icon';
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            let current = localStorage.getItem('porcitrack-worker-theme');
+            if(!current) {
+                current = window.location.pathname.includes('dashboard') ? 'light' : 'dark';
+            }
+            syncThemeIcon(current);
+            if(typeof window.applyPageTheme === 'function') {
+                window.applyPageTheme(current);
+            }
+        });
     </script>
 
     <!-- PWA Registration -->
