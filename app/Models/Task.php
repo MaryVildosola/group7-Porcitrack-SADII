@@ -13,6 +13,7 @@ class Task extends Model
         'pen_id',
         'pig_id',
         'status',
+        'priority',
         'due_date',
         'completed_at',
     ];

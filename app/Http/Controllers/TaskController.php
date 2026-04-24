@@ -35,6 +35,7 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'assigned_to' => 'required|exists:users,id',
             'due_date' => 'required|date',
+            'priority' => 'nullable|string|max:50',
             'pen_id' => 'nullable|exists:pens,id',
             'pig_id' => 'nullable|exists:pigs,id',
         ]);

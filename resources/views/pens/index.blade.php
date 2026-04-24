@@ -307,38 +307,31 @@
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 9999;
         }
 
         .custom-modal {
-            background: #f1f5f9;
+            background: #fff;
             width: 90%;
             max-width: 550px;
             border-radius: 32px;
             padding: 40px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
             position: relative;
         }
 
         .modal-close {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.2rem;
+            top: 24px;
+            right: 24px;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: #fff;
-            background: #475569;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
+            color: #94a3b8;
+            transition: color 0.2s;
         }
 
         .modal-close:hover {
-            background: #1e293b;
+            color: var(--deep-slate);
         }
 
         .form-group {
@@ -487,8 +480,10 @@
                         <div
                             style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                             <div>
-                                <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--deep-slate); margin: 0;"
-                                    id="side-pen-name">{{ $firstPen->name }}</h2>
+                                <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--deep-slate); margin: 0; display: flex; align-items: center; gap: 8px;">
+                                    <span id="side-pen-name">{{ $firstPen->name }}</span>
+                                    <span id="side-pen-id" style="font-size: 0.65rem; background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 6px; font-weight: 800;">#{{ $firstPen->id }}</span>
+                                </h2>
                                 <p style="color: #64748b; font-weight: 500; margin: 4px 0 0;" id="side-pen-section">
                                     {{ $firstPen->section ?: 'Unassigned' }}</p>
                             </div>
@@ -623,6 +618,49 @@
         </div>
     </div>
 
+    <!-- MODAL: EDIT PEN -->
+    <div id="editPenModal" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <i class='bx bx-x modal-close' onclick="closeModal('editPenModal')"></i>
+            <h2 style="font-weight: 900; margin-bottom: 4px;">Edit Pen</h2>
+            <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 28px;">Update pen details and financial parameters.</p>
+            <form id="edit-pen-form">
+                @csrf
+                @method('PUT')
+                <input type="hidden" id="edit-pen-id" name="id">
+                <div class="form-group">
+                    <label class="form-label">Pen Identifier / Name</label>
+                    <input id="edit-pen-name" name="name" class="form-input" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Section / Classification</label>
+                    <input id="edit-pen-section" name="section" class="form-input">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Batch Investment (₱)</label>
+                        <input id="edit-pen-batch-cost" name="batch_cost" class="form-input" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Daily Feed Cost (Avg)</label>
+                        <input id="edit-pen-feed-cons" name="feed_cons" class="form-input" placeholder="0.00">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Avg Start Weight (kg)</label>
+                        <input id="edit-pen-avg-weight" name="avg_weight" class="form-input" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Weight (kg)</label>
+                        <input id="edit-pen-target-weight" name="target_weight" class="form-input" placeholder="0.00">
+                    </div>
+                </div>
+                <button type="submit" id="edit-pen-submit-btn" style="width: 100%; background: var(--accent-green); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; margin-top: 10px; cursor: pointer;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: ADD PIG -->
     <div id="addPigModal" class="custom-modal-overlay">
         <div class="custom-modal">
@@ -673,6 +711,53 @@
             </form>
         </div>
     </div>
+    <!-- MODAL: ASSIGN TASK -->
+    <div id="assignTaskModal" class="custom-modal-overlay">
+        <div class="custom-modal">
+            <i class='bx bx-x modal-close' onclick="closeModal('assignTaskModal')"></i>
+            <h2 style="font-weight: 900; margin-bottom: 4px;">Assign Monitoring Task</h2>
+            <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 28px;">Setting up a health check for <strong id="task-pig-tag-display" style="color: var(--deep-slate);"></strong></p>
+            <form id="assign-task-form">
+                @csrf
+                <input type="hidden" id="task-pig-id" name="pig_id">
+                <input type="hidden" id="task-pen-id" name="pen_id">
+                <input type="hidden" name="status" value="pending">
+                
+                <div class="form-group">
+                    <label class="form-label">Task Description</label>
+                    <textarea id="task-desc" name="description" class="form-input" style="height: 100px; resize: none;" placeholder="What should the worker check? (e.g. Monitor appetite, Check leg wound, etc.)" required></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Assign To</label>
+                        <select id="task-worker" name="assigned_to" class="form-input">
+                            @foreach ($workers as $worker)
+                                <option value="{{ $worker->id }}">{{ $worker->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" name="due_date" class="form-input" value="{{ date('Y-m-d') }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority / Importance</label>
+                    <select name="priority" class="form-input">
+                        <option value="Low">Low Priority</option>
+                        <option value="Medium" selected>Medium / Normal</option>
+                        <option value="High">High Priority</option>
+                        <option value="Critical">Critical Alert</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="task-submit-btn" style="width: 100%; background: var(--accent-green); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 800; margin-top: 10px; cursor: pointer;">Assign Task</button>
+            </form>
+        </div>
+    </div>
+
     <div id="reportPreviewModal" class="custom-modal-overlay">
         <div class="custom-modal" style="max-width: 800px;"><i class='bx bx-x modal-close'
                 onclick="closeModal('reportPreviewModal')"></i>
@@ -702,6 +787,7 @@
                 this.currentPen = data;
 
                 document.getElementById('side-pen-name').innerText = data.name;
+                document.getElementById('side-pen-id').innerText = '#' + data.id;
                 document.getElementById('side-pen-section').innerText = data.section || 'Unassigned';
 
                 var rev = parseFloat(data.revenue || 0);
@@ -793,224 +879,31 @@
 
             quickAssignTask: function(event, pigId, pigTag, penId) {
                 if (event) event.stopPropagation();
-                var workerOptions = '';
-                this.workers.forEach(function(w) {
-                    workerOptions += `<option value="${w.id}">${w.name}</option>`;
-                });
 
-                Swal.fire({
-                    title: '<span style="font-weight: 900; color: #0f172a;">ASSIGN PROTOCOL</span>',
-                    width: '500px',
-                    padding: '2rem',
-                    background: '#f8fafc',
-                    html: `
-                        <div style="text-align: left; padding-top: 10px;">
-                            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 24px;">Tasking for <span style="font-weight: 800; color: var(--deep-slate);">Pig #${pigTag}</span></p>
-                            
-                            <div class="form-group" style="margin-bottom: 20px; position: relative;">
-                                <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Task Objective</label>
-                                <input id="swal-task-title" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" placeholder="e.g. Health Inspection">
-                                <div id="swal-task-suggestions" style="display:none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; padding: 8px; max-height: 150px; overflow-y: auto; margin-top: 5px;"></div>
-                            </div>
+                document.getElementById('task-pig-tag-display').innerText = 'Pig #' + pigTag;
+                document.getElementById('task-pig-id').value = pigId;
+                document.getElementById('task-pen-id').value = penId;
+                document.getElementById('task-desc').value = '';
+                
+                // Reset due date to today
+                var today = new Date().toISOString().split('T')[0];
+                var dateInput = document.querySelector('#assignTaskModal [name="due_date"]');
+                if (dateInput) dateInput.value = today;
 
-                            <div class="form-group" style="margin-bottom: 20px;">
-                                <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Instructions</label>
-                                <textarea id="swal-task-desc" class="swal2-textarea" style="width: 100%; margin: 0; border-radius: 12px; height: 100px; font-size: 14px; padding: 12px;" placeholder="Specific instructions for the worker..."></textarea>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Assign To</label>
-                                    <select id="swal-task-worker" class="swal2-select" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;">
-                                        ${workerOptions}
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Due Date</label>
-                                    <input type="date" id="swal-task-date" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${new Date().toISOString().split('T')[0]}">
-                                </div>
-                            </div>
-                        </div>
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: 'Deploy Task',
-                    confirmButtonColor: '#0f172a',
-                    cancelButtonText: 'Cancel',
-                    customClass: {
-                        popup: 'rounded-3xl border-none shadow-2xl',
-                        confirmButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs',
-                        cancelButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs'
-                    },
-                    didOpen: () => {
-                        const titleInput = document.getElementById('swal-task-title');
-                        const suggestionBox = document.getElementById('swal-task-suggestions');
-                        const descArea = document.getElementById('swal-task-desc');
-                        const suggestions = [
-                            { t: 'Vaccination', d: 'Administer scheduled vaccines. Verify dosage.' },
-                            { t: 'Deworming', d: 'Apply oral deworming treatment.' },
-                            { t: 'Weight In', d: 'Record current body weight.' },
-                            { t: 'Clinic Referral', d: 'Isolate animal and wait for vet inspection.' },
-                            { t: 'Special Feeding', d: 'Apply high-protein supplement ration.' }
-                        ];
-
-                        titleInput.addEventListener('input', (e) => {
-                            const val = e.target.value.toLowerCase();
-                            suggestionBox.innerHTML = '';
-                            if (!val) { suggestionBox.style.display = 'none'; return; }
-                            const filtered = suggestions.filter(s => s.t.toLowerCase().includes(val));
-                            if (filtered.length > 0) {
-                                filtered.forEach(s => {
-                                    const div = document.createElement('div');
-                                    div.style.padding = '8px 12px';
-                                    div.style.cursor = 'pointer';
-                                    div.style.fontSize = '12px';
-                                    div.style.fontWeight = '700';
-                                    div.style.borderRadius = '8px';
-                                    div.innerHTML = s.t;
-                                    div.onclick = () => {
-                                        titleInput.value = s.t;
-                                        descArea.value = s.d;
-                                        suggestionBox.style.display = 'none';
-                                    };
-                                    div.onmouseover = () => div.style.background = '#f0fdf4';
-                                    div.onmouseout = () => div.style.background = 'transparent';
-                                    suggestionBox.appendChild(div);
-                                });
-                                suggestionBox.style.display = 'block';
-                            } else {
-                                suggestionBox.style.display = 'none';
-                            }
-                        });
-                    },
-                    preConfirm: function() {
-                        const title = document.getElementById('swal-task-title').value;
-                        if (!title) return Swal.showValidationMessage('Title is required');
-                        
-                        return {
-                            title: title,
-                            description: document.getElementById('swal-task-desc').value,
-                            assigned_to: document.getElementById('swal-task-worker').value,
-                            due_date: document.getElementById('swal-task-date').value,
-                            pig_id: pigId,
-                            pen_id: penId,
-                            status: 'pending'
-                        };
-                    }
-                }).then(function(result) {
-                    if (result.isConfirmed) {
-                        Swal.fire({ title: 'Deploying...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                        fetch('{{ route('admin.tasks.store') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(result.value)
-                        }).then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({ icon: 'success', title: 'Deployed!', text: data.message, timer: 1500, showConfirmButton: false });
-                            } else {
-                                Swal.fire('Error', data.message || 'Failed to deploy task', 'error');
-                            }
-                        });
-                    }
-                });
+                window.openModal('assignTaskModal');
             },
 
             editPen: function(id) {
-                const pen = this.currentPen;
-                if (!pen) return;
-
-                Swal.fire({
-                    title: '<span style="font-weight: 900; color: #0f172a;">EDIT PEN DETAILS</span>',
-                    width: '600px',
-                    padding: '2rem',
-                    background: '#f8fafc',
-                    html: `
-                        <div style="text-align: left; padding-top: 10px;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Pen Identifier</label>
-                                    <input id="swal-pen-name" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.name}" placeholder="e.g. Pen Alpha-1">
-                                </div>
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Section / Classification</label>
-                                    <input id="swal-pen-section" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.section || ''}" placeholder="e.g. Nursery">
-                                </div>
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Batch Investment (₱)</label>
-                                    <input id="swal-pen-cost" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.batch_cost || ''}" placeholder="0.00">
-                                </div>
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Daily Feed Cons. (KG)</label>
-                                    <input id="swal-pen-feed" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.feed_cons || ''}" placeholder="0">
-                                </div>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Current Avg. Weight (KG)</label>
-                                    <input id="swal-pen-avg" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.avg_weight || ''}" placeholder="0.00">
-                                </div>
-                                <div class="form-group">
-                                    <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;">Market Target Weight (KG)</label>
-                                    <input id="swal-pen-target" class="swal2-input" style="width: 100%; margin: 0; border-radius: 12px; height: 45px; font-size: 14px;" value="${pen.target_weight || ''}" placeholder="100.00">
-                                </div>
-                            </div>
-                        </div>
-                    `,
-                    showCancelButton: true,
-                    confirmButtonText: 'Save Changes',
-                    confirmButtonColor: '#0f172a',
-                    cancelButtonText: 'Cancel',
-                    customClass: {
-                        popup: 'rounded-3xl border-none shadow-2xl',
-                        confirmButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs',
-                        cancelButton: 'px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs'
-                    },
-                    preConfirm: function() {
-                        const name = document.getElementById('swal-pen-name').value;
-                        if (!name) return Swal.showValidationMessage('Pen identifier is required');
-                        
-                        return {
-                            name: name,
-                            section: document.getElementById('swal-pen-section').value,
-                            batch_cost: document.getElementById('swal-pen-cost').value,
-                            feed_cons: document.getElementById('swal-pen-feed').value,
-                            avg_weight: document.getElementById('swal-pen-avg').value,
-                            target_weight: document.getElementById('swal-pen-target').value
-                        };
-                    }
-                }).then(function(r) {
-                    if (r.isConfirmed) {
-                        Swal.fire({ title: 'Updating...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                        
-                        fetch('/pens/' + id, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(r.value)
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({ icon: 'success', title: 'Success', text: data.message, timer: 1500, showConfirmButton: false })
-                                .then(() => location.reload());
-                            } else {
-                                Swal.fire('Error', data.message || 'Update failed', 'error');
-                            }
-                        })
-                        .catch(() => Swal.fire('Error', 'Network error', 'error'));
-                    }
-                });
+                var pen = this.currentPen;
+                document.getElementById('edit-pen-id').value = pen.id;
+                document.getElementById('edit-pen-name').value = pen.name;
+                document.getElementById('edit-pen-section').value = pen.section || '';
+                document.getElementById('edit-pen-batch-cost').value = pen.batch_cost || '';
+                document.getElementById('edit-pen-feed-cons').value = pen.feed_cons || '';
+                document.getElementById('edit-pen-avg-weight').value = pen.avg_weight || '';
+                document.getElementById('edit-pen-target-weight').value = pen.target_weight || '';
+                
+                window.openModal('editPenModal');
             },
 
             deletePen: function(id) {
@@ -1285,6 +1178,74 @@
                     Swal.fire('Error', 'Failed to save changes.', 'error');
                 }
             };
+            // --- TASK FORM SUBMIT ---
+            document.getElementById('assign-task-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                var btn = document.getElementById('task-submit-btn');
+                btn.disabled = true;
+                btn.innerText = 'Assigning...';
+
+                var formData = Object.fromEntries(new FormData(e.target));
+                formData.title = 'Monitor ' + document.getElementById('task-pig-tag-display').innerText;
+
+                var res = await fetch('{{ route('admin.tasks.store') }}', {
+                    method: 'POST',
+                    body: JSON.stringify(formData),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                var data = await res.json();
+                if (res.ok) {
+                    closeModal('assignTaskModal');
+                    Swal.fire({
+                        title: 'Task Assigned!',
+                        text: 'The monitoring task has been created.',
+                        icon: 'success',
+                        confirmButtonColor: '#22c55e'
+                    });
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = 'Assign Task';
+                    Swal.fire('Error', data.message || 'Something went wrong.', 'error');
+                }
+            });
+
+            // --- EDIT PEN FORM SUBMIT ---
+            document.getElementById('edit-pen-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                var id = document.getElementById('edit-pen-id').value;
+                var btn = document.getElementById('edit-pen-submit-btn');
+                btn.disabled = true;
+                btn.innerText = 'Saving...';
+
+                var res = await fetch('/pens/' + id, {
+                    method: 'PUT',
+                    body: JSON.stringify(Object.fromEntries(new FormData(e.target))),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                var data = await res.json();
+                if (data.success) {
+                    closeModal('editPenModal');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#22c55e'
+                    }).then(function() {
+                        location.reload();
+                    });
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = 'Save Changes';
+                    Swal.fire('Error', data.message || 'Something went wrong.', 'error');
+                }
+            });
         });
     </script>
 @endsection
