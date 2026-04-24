@@ -24,7 +24,7 @@ class SubjectController extends Controller
         $totalCosts = \App\Models\Pen::sum('batch_cost'); 
         // Note: batch_cost is a string in the DB currently, might need casting or cleaning if it has symbols
         
-        $avgFeedCost = \App\Models\FeedMix::avg('total_cost') ?? 0;
+        $avgFeedCost = \App\Models\FeedIngredient::avg('cost_per_sack') ?? 0;
 
         return view('subject.index', compact('totalPigs', 'sickPigs', 'recoveryRate', 'totalCosts', 'avgFeedCost'));
     }
