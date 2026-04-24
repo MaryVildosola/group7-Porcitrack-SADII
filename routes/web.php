@@ -17,8 +17,8 @@ use App\Http\Controllers\HealthController;
 
 // --- PUBLIC & REDIRECTS ---
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    return view('landing');
+})->name('landing');
 
 Route::get('/dashboard', function (Request $request) {
     if ($request->user()->role === 'admin') {
