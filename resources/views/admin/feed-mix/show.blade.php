@@ -52,7 +52,7 @@
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <button onclick="window.print()" class="btn-secondary">🖨️ Print</button>
-            <form method="POST" action="{{ route('admin.feed-mix.destroy', $formula) }}" onsubmit="return confirm('Delete this formula?')" style="display:inline;">
+            <form method="POST" action="{{ route('admin.feed-mix.destroy', $formula->id) }}" onsubmit="return confirm('Delete this formula?')" style="display:inline;">
                 @csrf @method('DELETE')
                 <button type="submit" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:10px 18px;border-radius:12px;cursor:pointer;font-size:0.88rem;font-weight:600;">Delete</button>
             </form>
@@ -76,6 +76,22 @@
         @else
             ⚠️ This formula is DEFICIENT in some nutrients. Review the analysis below.
         @endif
+    </div>
+
+    {{-- About This Formula --}}
+    <div class="panel" style="background:#f0f9ff;border-color:#bae6fd;">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+            <span style="font-size:1.6rem;line-height:1;">📋</span>
+            <div>
+                <div style="font-size:0.85rem;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">About This Feed Formula</div>
+                <p style="font-size:0.92rem;color:#374151;margin:0 0 8px;line-height:1.65;">
+                    A <strong>feed mixing formula</strong> defines the exact combination of raw feed ingredients (e.g., corn, soybean meal, fishmeal) blended per batch to meet the specific nutritional requirements of pigs at a given life stage. Each ingredient is measured in <strong>50 kg sacks</strong>, and the system automatically computes the weighted average nutrient profile of the resulting mix.
+                </p>
+                <p style="font-size:0.87rem;color:#6b7280;margin:0;line-height:1.6;">
+                    📚 <strong>Nutrient standards are based on</strong> Philippine swine industry guidelines aligned with <em>NRC (National Research Council)</em> and <em>PCAARRD</em> recommendations — covering Crude Protein (CP), Metabolizable Energy (ME), Crude Fat, Crude Fiber, Calcium (Ca), and Phosphorus (P) for Starter, Grower, Finisher, and Breeder/Sow stages.
+                </p>
+            </div>
+        </div>
     </div>
 
     {{-- Formula Meta --}}

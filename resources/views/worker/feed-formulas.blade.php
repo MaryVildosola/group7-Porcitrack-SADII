@@ -224,6 +224,16 @@ function openFormula(id) {
 
         ${f.notes ? `<div class="mb-6 p-4 rounded-2xl bg-white/5 border border-white/10 text-white/60 text-sm leading-relaxed"><i class='bx bx-note mr-1'></i> ${f.notes}</div>` : ''}
 
+        <div class="mb-6 p-4 rounded-2xl border" style="background:rgba(14,165,233,0.08);border-color:rgba(14,165,233,0.2);">
+            <p class="text-[10px] font-black uppercase tracking-[0.18em] mb-2" style="color:rgba(56,189,248,0.7);">📋 About This Formula</p>
+            <p class="text-white/60 text-xs leading-relaxed mb-1">
+                A <strong class="text-white/80">feed mixing formula</strong> defines the exact blend of raw ingredients (corn, soybean meal, fishmeal, etc.) needed per batch to meet a pig's nutritional requirements at a specific life stage. Quantities are in <strong class="text-white/80">50 kg sacks</strong>.
+            </p>
+            <p class="text-white/35 text-[11px] leading-relaxed">
+                📚 Nutrient targets are based on <em>NRC</em> &amp; <em>PCAARRD</em> Philippine swine guidelines — covering CP, ME, Fat, Fiber, Ca, and P per life stage.
+            </p>
+        </div>
+
         <div class="mb-6">
             <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">🧂 Mixing Instructions (per batch)</p>
             <div class="glass-panel rounded-2xl p-4 border border-white/5">

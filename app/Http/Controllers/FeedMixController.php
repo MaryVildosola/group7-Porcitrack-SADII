@@ -71,12 +71,13 @@ class FeedMixController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.feed-mix.show', $formula)
+        return redirect()->route('admin.feed-mix.show', $formula->id)
             ->with('success', 'Feed formula saved successfully!');
     }
 
-    public function show(FeedFormula $formula)
+    public function show(FeedFormula $feed_mix)
     {
+        $formula = $feed_mix;
         $formula->load('formulaIngredients.ingredient', 'creator');
         $nutrients    = $this->computeNutrients($formula);
         $requirements = self::REQUIREMENTS[$formula->life_stage] ?? [];
@@ -86,10 +87,10 @@ class FeedMixController extends Controller
         return view('admin.feed-mix.show', compact('formula', 'nutrients', 'requirements', 'checks', 'allRequirements'));
     }
 
-    public function destroy(FeedFormula $formula)
+    public function destroy(FeedFormula $feed_mix)
     {
-        $formula->formulaIngredients()->delete();
-        $formula->delete();
+        $feed_mix->formulaIngredients()->delete();
+        $feed_mix->delete();
 
         return redirect()->route('admin.feed-mix.index')
             ->with('success', 'Formula deleted.');
