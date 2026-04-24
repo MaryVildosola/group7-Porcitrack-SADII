@@ -103,7 +103,7 @@
             top: 0;
             left: 240px;
             right: 0;
-            z-index: 1050; /* Above everything including sidebar overlays */
+            z-index: 900; /* Below modals (1000) but above sidebar (999) */
             display: flex;
             align-items: center;
             justify-content: flex-end;

@@ -62,6 +62,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::get('/admin/pigs/{pig}', [PigController::class, 'adminShow'])->name('admin.pigs.show');
         Route::post('/admin/pigs/store', [PigController::class, 'store'])->name('admin.pigs.store');
         Route::post('/admin/pigs/{pig}/move-pen', [PigController::class, 'movePen'])->name('admin.pigs.move-pen');
+        Route::post('/admin/pigs/{pig}/update', [PigController::class, 'updateRecord'])->name('admin.pigs.update');
         Route::delete('/admin/pigs/{pig}', [PigController::class, 'destroy'])->name('admin.pigs.destroy');
 
         // User Management

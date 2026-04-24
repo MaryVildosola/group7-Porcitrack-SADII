@@ -311,22 +311,34 @@
         }
 
         .custom-modal {
-            background: #fff;
+            background: #f1f5f9;
             width: 90%;
             max-width: 550px;
             border-radius: 32px;
             padding: 40px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
             position: relative;
         }
 
         .modal-close {
             position: absolute;
-            top: 24px;
-            right: 24px;
-            font-size: 1.5rem;
+            top: 20px;
+            right: 20px;
+            font-size: 1.2rem;
             cursor: pointer;
-            color: #94a3b8;
+            color: #fff;
+            background: #475569;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #1e293b;
         }
 
         .form-group {
@@ -346,15 +358,43 @@
             width: 100%;
             padding: 14px 18px;
             border-radius: 14px;
-            border: 1.5px solid #e2e8f0;
+            border: 1.5px solid #cbd5e1;
             font-size: 0.9rem;
+            background: #fff;
+            color: #1e293b;
             transition: all 0.2s;
         }
 
         .form-input:focus {
             border-color: var(--accent-green);
             outline: none;
-            background: #fcfdfe;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        }
+
+        /* High-visibility Close Button for all SweetAlert modals on this page */
+        .swal2-close {
+            color: #ffffff !important;
+            background: #1e293b !important;
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            margin-top: 15px !important;
+            margin-right: 15px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 24px !important;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4) !important;
+            transition: all 0.2s !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+            border: 2px solid white !important;
+        }
+        .swal2-close:hover {
+            background: #ef4444 !important;
+            transform: scale(1.1) !important;
+            color: #ffffff !important;
         }
     </style>
 
@@ -724,7 +764,7 @@
                     title: 'Gathering Record...',
                     width: 700,
                     padding: '0',
-                    background: '#f8fafc',
+                    background: '#f1f5f9',
                     showConfirmButton: false,
                     showCloseButton: true,
                     customClass: {
@@ -996,6 +1036,103 @@
                     Swal.fire('Error', data.message || 'Could not save pig.', 'error');
                 }
             });
+
+            // --- ADMIN PIG EDITING LOGIC (GLOBAL) ---
+            window.togglePigEdit = function() {
+                console.log("Toggle Edit Triggered");
+                const editElements = document.querySelectorAll('.edit-mode');
+                const viewElements = document.querySelectorAll('.view-mode');
+                
+                if (editElements.length === 0) return;
+                const isEditing = editElements[0].style.display !== 'none';
+
+                editElements.forEach(el => {
+                    if (el.id === 'edit-actions-hud') {
+                        el.style.display = isEditing ? 'none' : 'flex';
+                    } else if (el.tagName === 'DIV') {
+                        el.style.display = isEditing ? 'none' : 'block';
+                    } else {
+                        el.style.display = isEditing ? 'none' : 'inline-block';
+                    }
+                });
+                viewElements.forEach(el => {
+                    if (el.tagName === 'H2' || el.tagName === 'DIV' || el.tagName === 'SECTION') {
+                        el.style.display = isEditing ? 'block' : 'none';
+                    } else {
+                        el.style.display = isEditing ? '' : 'none';
+                    }
+                });
+                
+                if (isEditing) {
+                    const activeTab = document.querySelector('.mini-tab-btn.active');
+                    if (activeTab) {
+                        const onclickAttr = activeTab.getAttribute('onclick');
+                        const match = onclickAttr ? onclickAttr.match(/'([^']+)'/) : null;
+                        if (match) {
+                            document.querySelectorAll('.mini-tab-content').forEach(c => c.style.display = 'none');
+                            const targetTab = document.getElementById(match[1]);
+                            if (targetTab) targetTab.style.display = 'block';
+                        }
+                    }
+                } else {
+                    const hud = document.getElementById('edit-actions-hud');
+                    if (hud) hud.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+
+                const btn = document.getElementById('edit-pig-toggle-btn');
+                if (btn) {
+                    btn.innerHTML = isEditing ? '<i class="bx bx-edit-alt"></i> Edit Details' : '<i class="bx bx-x"></i> Cancel Edit';
+                    btn.style.background = isEditing ? 'rgba(255,255,255,0.15)' : '#ef4444';
+                }
+            };
+
+            window.saveAdminPigChanges = async function(id) {
+                const form = document.getElementById('admin-edit-pig-form');
+                if (!form) return;
+                
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                Swal.fire({
+                    title: 'Saving changes...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                try {
+                    const response = await fetch(`/admin/pigs/${id}/update`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Updated!',
+                            text: result.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            if (typeof window.viewPig === 'function') {
+                                window.viewPig(id);
+                            } else {
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        Swal.fire('Error', result.message || 'Something went wrong', 'error');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire('Error', 'Failed to save changes.', 'error');
+                }
+            };
         });
     </script>
 @endsection
