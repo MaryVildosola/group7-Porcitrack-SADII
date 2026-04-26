@@ -2,23 +2,54 @@
 
 @section('content')
 <style>
-    .worker-dash .text-white          { color: #1e293b !important; }
-    .worker-dash .text-white\/30,
-    .worker-dash .text-white\/40,
-    .worker-dash .text-white\/50,
-    .worker-dash .text-white\/60,
-    .worker-dash .text-white\/70,
-    .worker-dash .text-white\/80      { color: #64748b !important; }
-    .worker-dash .bg-white\/5,
-    .worker-dash .bg-white\/10,
-    .worker-dash .bg-white\/15        { background-color: rgba(0,0,0,0.05) !important; }
-    .worker-dash .border-white\/10,
-    .worker-dash .border-white\/5     { border-color: rgba(0,0,0,0.1) !important; }
-    .worker-dash .hover\:bg-white\/5:hover,
-    .worker-dash .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.07) !important; }
-    .worker-dash .glass-panel         { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; }
+/* LIGHT MODE ONLY */
+body.light-theme .worker-dash {
+    background-color: #f8fafc !important;
+}
+
+body.light-theme .worker-dash .text-white {
+    color: #1e293b !important;
+}
+
+body.light-theme .worker-dash .text-white\/30,
+body.light-theme .worker-dash .text-white\/40,
+body.light-theme .worker-dash .text-white\/50,
+body.light-theme .worker-dash .text-white\/60,
+body.light-theme .worker-dash .text-white\/70,
+body.light-theme .worker-dash .text-white\/80 {
+    color: #64748b !important;
+}
+
+body.light-theme .worker-dash .bg-white\/5,
+body.light-theme .worker-dash .bg-white\/10,
+body.light-theme .worker-dash .bg-white\/15 {
+    background-color: rgba(0,0,0,0.05) !important;
+}
+
+body.light-theme .worker-dash .border-white\/10,
+body.light-theme .worker-dash .border-white\/5 {
+    border-color: rgba(0,0,0,0.1) !important;
+}
+
+body.light-theme .worker-dash .hover\:bg-white\/5:hover,
+body.light-theme .worker-dash .hover\:bg-white\/10:hover {
+    background-color: rgba(0,0,0,0.07) !important;
+}
+
+body.light-theme .worker-dash .glass-panel {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* LIGHT MODE ONLY */
+body.light-theme .glass-panel {
+    background: rgba(255,255,255,0.9) !important;
+    border-color: rgba(0,0,0,0.1) !important;
+}
 </style>
-<div class="worker-dash min-h-screen bg-[#f8fafc]">
+<div class="worker-dash min-h-screen bg-[#060b16]">
 <div class="p-5 md:p-10 max-w-full">
 
     <!-- Header -->
