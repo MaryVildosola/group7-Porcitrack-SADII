@@ -2,79 +2,74 @@
 
 @section('content')
 <style>
-    /* Dark Mode Overrides Engine */
-    .worker-dash.dark-mode { background: linear-gradient(to bottom right, #0a180e, #0d2214, #0a180e) !important; }
-    
-    /* Core Layouts */
-    .dark-mode .dash-card, .dark-mode .bg-white, .dark-mode .bg-white\/80 { 
-        background: rgba(255,255,255,0.08) !important; 
-        border-color: rgba(255,255,255,0.12) !important; 
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    /* Dark mode is the DEFAULT (body has no class).
+       Light mode overrides activate when body has .light-theme (set by worker.blade.php) */
+    body.light-theme .worker-dash { background: #f1f5f9 !important; }
+
+    body.light-theme .dash-card,
+    body.light-theme .bg-white\/80 {
+        background: rgba(255,255,255,0.95) !important;
+        border-color: rgba(0,0,0,0.08) !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.06) !important;
+    }
+    body.light-theme .dash-inner,
+    body.light-theme .bg-slate-50,
+    body.light-theme .bg-slate-100,
+    body.light-theme .bg-slate-200 {
+        background: #f8fafc !important;
+        border-color: rgba(0,0,0,0.05) !important;
+    }
+    body.light-theme .border-slate-100,
+    body.light-theme .border-slate-200 { border-color: #e2e8f0 !important; }
+    body.light-theme .text-slate-900,
+    body.light-theme .text-slate-800,
+    body.light-theme h1,
+    body.light-theme h2,
+    body.light-theme h3 { color: #0f172a !important; }
+    body.light-theme .text-slate-500,
+    body.light-theme .text-slate-400,
+    body.light-theme .text-slate-300 { color: #64748b !important; }
+
+    /* Dark Mode styles (default — no class needed) */
+    .worker-dash { background: linear-gradient(to bottom right, #0a180e, #0d2214, #0a180e); }
+
+    .dash-card, .bg-white\/80 {
+        background: rgba(255,255,255,0.08) !important;
+        border-color: rgba(255,255,255,0.12) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important;
     }
-    .dark-mode .dash-inner, .dark-mode .bg-slate-50, .dark-mode .bg-slate-100, .dark-mode .bg-slate-200 { 
-        background: rgba(0,0,0,0.25) !important; 
-        border-color: rgba(255,255,255,0.04) !important; 
+    .dash-inner, .bg-slate-50, .bg-slate-100, .bg-slate-200 {
+        background: rgba(0,0,0,0.25) !important;
+        border-color: rgba(255,255,255,0.04) !important;
         box-shadow: inset 0 4px 15px rgba(0,0,0,0.2) !important;
     }
-    .dark-mode .border-slate-100, .dark-mode .border-slate-200, .dark-mode .border-dashed { border-color: rgba(255,255,255,0.08) !important; }
-    
-    /* Typography */
-    .dark-mode .text-slate-900, .dark-mode .text-slate-800, .dark-mode h1, .dark-mode h2, .dark-mode h3 { color: #ffffff !important; }
-    .dark-mode .text-slate-500, .dark-mode .text-slate-400, .dark-mode .text-slate-300 { color: rgba(255,255,255,0.5) !important; }
-    .dark-mode .text-slate-900.dashboard-title span { color: #4ade80 !important; }
+    .border-slate-100, .border-slate-200, .border-dashed { border-color: rgba(255,255,255,0.08) !important; }
+    .text-slate-900, .text-slate-800 { color: #ffffff !important; }
+    .text-slate-500, .text-slate-400, .text-slate-300 { color: rgba(255,255,255,0.5) !important; }
+    .text-slate-50, .text-slate-100 { color: rgba(255,255,255,0.03) !important; }
 
-    /* Watermark background Icons */
-    .dark-mode .text-slate-50, .dark-mode .text-slate-100 { color: rgba(255,255,255,0.03) !important; }
-    .dark-mode i.text-slate-300 { color: rgba(255,255,255,0.2) !important; }
-
-    /* Dynamic Badges & Pastel Backgrounds => Translucent Neon */
-    .dark-mode .bg-red-50, .dark-mode .bg-green-50, .dark-mode .bg-blue-50, 
-    .dark-mode .bg-yellow-50, .dark-mode .bg-indigo-50, .dark-mode .bg-purple-50,
-    .dark-mode .bg-orange-50, .dark-mode .bg-teal-50 {
-        background-color: rgba(255,255,255,0.05) !important;
-        border-color: rgba(255,255,255,0.1) !important;
+    /* Light mode for inputs/modals when toggled */
+    body.light-theme input, body.light-theme select, body.light-theme textarea {
+        background-color: rgba(0,0,0,0.04) !important;
+        color: #0f172a !important;
+        border-color: rgba(0,0,0,0.1) !important;
     }
-    
-    /* Dynamic Colored Texts => Brightened 300 scale */
-    .dark-mode .text-red-500, .dark-mode .text-red-600 { color: #fca5a5 !important; }
-    .dark-mode .text-blue-500, .dark-mode .text-blue-600 { color: #93c5fd !important; }
-    .dark-mode .text-green-500, .dark-mode .text-green-600 { color: #86efac !important; }
-    .dark-mode .text-yellow-500, .dark-mode .text-yellow-600 { color: #fde047 !important; }
-    .dark-mode .text-indigo-500, .dark-mode .text-indigo-600 { color: #a5b4fc !important; }
-    .dark-mode .text-purple-500, .dark-mode .text-purple-600 { color: #d8b4fe !important; }
-    .dark-mode .text-orange-500, .dark-mode .text-orange-600 { color: #fdba74 !important; }
-    
-    /* Inputs, Selects, & Textareas Customization */
-    .dark-mode input, .dark-mode select, .dark-mode textarea {
-        background-color: rgba(0,0,0,0.3) !important;
-        color: #ffffff !important;
-        border-color: rgba(255,255,255,0.1) !important;
+    body.light-theme .bcs-btn, body.light-theme .feed-btn {
+        background: rgba(0,0,0,0.04) !important;
+        border-color: rgba(0,0,0,0.1) !important;
+        color: #64748b !important;
     }
-    .dark-mode input option { background-color: #0b1120 !important; color: white !important; }
-    .dark-mode select option { background-color: #0b1120 !important; color: white !important; }
-    .dark-mode input::placeholder, .dark-mode textarea::placeholder { color: rgba(255,255,255,0.3) !important; }
-    
-    /* Switch/Toggle Selectors & Modals */
-    .dark-mode .bcs-btn, .dark-mode .feed-btn { 
-        background: rgba(0,0,0,0.3) !important; border-color: rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.6) !important; 
+    body.light-theme .bcs-btn.border-green-500,
+    body.light-theme .feed-btn.border-green-500 {
+        background: rgba(34,197,94,0.1) !important;
+        border-color: rgba(34,197,94,0.4) !important;
+        color: #15803d !important;
     }
-    .dark-mode .bcs-btn.border-green-500, .dark-mode .feed-btn.border-green-500 { 
-        background: rgba(34,197,94,0.15) !important; border-color: rgba(34,197,94,0.4) !important; color: #86efac !important; 
-    }
-    
-    .dark-mode .glass-panel { 
-        background: rgba(255,255,255,0.08) !important; 
-        border-color: rgba(255,255,255,0.12) !important; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important;
-    }
-
-    .dark-mode #physicalChecklist > div { background: rgba(0,0,0,0.2) !important; border-color: rgba(255,255,255,0.05) !important; }
-    .dark-mode #physicalChecklist > div > span { color: rgba(255,255,255,0.6) !important; }
-    .dark-mode #physicalChecklist > div.bg-green-50\/50 { background: rgba(34,197,94,0.15) !important; border-color: rgba(34,197,94,0.3) !important; }
-    .dark-mode #physicalChecklist > div.bg-green-50\/50 > span { color: #86efac !important; }
 </style>
-<div class="worker-dash min-h-screen bg-slate-200 transition-colors duration-500">
+
+<div class="worker-dash min-h-screen transition-colors duration-200">
     <div class="px-6 md:px-12 py-10 max-w-full">
 
         <!-- Header Section -->
@@ -149,9 +144,9 @@
                 <h2 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Pens Overview</h2>
                 <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest mt-1">Real-time inventory</p>
             </div>
-            <button class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-green-600 transition shadow-sm">
-                <i class='bx bx-filter-alt'></i>
-            </button>
+  <button class="w-10 h-10 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-green-600 dark:text-white/60 transition shadow-sm">
+    <i class='bx bx-filter-alt'></i>
+</button>
         </div>
 
         <!-- Pens Grid -->
@@ -218,9 +213,11 @@
                 </div>
             </div>
             @empty
-            <div class="p-10 text-center bg-white rounded-[2rem] border border-dashed border-slate-200">
-                <p class="text-slate-400 text-sm font-medium">No recent activity found.</p>
-            </div>
+            <div class="p-10 text-center bg-white dark:bg-white/5 rounded-[2rem] border border-dashed border-slate-200 dark:border-white/10">
+    <p class="text-slate-400 dark:text-white/50 text-sm font-medium">
+        No recent activity found.
+    </p>
+</div>
             @endforelse
         </div>
 
@@ -240,14 +237,12 @@
                 </button>
             </div>
             <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-green-500 to-emerald-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                 <div id="qr-reader" class="relative rounded-[2.5rem] overflow-hidden border-2 border-white/10 bg-black aspect-square"></div>
-                <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none"></div>
                 <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.8)] animate-pulse"></div>
             </div>
             <div class="mt-8 text-center space-y-2">
                 <p class="text-white font-bold">Waiting for ID...</p>
-                <p class="text-white/40 text-xs px-6 leading-relaxed">Position a Pen QR or Ear Tag within the frame to automatically trigger the log entry.</p>
+                <p class="text-white/40 text-xs px-6 leading-relaxed">Position a Pen QR or Ear Tag within the frame.</p>
             </div>
         </div>
     </div>
@@ -279,7 +274,7 @@
         </div>
     </div>
 
-    <!-- Health & Pig Monitoring Form Modal -->
+    <!-- Health Monitoring Modal -->
     <div id="healthModal" class="fixed inset-0 z-[210] hidden bg-slate-900/95 backdrop-blur-3xl flex items-start justify-center p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-slate-200 animate-fade-in my-6">
             <div class="p-6 border-b border-slate-100 bg-slate-50">
@@ -309,7 +304,6 @@
                     </div>
                 </div>
 
-                <!-- Body Condition Score -->
                 <div>
                     <p class="text-base font-black text-slate-900 mb-1">Body Condition Score</p>
                     <p class="text-sm text-slate-400 mb-3">1 = Thin | 3 = Ideal | 5 = Obese</p>
@@ -323,19 +317,12 @@
                     <input type="hidden" id="selectedBCS" value="3">
                 </div>
 
-                <!-- Feeding Behavior -->
                 <div>
                     <p class="text-base font-black text-slate-900 mb-3">Feeding Behavior</p>
                     <div class="grid grid-cols-3 gap-2">
-                        <button type="button" onclick="setFeedBehavior(this, 'Active')" class="feed-btn py-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-bold text-xs transition active:scale-95">
-                            Active
-                        </button>
-                        <button type="button" onclick="setFeedBehavior(this, 'Normal')" class="feed-btn py-4 rounded-xl border border-green-500 bg-green-50 text-green-700 font-bold text-xs transition active:scale-95">
-                            Normal
-                        </button>
-                        <button type="button" onclick="setFeedBehavior(this, 'Poor/None')" class="feed-btn py-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-bold text-xs transition active:scale-95">
-                            Poor/None
-                        </button>
+                        <button type="button" onclick="setFeedBehavior(this, 'Active')" class="feed-btn py-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-bold text-xs transition active:scale-95">Active</button>
+                        <button type="button" onclick="setFeedBehavior(this, 'Normal')" class="feed-btn py-4 rounded-xl border border-green-500 bg-green-50 text-green-700 font-bold text-xs transition active:scale-95">Normal</button>
+                        <button type="button" onclick="setFeedBehavior(this, 'Poor/None')" class="feed-btn py-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-bold text-xs transition active:scale-95">Poor/None</button>
                     </div>
                     <input type="hidden" id="selectedFeedBehavior" value="Normal">
                 </div>
@@ -383,35 +370,17 @@
 
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        // --- Page specific theme listener ---
-        window.applyPageTheme = function(theme) {
-            const dash = document.querySelector('.worker-dash');
-            if(theme === 'dark') {
-                dash.classList.add('dark-mode');
-            } else {
-                dash.classList.remove('dark-mode');
-            }
-        };
-
         let html5QrcodeScanner = null;
 
         function startQRScanner() {
             document.getElementById('qrModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-
-            const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0
-            };
-
             html5QrcodeScanner = new Html5Qrcode("qr-reader");
             html5QrcodeScanner.start(
                 { facingMode: "environment" },
-                config,
+                { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
                 onScanSuccess
             ).catch(err => {
-                console.error("Camera access failed", err);
                 Swal.fire({ title: 'Camera Error', text: 'Unable to access your camera.', icon: 'error' });
                 stopQRScanner();
             });
@@ -421,45 +390,26 @@
             document.getElementById('qrModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
             if (html5QrcodeScanner && html5QrcodeScanner.getState() !== 1) {
-                html5QrcodeScanner.stop().catch(err => console.warn("Scanner stop error:", err));
+                html5QrcodeScanner.stop().catch(() => {});
             }
         }
 
-        function onScanSuccess(decodedText, decodedResult) {
+        function onScanSuccess(decodedText) {
             try { stopQRScanner(); } catch (e) {}
             const rawId = decodedText.trim();
-            
-            // JSON handling for format: {"type":"pig","tag":"Pen Z1-001","pen_id":"3","pen_name":"Pen Z1"}
             if (rawId.startsWith('{')) {
                 try {
                     const qrData = JSON.parse(rawId);
-                    const type = (qrData.type || qrData.TYPE || '').toUpperCase();
-                    
-                    if (type === 'PIG') {
-                        const tag = qrData.tag || qrData.TAG || qrData.pig_id || qrData.PIG_ID;
-                        if (tag) {
-                            openHealthModal(tag);
-                            return;
-                        }
-                    } else if (type === 'PEN') {
-                        const penId = qrData.pen_id || qrData.PEN_ID || qrData.id || qrData.ID;
-                        const penName = qrData.pen_name || qrData.PEN_NAME || '';
-                        if (penId) {
-                            openFeedingModal(penId, penName);
-                            return;
-                        }
-                    }
-                } catch (e) { console.error("JSON Parse Error", e); }
+                    const type = (qrData.type || '').toUpperCase();
+                    if (type === 'PIG') { openHealthModal(qrData.tag); return; }
+                    if (type === 'PEN') { openFeedingModal(qrData.pen_id, qrData.pen_name); return; }
+                } catch (e) {}
             }
-
-            // Fallback for text format
             let id = rawId.toUpperCase();
             if (id.startsWith('PEN-') || id.startsWith('PEN')) {
                 openFeedingModal(id.replace('PEN-', '').replace('PEN', '').trim());
-            } else if (id.startsWith('PIG-') || id.startsWith('PIG')) {
-                openHealthModal(id.replace('PIG-', '').replace('PIG', '').trim());
             } else {
-                openHealthModal(id); // Assume pig tag if unknown format
+                openHealthModal(id);
             }
         }
 
@@ -481,24 +431,14 @@
         async function submitFeedingLog() {
             const qty = document.getElementById('feedQty').value;
             const penId = document.getElementById('targetPenId').innerText;
-            if (!qty) {
-                Swal.fire({ title: 'Error', text: 'Enter quantity', icon: 'error' });
-                return;
-            }
-
-            // Here you would normally send to an API. For now, we'll show success.
+            if (!qty) { Swal.fire({ title: 'Error', text: 'Enter quantity', icon: 'error' }); return; }
             Swal.fire({ title: 'Feeding Logged', text: `${qty}kg for Pen ${penId}`, icon: 'success' });
             closeFeedingModal();
         }
 
         const physicalCheckItems = [
-            'Snout — No discharge',
-            'Eyes — Clear, bright',
-            'Ears — No redness',
-            'Legs — Walking normally',
-            'Skin — No wounds/rashes',
-            'Breathing — Normal',
-            'Water — Drinking adequately',
+            'Snout — No discharge','Eyes — Clear, bright','Ears — No redness',
+            'Legs — Walking normally','Skin — No wounds/rashes','Breathing — Normal','Water — Drinking adequately',
         ];
 
         function openHealthModal(pigId) {
@@ -507,7 +447,6 @@
             document.getElementById('healthModal').classList.add('flex');
             document.body.style.overflow = 'hidden';
 
-            // Reset UI states
             document.getElementById('pigInfoPen').innerText = 'Loading...';
             document.getElementById('pigInfoStage').innerText = 'Loading...';
             document.getElementById('pigInfoLastCheck').innerText = 'Loading...';
@@ -526,7 +465,6 @@
                 if (b.innerText.trim() === 'Normal') b.classList.add('border-green-500', 'bg-green-50', 'text-green-700');
             });
 
-            // Reset checklist
             const container = document.getElementById('physicalChecklist');
             container.innerHTML = '';
             physicalCheckItems.forEach((item, i) => {
@@ -538,7 +476,6 @@
                 `);
             });
 
-            // Fetch data
             fetch(`/api/health/pig/${pigId}`)
                 .then(r => r.json())
                 .then(data => {
@@ -554,11 +491,8 @@
         function toggleCheck(el) {
             const cb = el.querySelector('input');
             cb.checked = !cb.checked;
-            if (cb.checked) {
-                el.classList.add('border-green-200', 'bg-green-50/50');
-            } else {
-                el.classList.remove('border-green-200', 'bg-green-50/50');
-            }
+            el.classList.toggle('border-green-200', cb.checked);
+            el.classList.toggle('bg-green-50\/50', cb.checked);
         }
 
         function setBCS(btn, score) {
@@ -596,11 +530,7 @@
                 physical_checks: physicalChecks
             };
 
-            Swal.fire({
-                title: 'Saving Report...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
+            Swal.fire({ title: 'Saving Report...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
             try {
                 const response = await fetch('/api/health/report', {
@@ -608,12 +538,9 @@
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify(data)
                 });
-
                 if (response.ok) {
                     Swal.fire({ title: 'Report Saved', text: 'Farm database updated successfully.', icon: 'success' });
                     closeHealthModal();
-                    // Smoothly refresh the dashboard data without a full page reload if possible, 
-                    // but for now location.reload() is the most reliable way to update all counts and recent activities.
                     setTimeout(() => location.reload(), 1000);
                 } else {
                     const err = await response.json();
