@@ -20,7 +20,7 @@
     .light-mode .backdrop-blur-xl,
     .light-mode .backdrop-blur-3xl    { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; backdrop-filter: blur(10px); }
 </style>
-<div class="worker-dash min-h-screen bg-gradient-to-br from-[#0a180e] via-[#0d2214] to-[#0a180e] transition-colors duration-500">
+<div class="worker-dash min-h-screen">
     <div class="p-6 md:p-12 max-w-full">
 
         <!-- Header Section -->
