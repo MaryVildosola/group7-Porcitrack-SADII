@@ -41,14 +41,20 @@
         }
     </script>
 
+<script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+
     <style>
         body {
-            background-color: #f8fafc;
+            background-color: #060b16; /* Default Dark Base */
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
             margin: 0;
             padding: 0;
-            color: #0f172a;
+            color: #ffffff; /* Default White Text */
         }
 
         html,
@@ -64,11 +70,15 @@
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-        }
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .glass-panel {
+    background: rgba(255,255,255,0.85);
+    border-color: rgba(0,0,0,0.1);
+}
 
         .glass-button {
             background: rgba(255, 255, 255, 0.85);
@@ -82,11 +92,52 @@
             transform: scale(0.97);
             background: rgba(255, 255, 255, 1);
         }
+
+        /* --- GLOBAL LIGHT THEME OVERRIDES --- */
+        body.light-theme,
+        body.light-theme main,
+        body.light-theme .worker-dash {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        
+        /* Layout Backgrounds (Sidebar, Header, Floating Icons) */
+        body.light-theme .bg-\[\#0b1120\],
+        body.light-theme .bg-\[\#060b16\] { background-color: #ffffff !important; }
+        body.light-theme .bg-\[\#141e36\] { background-color: #f1f5f9 !important; }
+
+        .worker-dash {
+    background: linear-gradient(
+        135deg,
+        #0a180e 0%,
+        #0d2214 40%,
+        #0a180e 100%
+    );
+}
+        
+        /* Text Colors */
+        body.light-theme .text-white { color: #0f172a !important; }
+        body.light-theme .text-white\/30,
+        body.light-theme .text-white\/40,
+        body.light-theme .text-white\/50,
+        body.light-theme .text-white\/60,
+        body.light-theme .text-white\/70,
+        body.light-theme .text-white\/80 { color: #64748b !important; }
+        
+        /* Borders */
+        body.light-theme .border-white\/5,
+        body.light-theme .border-white\/10,
+        body.light-theme .border-white\/20 { border-color: #e2e8f0 !important; }
+        
+        /* Button and Hover Backgrounds */
+        body.light-theme .bg-white\/5 { background-color: #f8fafc !important; }
+        body.light-theme .bg-white\/10 { background-color: #f1f5f9 !important; }
+        body.light-theme .hover\:bg-white\/10:hover,
+        body.light-theme .hover\:bg-\[\#141e36\]:hover { background-color: #e2e8f0 !important; }
     </style>
 </head>
 
-<body class="text-slate-800 antialiased min-h-screen selection:bg-green-200 overflow-x-hidden">
-
+<body class="text-white bg-[#060b16] antialiased min-h-screen selection:bg-green-200 overflow-x-hidden">
     <div class="flex h-screen w-screen overflow-hidden">
 
         <!-- Backdrop Overlay (Mobile only) -->
@@ -248,11 +299,6 @@
             <!-- Global Floating Icons (Right Side - Green as requested) -->
             <div
                 class="hidden md:flex absolute top-4 right-4 md:top-12 md:right-8 z-50 items-center gap-2 md:gap-3 pointer-events-auto">
-                <!-- Theme Toggle -->
-                <button onclick="toggleWorkerTheme()"
-                    class="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center bg-[#0b1120] border border-white/10 hover:bg-[#141e36] transition shadow-lg text-white active:scale-95">
-                    <i class='bx bx-sun text-lg md:text-xl global-theme-icon'></i>
-                </button>
                 <!-- Sync Status -->
                 <div id="globalSyncStatus"
                     class="flex items-center gap-2 md:gap-3 bg-[#0b1120] px-3 py-1.5 md:px-4 md:py-2 rounded-2xl border border-white/10 cursor-pointer hover:bg-[#141e36] transition shadow-lg"
@@ -487,33 +533,72 @@
         function toggleWorkerTheme() {
             let currentTheme = localStorage.getItem('porcitrack-worker-theme');
             if(!currentTheme) {
-                currentTheme = window.location.pathname.includes('dashboard') ? 'light' : 'dark';
+                currentTheme = 'dark'; // Default to dark
             }
             let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             localStorage.setItem('porcitrack-worker-theme', newTheme);
-            syncThemeIcon(newTheme);
-            
-            if (typeof window.applyPageTheme === 'function') {
-                window.applyPageTheme(newTheme);
-            }
+            applyPageTheme(newTheme);
         }
         
-        function syncThemeIcon(theme) {
+        function applyPageTheme(theme) {
+            // Updated Icon Logic: Dark Mode = Moon, Light Mode = Sun
             document.querySelectorAll('.global-theme-icon').forEach(icon => {
-                icon.className = theme === 'dark' ? 'bx bx-sun text-xl md:text-xl global-theme-icon' : 'bx bx-moon text-xl md:text-xl global-theme-icon';
+                icon.className = theme === 'dark' ? 'bx bx-moon text-xl md:text-xl global-theme-icon' : 'bx bx-sun text-xl md:text-xl global-theme-icon';
             });
+
+            // Toggle custom light-theme class on body
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+
+            // Update settings toggle switch
+            const themeToggle = document.getElementById('themeToggleSwitch');
+            if(themeToggle) {
+                themeToggle.checked = (theme === 'dark');
+            }
         }
         
         document.addEventListener('DOMContentLoaded', () => {
-            let current = localStorage.getItem('porcitrack-worker-theme');
-            if(!current) {
-                current = window.location.pathname.includes('dashboard') ? 'light' : 'dark';
-            }
-            syncThemeIcon(current);
-            if(typeof window.applyPageTheme === 'function') {
-                window.applyPageTheme(current);
-            }
+            let current = localStorage.getItem('porcitrack-worker-theme') || 'dark';
+            applyPageTheme(current);
         });
+
+        // --- FIXED BROKEN BUTTONS (Search & Sync) ---
+        window.showSearch = function() {
+            Swal.fire({
+                title: 'Search',
+                input: 'text',
+                inputPlaceholder: 'Search pigs, pens, or tasks...',
+                background: document.body.classList.contains('light-theme') ? '#ffffff' : '#0b1120',
+                color: document.body.classList.contains('light-theme') ? '#000000' : '#ffffff',
+                confirmButtonColor: '#22c55e',
+                confirmButtonText: 'Search'
+            });
+        }
+
+        window.syncData = function() {
+            Swal.fire({
+                title: 'Syncing Data...',
+                text: 'Connecting to main server...',
+                icon: 'info',
+                timer: 1500,
+                showConfirmButton: false,
+                background: document.body.classList.contains('light-theme') ? '#ffffff' : '#0b1120',
+                color: document.body.classList.contains('light-theme') ? '#000000' : '#ffffff',
+            }).then(() => {
+                Swal.fire({
+                    title: 'Synced!',
+                    text: 'All offline data has been updated.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: document.body.classList.contains('light-theme') ? '#ffffff' : '#0b1120',
+                    color: document.body.classList.contains('light-theme') ? '#000000' : '#ffffff',
+                });
+            });
+        }
     </script>
 
     <!-- PWA Registration -->
@@ -526,6 +611,21 @@
             });
         }
     </script>
+
+    <script>
+function toggleDarkMode() {
+    const html = document.documentElement;
+
+    if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+    } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+</script>
+
 </body>
 
 </html>
