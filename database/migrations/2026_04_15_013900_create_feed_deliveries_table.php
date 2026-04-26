@@ -9,13 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('feed_deliveries', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+public function up(): void
+{
+    Schema::create('feed_deliveries', function (Blueprint $table) {
+    $table->id();
+    $table->string('feed_type')->default('Standard Feed');
+    $table->integer('quantity')->default(0);
+    $table->date('delivery_date')->nullable();
+    $table->timestamps();
+});
+}
 
     /**
      * Reverse the migrations.
