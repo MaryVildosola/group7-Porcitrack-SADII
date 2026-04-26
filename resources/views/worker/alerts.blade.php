@@ -2,23 +2,24 @@
 
 @section('content')
 <style>
-    .worker-dash .text-white          { color: #1e293b !important; }
-    .worker-dash .text-white\/30,
-    .worker-dash .text-white\/40,
-    .worker-dash .text-white\/50,
-    .worker-dash .text-white\/60,
-    .worker-dash .text-white\/70,
-    .worker-dash .text-white\/80      { color: #64748b !important; }
-    .worker-dash .bg-white\/5,
-    .worker-dash .bg-white\/10,
-    .worker-dash .bg-white\/15        { background-color: rgba(0,0,0,0.05) !important; }
-    .worker-dash .border-white\/10,
-    .worker-dash .border-white\/5     { border-color: rgba(0,0,0,0.1) !important; }
-    .worker-dash .hover\:bg-white\/10:hover,
-    .worker-dash .hover\:bg-white\/20:hover { background-color: rgba(0,0,0,0.07) !important; }
-    .worker-dash .glass-panel         { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; }
+    body.light-theme .worker-dash .text-white          { color: #1e293b !important; }
+    body.light-theme .worker-dash .text-white\/30,
+    body.light-theme .worker-dash .text-white\/40,
+    body.light-theme .worker-dash .text-white\/50,
+    body.light-theme .worker-dash .text-white\/60,
+    body.light-theme .worker-dash .text-white\/70,
+    body.light-theme .worker-dash .text-white\/80      { color: #64748b !important; }
+    body.light-theme .worker-dash .bg-white\/5,
+    body.light-theme .worker-dash .bg-white\/10,
+    body.light-theme .worker-dash .bg-white\/15        { background-color: rgba(0,0,0,0.05) !important; }
+    body.light-theme .worker-dash .border-white\/10,
+    body.light-theme .worker-dash .border-white\/5     { border-color: rgba(0,0,0,0.1) !important; }
+    body.light-theme .worker-dash .hover\:bg-white\/10:hover,
+    body.light-theme .worker-dash .hover\:bg-white\/20:hover { background-color: rgba(0,0,0,0.07) !important; }
+    body.light-theme .worker-dash .glass-panel         { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.1) !important; }
+    body.light-theme .worker-dash                      { background-color: #f8fafc !important; }
 </style>
-<div class="worker-dash min-h-screen bg-[#f8fafc]">
+<div class="worker-dash min-h-screen">
     <div class="p-6 md:p-12 max-w-full">
 
         <!-- Header Section -->
@@ -127,4 +128,5 @@
             });
         }
     </script>
+</div>
 @endsection
