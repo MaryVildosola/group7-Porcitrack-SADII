@@ -276,9 +276,10 @@ body.light-theme .glass-panel {
                         <p class="text-[10px] text-white/40 uppercase tracking-widest">Worker</p>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                <form method="POST" action="{{ route('logout') }}" class="mt-2" id="workerLogoutForm">
                     @csrf
-                    <button type="submit"
+                    <button type="button"
+                        onclick="confirmWorkerLogout()"
                         class="w-full flex items-center justify-center gap-2 px-4 py-2 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition text-xs font-medium border border-transparent hover:border-white/10">
                         <i class='bx bx-log-out text-base'></i>
                         <span>Logout</span>
@@ -597,6 +598,27 @@ body.light-theme .glass-panel {
                     background: document.body.classList.contains('light-theme') ? '#ffffff' : '#0b1120',
                     color: document.body.classList.contains('light-theme') ? '#000000' : '#ffffff',
                 });
+        function confirmWorkerLogout() {
+            Swal.fire({
+                title: 'Log Out?',
+                text: 'Are you sure you want to log out of PorciTrack?',
+                icon: 'question',
+                background: '#0b1120',
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, log out',
+                cancelButtonText: 'Stay',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#334155',
+                customClass: {
+                    popup: 'rounded-3xl',
+                    confirmButton: 'rounded-xl font-bold text-sm',
+                    cancelButton: 'rounded-xl font-bold text-sm',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('workerLogoutForm').submit();
+                }
             });
         }
     </script>

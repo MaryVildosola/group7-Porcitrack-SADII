@@ -108,11 +108,10 @@
     </nav>
     <!-- End::nav -->
 
-    <!-- Logout at bottom -->
     <div class="sidebar-logout">
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout') }}" id="adminLogoutForm">
             @csrf
-            <button type="submit" class="sidebar-logout-btn">
+            <button type="button" class="sidebar-logout-btn" onclick="confirmAdminLogout()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" fill="currentColor" />
                 </svg>
@@ -120,6 +119,30 @@
             </button>
         </form>
     </div>
+
+    <script>
+    function confirmAdminLogout() {
+        Swal.fire({
+            title: '<span style="font-weight:900;color:#1e293b;">Log Out?</span>',
+            html: '<p style="color:#64748b;font-size:0.88rem;margin:0;">Are you sure you want to log out of PorciTrack?</p>',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, log out',
+            cancelButtonText: 'Stay',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#94a3b8',
+            customClass: {
+                popup: 'rounded-3xl border-none shadow-2xl',
+                confirmButton: 'px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-xs',
+                cancelButton: 'px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-xs'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('adminLogoutForm').submit();
+            }
+        });
+    }
+    </script>
 
 </div>
 <!-- End::main-sidebar -->
