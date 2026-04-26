@@ -260,43 +260,16 @@ class ProfileController extends Controller
     }
 
     // Update settings specifically for workers
-    public function updateWorkerSettings(Request $request): RedirectResponse
-    {
-        $user = User::findOrFail(Auth::id());
+    public function updateWorkerSettings(Request $request)
+{
+    $request->validate([
+        'theme' => 'required|in:light,dark'
+    ]);
 
-        $validated = $request->validate([
-            'name'      => ['required', 'string', 'max:255'],
-            'password'  => ['nullable', 'string', 'min:8', 'confirmed'],
-            'photo'     => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
-        ]);
+    $user = auth()->user();
+    $user->theme = $request->theme;
+    $user->save();
 
-        $user->name = $validated['name'];
-
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
-
-        if ($request->hasFile('photo')) {
-            if ($user->photo) {
-                Storage::disk('public')->delete($user->photo);
-            }
-            $photo     = $request->file('photo');
-            $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
-            
-            Storage::disk('public')->makeDirectory('users');
-            $manager = new ImageManager(new Driver());
-            $manager->read($photo)
-                ->scaleDown(width: 300)
-                ->toJpeg(80)
-                ->save(storage_path('app/public/users/' . $photoName));
-                
-            $user->photo = 'users/' . $photoName;
-        }
-
-        $user->save();
-
-        return redirect()
-            ->route('worker.settings')
-            ->with('success', 'Settings updated successfully.');
-    }
+    return back()->with('success', 'Settings updated');
+}
 }
