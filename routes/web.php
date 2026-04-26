@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\FeedMixController;
@@ -89,9 +87,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::get('/admin/weekly-reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
         Route::get('/admin/weekly-reports/{id}', [ReportController::class, 'show'])->name('admin.reports.show');
 
-        // Enrollment & Subjects (Legacy or other features)
-        Route::resource('enrollments', EnrollmentController::class);
-        Route::resource('subject', SubjectController::class);
         Route::post('/admin/pigs/activities/{activity}/acknowledge', [PigController::class, 'acknowledgeActivity'])->name('admin.pigs.activities.acknowledge');
     });
 
