@@ -14,6 +14,13 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+
 </head>
 
 <body class="font-sans antialiased">
@@ -34,6 +41,20 @@
             {{ $slot }}
         </main>
     </div>
+
+    <script>
+function toggleDarkMode() {
+    const html = document.documentElement;
+
+    if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+    } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+</script>
 </body>
 
 </html>
