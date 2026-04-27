@@ -16,6 +16,7 @@ class RegisteredUserController extends Controller
 {
     /**
      * Display the registration view.
+     * This is the method your error says is missing.
      */
     public function create(): View
     {
@@ -24,55 +25,40 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', 'in:admin,farm_worker'],
-            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ]);
-
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photo = $request->file('photo');
-            $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
-            
-            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('users');
-            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
-            $manager->read($photo)
-                ->scaleDown(width: 300)
-                ->toJpeg(80)
-                ->save(storage_path('app/public/users/' . $photoName));
-                
-            $photoPath = 'users/' . $photoName;
-        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'photo' => $photoPath,
+            'status' => true, // Ensure status is set to true/1
         ]);
 
         event(new Registered($user));
 
+        // Log the user in to create the Laravel Session
         Auth::login($user);
 
-        $url = '';
-        if ($user->role === 'admin') {
-            $url = 'admin/dashboard';
-        } elseif ($user->role === 'farm_worker') {
-            $url = 'worker/dashboard';
-        } else {
-            $url = 'dashboard';
+        // Role-based redirect
+        $role = strtolower(trim($user->role ?? ''));
+
+        if ($role === 'admin') {
+            return redirect('/admin/dashboard');
         }
 
-        return redirect($url);
+        if ($role === 'farm_worker' || $role === 'worker') {
+            return redirect('/worker/dashboard');
+        }
+
+        return redirect()->route('dashboard');
     }
 }
