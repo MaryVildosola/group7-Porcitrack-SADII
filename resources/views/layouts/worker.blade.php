@@ -188,15 +188,18 @@ body.light-theme .glass-panel {
         <!-- Sidebar Navigation -->
         <aside id="workerSidebar"
             class="fixed inset-y-0 left-0 z-[100] w-72 bg-[#0b1120] backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 shadow-2xl">
-            <div class="p-6 border-b border-white/10">
+            <div class="p-5 border-b border-white/10">
                 <div class="flex items-center gap-3">
-                    <div
-                        class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-inner">
-                        <i class='bx bx-pig text-xl text-white font-bold'></i>
+                    <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-white/10 shrink-0">
+                        @if(Auth::user()->photo)
+                            <img src="{{ asset('storage/'. Auth::user()->photo) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                        @else
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=166534&color=fff&size=80&bold=true" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                        @endif
                     </div>
-                    <div>
-                        <h2 class="font-bold text-white">Porcitrack</h2>
-                        <p class="text-xs text-white/60">Worker Portal</p>
+                    <div class="min-w-0">
+                        <h2 class="font-extrabold text-white text-base tracking-tight leading-tight">PorciTrack</h2>
+                        <p class="text-[11px] text-white/50 truncate">{{ Auth::user()->name }}</p>
                     </div>
                 </div>
             </div>
@@ -247,6 +250,22 @@ body.light-theme .glass-panel {
                             <span>QR Labels</span>
                         </a>
                     </div>
+                    <script>
+function toggleDropdown(dropdownId, iconId) {
+    const dropdown = document.getElementById(dropdownId);
+    const icon = document.getElementById(iconId);
+
+    // Toggle the 'hidden' class
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        // Add a slight delay for the transition effect if desired
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        dropdown.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+</script>
                 </div>
 
                 <a href="{{ route('worker.settings') }}"
@@ -265,24 +284,23 @@ body.light-theme .glass-panel {
                 </a>
             </nav>
 
-            <div class="p-4 border-t border-white/10">
-                <div class="flex items-center gap-3 px-4 py-3">
-                    <div class="w-10 h-10 rounded-full overflow-hidden border border-white/20 shadow-inner bg-white/10">
-                        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=0b1120&color=22c55e' }}"
+            <div class="p-4 border-t border-white/10 space-y-3">
+                <div class="flex items-center gap-3 px-3 py-2">
+                    <div class="w-9 h-9 rounded-full overflow-hidden border border-white/20 shadow-inner bg-white/10 shrink-0">
+                        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=166534&color=fff&size=80&bold=true' }}"
                             alt="User" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
+                        <p class="text-sm font-semibold text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
                         <p class="text-[10px] text-white/40 uppercase tracking-widest">Worker</p>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" class="mt-2" id="workerLogoutForm">
+                <form method="POST" action="{{ route('logout') }}" id="workerLogoutForm">
                     @csrf
-                    <button type="button"
-                        onclick="confirmWorkerLogout()"
-                        class="w-full flex items-center justify-center gap-2 px-4 py-2 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition text-xs font-medium border border-transparent hover:border-white/10">
-                        <i class='bx bx-log-out text-base'></i>
-                        <span>Logout</span>
+                    <button type="button" onclick="confirmWorkerLogout()"
+                        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:text-red-300 transition-all duration-200 font-semibold text-sm">
+                        <i class='bx bx-log-out text-lg'></i>
+                        <span>Log Out</span>
                     </button>
                 </form>
             </div>
@@ -470,19 +488,6 @@ body.light-theme .glass-panel {
             });
         }
 
-        // --- Dropdown Logic ---
-        function toggleDropdown(id, iconId) {
-            const dropdown = document.getElementById(id);
-            const icon = document.getElementById(iconId);
-
-            if (dropdown.classList.contains('hidden')) {
-                dropdown.classList.remove('hidden');
-                icon.classList.add('rotate-180');
-            } else {
-                dropdown.classList.add('hidden');
-                icon.classList.remove('rotate-180');
-            }
-        }
 
         // Auto-open dropdown if child is active
         document.addEventListener('DOMContentLoaded', () => {
@@ -598,13 +603,17 @@ body.light-theme .glass-panel {
                     background: document.body.classList.contains('light-theme') ? '#ffffff' : '#0b1120',
                     color: document.body.classList.contains('light-theme') ? '#000000' : '#ffffff',
                 });
+            });
+        }
+
         function confirmWorkerLogout() {
+            const isLight = document.body.classList.contains('light-theme');
             Swal.fire({
                 title: 'Log Out?',
                 text: 'Are you sure you want to log out of PorciTrack?',
                 icon: 'question',
-                background: '#0b1120',
-                color: '#fff',
+                background: isLight ? '#ffffff' : '#0b1120',
+                color: isLight ? '#1e293b' : '#ffffff',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, log out',
                 cancelButtonText: 'Stay',
