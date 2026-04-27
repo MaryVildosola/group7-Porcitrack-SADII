@@ -6,11 +6,16 @@
     <!-- Farm Admin Profile -->
     <div class="sidebar-profile" style="padding-top: 24px !important;">
         <div class="sidebar-avatar">
-            <img src="{{ asset('assets/images/pig-logo.png') }}" alt="Farm Admin">
-        </div>
+    <img 
+        src="{{ Auth::user()->photo 
+            ? asset('storage/' . Auth::user()->photo) 
+            : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=166534&color=fff&size=80&bold=true' 
+        }}" 
+        alt="{{ Auth::user()->name }}">
+</div>
         <div class="sidebar-profile-info">
-            <p class="sidebar-profile-name">Farm Admin</p>
-            <p class="sidebar-profile-role">Management System</p>
+            <p class="sidebar-profile-name">{{ Auth::user()->name }}</p>
+            <p class="sidebar-profile-role">{{ ucfirst(str_replace('_', ' ', Auth::user()->role)) }}</p>
         </div>
     </div>
 
