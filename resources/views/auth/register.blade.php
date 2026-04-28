@@ -2,21 +2,24 @@
 <style>
     /* Unified Pro Layout */
     .auth-container { 
-        max-width: 850px !important; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 50px !important; 
+        max-width: 850px; 
+        gap: 50px; 
     }
 
     .form-card.register-card { 
-        max-width: 400px !important; 
+        max-width: 420px !important; 
         padding: 35px !important; 
-        background: rgba(255, 255, 255, 0.03) !important;
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border);
         border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 12px 40px var(--shadow);
+    }
+    .form-card.register-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--green-main), var(--green-soft));
     }
     
     .form-card.register-card h2 { 
@@ -24,43 +27,59 @@
         font-weight: 800;
         letter-spacing: -0.025em;
         margin-bottom: 4px; 
-        background: linear-gradient(to right, #fff, rgba(255,255,255,0.5));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--text-dark);
+        background: none;
+        -webkit-background-clip: unset;
+        -webkit-text-fill-color: unset;
     }
 
     .register-subtitle { 
         font-size: 0.8rem; 
-        color: rgba(255,255,255,0.35); 
-        margin-bottom: 24px; 
+        color: var(--text-muted); 
+        margin-bottom: 24px;
+        text-align: center;
     }
 
     /* Refined Input Groups */
     .input-group { position: relative; margin-bottom: 20px; }
     
     .field-label { 
-        font-size: 0.65rem; 
-        color: rgba(255,255,255,0.4); 
+        font-size: 0.7rem; 
+        color: var(--text-muted); 
         margin-bottom: 6px; 
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+        display: block;
     }
 
     .input-group input, .input-group select { 
         width: 100%;
-        background: transparent !important;
-        border: none !important;
-        border-bottom: 1px solid rgba(255,255,255,0.1) !important;
-        color: #fff !important;
+        background: var(--green-bg) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text-dark) !important;
         font-size: 0.9rem !important; 
-        padding: 8px 0 !important; 
+        padding: 10px 14px !important; 
+        font-family: 'Inter', sans-serif;
         transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .input-group input::placeholder {
+        color: var(--text-muted) !important;
     }
 
     .input-group input:focus, .input-group select:focus { 
-        border-bottom-color: #66bb6a !important;
+        border-color: var(--green-main) !important;
+        box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+        background: var(--white) !important;
         outline: none;
+    }
+
+    .input-group select option {
+        background: var(--white);
+        color: var(--text-dark);
     }
 
     /* Split Row Logic */
@@ -71,26 +90,40 @@
         margin-bottom: 10px;
     }
 
-    /* Photo Upload Button - Pro Style */
+    /* Photo Upload Button */
     .file-upload-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 38px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
+        height: 40px;
+        background: var(--green-bg);
+        border: 1px solid var(--border);
         border-radius: 12px;
-        color: rgba(255,255,255,0.6);
-        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-size: 0.78rem;
         font-weight: 600;
+        font-family: 'Inter', sans-serif;
         cursor: pointer;
         transition: all 0.3s;
     }
 
     .file-upload-btn:hover {
-        background: rgba(102, 187, 106, 0.1);
-        border-color: #66bb6a;
-        color: #fff;
+        background: var(--green-accent);
+        border-color: var(--green-soft);
+        color: var(--green-main);
+    }
+
+    /* Strength bar */
+    .strength-bar-wrap {
+        height: 3px;
+        background: var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .strength-bar {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.3s, background 0.3s;
     }
 
     /* Social Section */
@@ -101,31 +134,52 @@
         margin: 25px 0 15px; 
     }
 
-    .compact-divider div { height: 1px; flex: 1; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent); }
+    .compact-divider div { 
+        height: 1px; 
+        flex: 1; 
+        background: var(--border); 
+    }
     
     .google-icon-btn {
-        width: 42px;
-        height: 42px;
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.08);
+        background: var(--white);
+        border: 1px solid var(--border);
         border-radius: 14px;
         margin: 0 auto;
+        cursor: pointer;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .google-icon-btn:hover { 
-        background: rgba(255,255,255,0.07); 
+        background: var(--green-accent); 
         transform: scale(1.1) rotate(5deg);
-        border-color: rgba(255,255,255,0.2);
+        border-color: var(--green-soft);
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    /* Sign-in link */
+    .signin-link {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    .signin-link:hover {
+        color: var(--green-main);
+    }
+    .signin-link span {
+        color: var(--green-main);
+        font-weight: 600;
     }
 </style>
 
 <div class="auth-container">
     <div class="logo-card">
-        <img src="{{ asset('assets/images/pig-logo.png') }}" alt="PorciTrack Logo" style="filter: drop-shadow(0 0 20px rgba(102,187,106,0.2));">
+        <img src="{{ asset('assets/images/pig-logo.png') }}" alt="PorciTrack Logo">
     </div>
 
     <div class="form-card register-card">
@@ -167,19 +221,19 @@
             <div class="input-group">
                 <label class="field-label">Password</label>
                 <input id="password" type="password" name="password" required oninput="checkStrength(this.value)" placeholder="••••••••">
-                <div class="strength-bar-wrap" style="height: 2px; margin-top: 8px;"><div class="strength-bar" id="strengthBar"></div></div>
+                <div class="strength-bar-wrap" style="margin-top: 8px;"><div class="strength-bar" id="strengthBar"></div></div>
             </div>
 
             <div class="input-group">
                 <label class="field-label">Confirm Password</label>
                 <input id="password_confirmation" type="password" name="password_confirmation" required oninput="checkMatch()" placeholder="••••••••">
-                <div id="matchLabel" style="font-size: 10px; margin-top: 5px;"></div>
+                <div id="matchLabel" style="font-size: 11px; margin-top: 5px;"></div>
             </div>
 
             <button type="submit" class="btn-register" style="margin-top: 10px;">Sign Up</button>
 
             <div class="compact-divider">
-                <div></div><span style="font-size: 9px; color: rgba(255,255,255,0.2);">OR REGISTER WITH</span><div></div>
+                <div></div><span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em;">OR REGISTER WITH</span><div></div>
             </div>
 
             <button type="button" onclick="window.registerWithGoogle()" class="google-icon-btn">
@@ -192,8 +246,8 @@
             </button>
 
             <div style="text-align: center; margin-top: 25px;">
-                <a href="{{ route('login') }}" style="color: rgba(255,255,255,0.4); font-size: 0.8rem; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#66bb6a'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
-                    Already have an account? <span style="color: #66bb6a; font-weight: 600;">Sign in</span>
+                <a href="{{ route('login') }}" class="signin-link">
+                    Already have an account? <span>Sign in</span>
                 </a>
             </div>
         </form>
@@ -232,6 +286,52 @@
             document.getElementById('password_confirmation').value = dummy;
             registerForm.submit();
         } catch (e) { Swal.fire('Error', e.message, 'error'); }
+    };
+
+    // ── Helper Functions ──
+    window.handlePhotoChange = (input) => {
+        const label = document.getElementById('photo-label');
+        if (input.files && input.files[0]) {
+            label.innerText = input.files[0].name;
+            label.style.color = 'var(--green-main)';
+        } else {
+            label.innerText = 'Select File';
+            label.style.color = 'var(--text-muted)';
+        }
+    };
+
+    window.checkStrength = (p) => {
+        const bar = document.getElementById('strengthBar');
+        let s = 0;
+        if (p.length > 5) s++;
+        if (p.length > 8) s++;
+        if (/[A-Z]/.test(p)) s++;
+        if (/[0-9]/.test(p)) s++;
+        if (/[^A-Za-z0-9]/.test(p)) s++;
+
+        const colors = ['#e57373', '#ffb74d', '#fff176', '#aed581', '#81c784'];
+        const widths = ['20%', '40%', '60%', '80%', '100%'];
+        
+        if (p.length === 0) {
+            bar.style.width = '0';
+        } else {
+            bar.style.width = widths[s-1] || '10%';
+            bar.style.background = colors[s-1] || colors[0];
+        }
+    };
+
+    window.checkMatch = () => {
+        const p1 = document.getElementById('password').value;
+        const p2 = document.getElementById('password_confirmation').value;
+        const label = document.getElementById('matchLabel');
+        if (!p2) { label.innerText = ''; return; }
+        if (p1 === p2) {
+            label.innerText = 'Passwords match';
+            label.style.color = 'var(--green-main)';
+        } else {
+            label.innerText = 'Passwords do not match';
+            label.style.color = '#e57373';
+        }
     };
 
     // ── Email/Password Registration ──
