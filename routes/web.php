@@ -13,6 +13,8 @@ use App\Http\Controllers\PenController;
 use App\Http\Controllers\PigController;
 use App\Http\Controllers\HealthController;
 
+use App\Http\Controllers\AnalyticsController;
+
 // --- PUBLIC & REDIRECTS ---
 Route::get('/', function () {
     return view('landing');
@@ -40,8 +42,15 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
             $availableStock = max($totalDelivered - $totalConsumed, 0);
             $recentTasks = \App\Models\Task::with('assignee')->latest()->limit(5)->get();
 
+            // Fetch unacknowledged critical alerts from workers
+            $criticalAlerts = \App\Models\PigActivity::with('pig')
+                ->where('is_critical_alert', true)
+                ->whereNull('acknowledged_at')
+                ->latest()
+                ->get();
+
             return view('users.dashboard', compact(
-            'pendingTasks', 'totalPigs', 'sickPigs', 'availableStock', 'recentTasks'
+                'pendingTasks', 'totalPigs', 'sickPigs', 'availableStock', 'recentTasks', 'criticalAlerts'
             ));
         }
         )->name('admin.dashboard');
@@ -87,6 +96,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::get('/admin/weekly-reports', [ReportController::class, 'adminIndex'])->name('admin.reports');
         Route::get('/admin/weekly-reports/{id}', [ReportController::class, 'show'])->name('admin.reports.show');
 
+        // Live Analytics
+        Route::get('/admin/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');
+
         Route::post('/admin/pigs/activities/{activity}/acknowledge', [PigController::class, 'acknowledgeActivity'])->name('admin.pigs.activities.acknowledge');
     });
 
@@ -96,6 +108,7 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 
         Route::get('/worker/tasks', [TaskController::class, 'workerIndex'])->name('worker.tasks');
         Route::post('/worker/tasks/{task}/complete', [TaskController::class, 'updateStatus'])->name('worker.tasks.complete');
+        Route::post('/worker/tasks/{task}/progress', [TaskController::class, 'updateProgress'])->name('worker.tasks.progress');
 
         Route::get('/worker/alerts', function () {
             return view('worker.alerts');
@@ -120,14 +133,36 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 
         // --- SWINE DETAILS ---
         Route::get('/worker/swine-details', function () {
+            $user = auth()->user();
             $thisWeek = \Carbon\Carbon::now()->startOfWeek();
-            $pens = \App\Models\Pen::with(['pigs' => function($q) {
-                $q->whereNotIn('status', ['Sold', 'Disposed']);
-            }])->get();
+
+            // Get only pens assigned to this worker
+            $pens = \App\Models\Pen::where('assigned_to', $user->id)
+                ->with(['pigs' => function($q) {
+                    $q->whereNotIn('status', ['Sold', 'Disposed'])->with(['activities' => function($aq) {
+                        $aq->latest()->limit(1);
+                    }]);
+                }])->get();
+
+            // Transform pigs for instant UI
+            $pens->each(function($pen) {
+                $pen->pigs->each(function($pig) use ($pen) {
+                    $pig->last_check_human = $pig->activities->first() 
+                        ? $pig->activities->first()->created_at->diffForHumans() 
+                        : 'No Recent Check';
+                    $pig->feed_formula_name = 'Standard Mix'; // Fallback since relation is missing
+                    $pig->growth_stage_label = $pig->growth_stage;
+                });
+            });
+
+            $assignedPenIds = $pens->pluck('id');
+            
+            // Fetch unique breeds from the system
+            $breeds = \App\Models\Pig::distinct()->whereNotNull('breed')->pluck('breed');
 
             try {
-                $existingReport = \App\Models\Task::where(function ($q) {
-                            $q->where('user_id', auth()->id())->orWhere('assigned_to', auth()->id());
+                $existingReport = \App\Models\Task::where(function ($q) use ($user) {
+                            $q->where('user_id', $user->id)->orWhere('assigned_to', $user->id);
                         }
                         )->where('status', 'completed')->whereBetween('updated_at', [$thisWeek, \Carbon\Carbon::now()->endOfWeek()])->exists();
             }
@@ -136,18 +171,42 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
             }
 
             try {
+                $activePigs = \App\Models\Pig::whereIn('pen_id', $assignedPenIds)->whereNotIn('status', ['Sold', 'Disposed']);
+                $activePigsList = (clone $activePigs)->get();
+                $totalActiveCount = $activePigsList->count();
+                
+                // Count pigs that have been updated today by this worker
+                $checkedTodayCount = \App\Models\PigActivity::whereIn('pig_id', $activePigsList->pluck('id'))
+                    ->where('user_id', $user->id)
+                    ->whereDate('created_at', \Carbon\Carbon::today())
+                    ->distinct('pig_id')
+                    ->count();
+
                 $analytics = [
-                    'total_pigs' => \App\Models\Pig::whereNotIn('status', ['Sold', 'Disposed'])->count() ?? 0,
-                    'sick_pigs' => \App\Models\Pig::where('health_status', 'Sick')->count() ?? 0,
-                    'avg_weight' => \App\Models\Pig::whereNotIn('status', ['Sold', 'Disposed'])->avg('weight') ?? 0,
-                    'active_pens' => \App\Models\Pen::where('is_active', true)->count() ?? 0,
+                    'total_pigs' => $totalActiveCount ?? 0,
+                    'checked_today' => $checkedTodayCount ?? 0,
+                    'progress_percent' => $totalActiveCount > 0 ? round(($checkedTodayCount / $totalActiveCount) * 100) : 0,
+                    'sick_pigs' => (clone $activePigs)->where('health_status', 'Sick')->count() ?? 0,
+                    'avg_weight' => (clone $activePigs)->avg('weight') ?? 0,
+                    'active_pens' => $pens->count() ?? 0,
                 ];
             }
             catch (\Exception $e) {
-                $analytics = ['total_pigs' => 0, 'sick_pigs' => 0, 'avg_weight' => 0, 'active_pens' => 0];
+                $analytics = ['total_pigs' => 0, 'checked_today' => 0, 'progress_percent' => 0, 'sick_pigs' => 0, 'avg_weight' => 0, 'active_pens' => 0];
             }
 
-            return view('worker.swineDetails', compact('thisWeek', 'existingReport', 'analytics', 'pens'));
+            try {
+                $recentLogs = \App\Models\PigActivity::where('user_id', $user->id)
+                    ->with('pig')
+                    ->latest()
+                    ->limit(10)
+                    ->get();
+            }
+            catch (\Exception $e) {
+                $recentLogs = collect();
+            }
+
+            return view('worker.swineDetails', compact('thisWeek', 'existingReport', 'analytics', 'pens', 'breeds', 'recentLogs'));
         })->name('worker.swineDetails');
 
         Route::get('/worker/pigs/{pig}', [PigController::class, 'show'])->name('worker.pigs.show');
