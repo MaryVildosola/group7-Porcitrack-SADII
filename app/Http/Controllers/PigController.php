@@ -71,11 +71,11 @@ class PigController extends Controller
     public function updateRecord(Request $request, Pig $pig)
     {
         $validated = $request->validate([
-            'tag' => 'required|string|max:255|unique:pigs,tag,' . $pig->id,
+            'tag' => 'sometimes|required|string|max:255|unique:pigs,tag,' . $pig->id,
             'birth_date' => 'nullable|date',
             'weight' => 'nullable|numeric|min:0',
             'target_weight' => 'nullable|numeric|min:0',
-            'health_status' => 'required|in:Healthy,Warning,Sick',
+            'health_status' => 'sometimes|required|in:Healthy,Warning,Sick',
             'remarks' => 'nullable|string',
             'breed' => 'nullable|string|max:255',
             'bcs_score' => 'required|integer|min:1|max:5',
@@ -84,6 +84,17 @@ class PigController extends Controller
         ]);
 
         $pig->update($validated);
+
+        // CREATE LOG FOR HISTORY (NEW)
+        $action = ($request->has('remarks') && str_contains($request->remarks, 'Daily Check')) ? 'Daily Assessment' : 'Weekly Metric Update';
+        \App\Models\PigActivity::create([
+            'pig_id' => $pig->id,
+            'user_id' => auth()->id(),
+            'type' => str_contains($action, 'Metric') ? 'Growth' : 'Care',
+            'action' => $action,
+            'details' => $request->remarks ?: 'Record updated by worker.',
+            'created_at' => now()
+        ]);
 
         return response()->json([
             'success' => true,
@@ -115,8 +126,13 @@ class PigController extends Controller
 
     public function show(Pig $pig)
     {
-        $pig->load(['pen', 'activities.user', 'healthReports.user']);
-        return view('worker.pigShow', compact('pig'));
+        $pig->load([
+            'pen',
+            'activities' => fn($q) => $q->latest()->limit(15),
+            'healthReports' => fn($q) => $q->latest()->limit(3),
+            'tasks' => fn($q) => $q->latest()->limit(5),
+        ]);
+        return view('worker.pigCard', compact('pig'));
     }
 
     /**
