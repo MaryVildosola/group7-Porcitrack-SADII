@@ -14,6 +14,8 @@ class Task extends Model
         'pig_id',
         'status',
         'priority',
+        'progress',
+        'findings',
         'due_date',
         'completed_at',
     ];
@@ -21,6 +23,7 @@ class Task extends Model
     protected $casts = [
         'due_date' => 'date',
         'completed_at' => 'datetime',
+        'findings' => 'array',
     ];
 
     public function assignee()
