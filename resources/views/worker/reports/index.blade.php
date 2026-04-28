@@ -2,54 +2,113 @@
 
 @section('content')
 <style>
-/* LIGHT MODE ONLY */
-body.light-theme .worker-dash {
-    background-color: #f8fafc !important;
-}
+/* --- Light theme: high-contrast overrides for reports page --- */
+body.light-theme .worker-dash { background: #f1f5f9 !important; }
 
-body.light-theme .worker-dash .text-white {
-    color: #1e293b !important;
-}
-
+/* Text */
+body.light-theme .worker-dash .text-white { color: #0f172a !important; }
 body.light-theme .worker-dash .text-white\/30,
-body.light-theme .worker-dash .text-white\/40,
+body.light-theme .worker-dash .text-white\/40 { color: #94a3b8 !important; }
 body.light-theme .worker-dash .text-white\/50,
-body.light-theme .worker-dash .text-white\/60,
+body.light-theme .worker-dash .text-white\/60 { color: #64748b !important; }
 body.light-theme .worker-dash .text-white\/70,
-body.light-theme .worker-dash .text-white\/80 {
-    color: #64748b !important;
-}
+body.light-theme .worker-dash .text-white\/80 { color: #475569 !important; }
 
+/* Card backgrounds — solid white with visible borders & shadows */
 body.light-theme .worker-dash .bg-white\/5,
 body.light-theme .worker-dash .bg-white\/10,
-body.light-theme .worker-dash .bg-white\/15 {
-    background-color: rgba(0,0,0,0.05) !important;
+body.light-theme .worker-dash .bg-white\/15,
+body.light-theme .worker-dash .glass-panel,
+body.light-theme .worker-dash .backdrop-blur-xl {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+    backdrop-filter: none !important;
 }
 
-body.light-theme .worker-dash .border-white\/10,
-body.light-theme .worker-dash .border-white\/5 {
-    border-color: rgba(0,0,0,0.1) !important;
-}
-
-body.light-theme .worker-dash .hover\:bg-white\/5:hover,
-body.light-theme .worker-dash .hover\:bg-white\/10:hover {
-    background-color: rgba(0,0,0,0.07) !important;
-}
-
+/* Specific Panel Fixes */
 body.light-theme .worker-dash .glass-panel {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* LIGHT MODE ONLY */
-body.light-theme .glass-panel {
-    background: rgba(255,255,255,0.9) !important;
-    border-color: rgba(0,0,0,0.1) !important;
+body.light-theme #reportModal,
+body.light-theme #careAlertModal {
+    background: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* Borders */
+body.light-theme .worker-dash .border-white\/10,
+body.light-theme .worker-dash .border-white\/5,
+body.light-theme .worker-dash .border-white\/20 {
+    border-color: #e2e8f0 !important;
+}
+
+/* Hover states */
+body.light-theme .worker-dash .hover\:bg-white\/5:hover,
+body.light-theme .worker-dash .hover\:bg-white\/10:hover,
+body.light-theme .worker-dash .hover\:bg-white\/15:hover,
+body.light-theme .worker-dash .hover\:bg-white\/20:hover {
+    background: #f8fafc !important;
+}
+
+/* Success/Warning Badges in Light Mode */
+body.light-theme .worker-dash .bg-green-500\/5,
+body.light-theme .worker-dash .bg-green-500\/10,
+body.light-theme .worker-dash .bg-green-500\/15 { background: #f0fdf4 !important; }
+body.light-theme .worker-dash .text-green-400,
+body.light-theme .worker-dash .text-green-300 { color: #166534 !important; }
+body.light-theme .worker-dash .border-green-500\/15,
+body.light-theme .worker-dash .border-green-500\/30 { border-color: #bbf7d0 !important; }
+
+body.light-theme .worker-dash .bg-yellow-500\/5,
+body.light-theme .worker-dash .bg-yellow-500\/10,
+body.light-theme .worker-dash .bg-yellow-500\/15 { background: #fffbeb !important; }
+body.light-theme .worker-dash .text-yellow-400,
+body.light-theme .worker-dash .text-yellow-300 { color: #92400e !important; }
+body.light-theme .worker-dash .border-yellow-500\/25,
+body.light-theme .worker-dash .border-yellow-500\/30 { border-color: #fde68a !important; }
+
+body.light-theme .worker-dash .bg-red-500\/5,
+body.light-theme .worker-dash .bg-red-500\/10,
+body.light-theme .worker-dash .bg-red-500\/20 { background: #fef2f2 !important; }
+body.light-theme .worker-dash .text-red-400,
+body.light-theme .worker-dash .text-red-300 { color: #991b1b !important; }
+body.light-theme .worker-dash .border-red-500\/20,
+body.light-theme .worker-dash .border-red-500\/30 { border-color: #fecaca !important; }
+
+body.light-theme .worker-dash .bg-blue-500\/10 { background: #eff6ff !important; }
+body.light-theme .worker-dash .text-blue-400 { color: #1e40af !important; }
+
+/* Input field overrides */
+body.light-theme .worker-dash input,
+body.light-theme .worker-dash textarea {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.light-theme .worker-dash input::placeholder,
+body.light-theme .worker-dash textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Status buttons in care modal */
+body.light-theme .worker-dash .status-btn {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-theme .worker-dash .status-btn i {
+    opacity: 0.8;
+}
+
+/* Modal specific overrides */
+body.light-theme #careAlertModal .bg-slate-900\/90 {
+    background: rgba(15, 23, 42, 0.4) !important;
 }
 </style>
-<div class="worker-dash min-h-screen bg-[#060b16]">
+<div class="worker-dash min-h-screen">
 <div class="p-5 md:p-10 max-w-full">
 
     <!-- Header -->
@@ -301,7 +360,60 @@ body.light-theme .glass-panel {
             </div>
         </div>
         @endforeach
+    </div>
 
+    <!-- Weekly Task Activity & History -->
+    <h2 class="text-xl font-black text-white mb-5 flex items-center gap-2">
+        <i class='bx bx-history text-blue-400'></i>
+        Weekly Task Activity
+    </h2>
+    <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden mb-10">
+        <div class="p-5 border-b border-white/10 bg-white/5">
+            <p class="text-white/40 text-[10px] font-black uppercase tracking-widest">Protocol Execution History</p>
+        </div>
+        <div class="divide-y divide-white/5">
+            @forelse($weeklyTasks as $wTask)
+                <div class="p-5 hover:bg-white/5 transition">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                <i class='bx {{ $wTask->status === "completed" ? "bx-check-circle text-green-400" : "bx-time text-yellow-400" }} text-xl'></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-black text-sm">{{ $wTask->title }}</h4>
+                                <p class="text-white/30 text-[10px] font-bold uppercase tracking-tighter">
+                                    {{ $wTask->status }} · Progress: {{ $wTask->progress }}% · {{ $wTask->updated_at->diffForHumans() }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-black text-white/40 border border-white/10 uppercase tracking-widest">
+                                {{ $wTask->priority }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    @if($wTask->findings && count($wTask->findings) > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            @foreach($wTask->findings as $finding)
+                                <div class="bg-white/5 rounded-xl p-3 border border-white/5">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <i class='bx bx-radio-circle-marked text-blue-400'></i>
+                                        <p class="text-[9px] font-black text-white/40 uppercase tracking-tighter">{{ Str::limit($finding['text'], 20) }}</p>
+                                    </div>
+                                    <p class="text-white/70 text-[11px] font-medium italic">"{{ $finding['finding'] ?: 'No findings recorded.' }}"</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="p-10 text-center">
+                    <i class='bx bx-task-x text-white/10 text-5xl mb-3'></i>
+                    <p class="text-white/30 text-sm font-medium">No task activity recorded for this week.</p>
+                </div>
+            @endforelse
+        </div>
     </div>
 
     <!-- Feed & Notes -->
@@ -346,8 +458,8 @@ body.light-theme .glass-panel {
 </div>
 
 <!-- ===== REPORT PREVIEW MODAL ===== -->
-<div id="reportModal" class="fixed inset-0 z-[220] hidden bg-black/80 backdrop-blur-md flex items-start justify-center p-4 overflow-y-auto">
-    <div class="w-full max-w-lg bg-[#070e08] border border-white/10 rounded-3xl shadow-2xl my-6 overflow-hidden">
+<div id="reportModal" class="fixed inset-0 z-[220] hidden bg-slate-900/80 backdrop-blur-md flex items-start justify-center p-4 overflow-y-auto">
+    <div class="glass-panel w-full max-w-lg rounded-3xl shadow-2xl my-6 overflow-hidden border border-white/10">
 
         <!-- Modal Header -->
         <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
@@ -382,8 +494,8 @@ body.light-theme .glass-panel {
 </div>
 
 <!-- Admin Alert & Care Modal -->
-<div id="careAlertModal" class="fixed inset-0 z-[230] hidden bg-black/80 backdrop-blur-md items-center justify-center p-4 overflow-y-auto">
-    <div class="w-full max-w-lg bg-[#0a0f0b] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden my-auto" onclick="event.stopPropagation()">
+<div id="careAlertModal" class="fixed inset-0 z-[230] hidden bg-slate-900/80 backdrop-blur-md items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-panel w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden my-auto border border-white/10" onclick="event.stopPropagation()">
 
         <!-- Header -->
         <div class="p-6 border-b border-white/10 flex items-center justify-between">
@@ -460,7 +572,15 @@ body.light-theme .glass-panel {
         @endforeach
     @endforeach
 
-    let selectedStatus = null;
+    // ---- SWAL THEME HELPER ----
+    function getSwalConfig() {
+        const isLight = document.body.classList.contains('light-theme');
+        return {
+            background: isLight ? '#ffffff' : '#070e08',
+            color: isLight ? '#0f172a' : '#fff',
+            confirmButtonColor: '#22c55e'
+        };
+    }
 
     // ---- Care Alert Modal ----
     function openCareAlertModal(pigId, pigTag) {
@@ -533,11 +653,11 @@ body.light-theme .glass-panel {
         const details = document.getElementById('careDetails').value.trim();
 
         if(!selectedStatus) {
-            Swal.fire({ title: 'Select Status', text: 'Please select either "Action Taken" or "Health In Danger".', icon: 'warning', background: '#0a0f0b', color: '#fff', confirmButtonColor: '#ef4444' });
+            Swal.fire({ ...getSwalConfig(), title: 'Select Status', text: 'Please select either "Action Taken" or "Health In Danger".', icon: 'warning' });
             return;
         }
         if(!details) {
-            Swal.fire({ title: 'Add Details', text: 'Please describe the care provided or the current situation.', icon: 'warning', background: '#0a0f0b', color: '#fff', confirmButtonColor: '#ef4444' });
+            Swal.fire({ ...getSwalConfig(), title: 'Add Details', text: 'Please describe the care provided or the current situation.', icon: 'warning' });
             return;
         }
 
@@ -675,8 +795,6 @@ body.light-theme .glass-panel {
         const latestPerPig = getLatestPerPig(allLogs);
         const sickPigs     = latestPerPig.filter(l => l.symptom !== 'Healthy' || l.feed === 'Poor/None');
         const healthyPigs  = latestPerPig.filter(l => l.symptom === 'Healthy' && l.feed !== 'Poor/None');
-        const uniquePigsChecked = latestPerPig.length;
-
         const weekStart = '{{ \Carbon\Carbon::parse($thisWeek)->format("M d") }}';
         const weekEnd   = '{{ \Carbon\Carbon::parse($thisWeek)->endOfWeek()->format("M d, Y") }}';
 
@@ -689,6 +807,17 @@ body.light-theme .glass-panel {
                 avgKg: {{ round($p->pigs->avg('weight') ?? 0) }},
                 sick: {{ $p->pigs->where('health_status', 'Sick')->count() }},
                 progress: {{ $p->progress }}
+            },
+            @endforeach
+        ];
+
+        const tasksData = [
+            @foreach($weeklyTasks as $t)
+            {
+                title: {!! json_encode($t->title) !!},
+                status: '{{ $t->status }}',
+                progress: {{ $t->progress }},
+                findings: {!! json_encode($t->findings) !!}
             },
             @endforeach
         ];
@@ -721,6 +850,21 @@ body.light-theme .glass-panel {
                         <p class="text-white/30 text-[9px] uppercase font-black mb-1">Avg. Weight</p>
                         <p class="text-blue-400 font-black text-2xl">{{ $analytics['avg_weight'] }}<span class="text-xs">kg</span></p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Task Summary -->
+            <div>
+                <p class="text-white/40 text-xs font-black uppercase tracking-widest mb-3">Protocol Execution</p>
+                <div class="space-y-2">
+                    ${tasksData.map(t => `
+                    <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-white font-bold text-xs">${t.title}</p>
+                            <span class="text-[9px] font-black uppercase ${t.status === 'completed' ? 'text-green-400' : 'text-yellow-400'}">${t.status} (${t.progress}%)</span>
+                        </div>
+                        ${t.findings ? t.findings.map(f => `<p class="text-white/40 text-[9px] italic ml-2">· ${f.text}: ${f.finding || 'N/A'}</p>`).join('') : ''}
+                    </div>`).join('')}
                 </div>
             </div>
 
@@ -808,12 +952,24 @@ body.light-theme .glass-panel {
     }
 
     function submitReport() {
-        const feed  = document.getElementById('reportFeedKg').value.trim();
-        const notes = document.getElementById('reportNotes').value.trim();
-        document.getElementById('hiddenFeed').value  = feed;
-        document.getElementById('hiddenNotes').value = notes;
-        closeReport();
-        document.getElementById('hiddenReportForm').submit();
+        Swal.fire({
+            ...getSwalConfig(),
+            title: 'Submit Weekly Report?',
+            text: "This will transmit your data to HQ for review.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Submit Now',
+            cancelButtonText: 'Review More'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const feed  = document.getElementById('reportFeedKg').value.trim();
+                const notes = document.getElementById('reportNotes').value.trim();
+                document.getElementById('hiddenFeed').value  = feed;
+                document.getElementById('hiddenNotes').value = notes;
+                closeReport();
+                document.getElementById('hiddenReportForm').submit();
+            }
+        });
     }
 </script>
 @endsection
