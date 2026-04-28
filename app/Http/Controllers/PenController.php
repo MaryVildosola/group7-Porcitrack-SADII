@@ -14,7 +14,7 @@ class PenController extends Controller
      */
     public function index()
     {
-        $pens = Pen::with(['pigs' => function($q) {
+        $pens = Pen::with(['assignedPersonnel', 'pigs' => function($q) {
             $q->whereNotIn('status', ['Sold', 'Disposed'])
               ->orderByRaw("FIELD(health_status, 'Critical', 'Sick', 'Recovering', 'Healthy')");
         }, 'pigs.pen'])->get();
@@ -83,6 +83,7 @@ class PenController extends Controller
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'pig_count' => 'nullable|integer|min:0|max:200',
+            'assigned_to' => 'nullable|exists:users,id',
         ]);
 
         return \DB::transaction(function () use ($validated) {
@@ -137,6 +138,7 @@ class PenController extends Controller
             'progress' => 'nullable|integer',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
+            'assigned_to' => 'nullable|exists:users,id',
         ]);
 
         $pen->update($validated);
