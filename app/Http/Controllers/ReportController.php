@@ -1,6 +1,4 @@
-<?php
-
-namespace App\Http\Controllers;
+<?php namespace App\Http\Controllers;
 
 use App\Models\WeeklyReport;
 use App\Models\User;
@@ -151,7 +149,9 @@ class ReportController extends Controller
             return $pen->pigs->where('health_status', '!=', 'Healthy')->count();
         });
 
-        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics', 'pens'));
+        $weeklyTasks = (clone $tasksThisWeek)->latest('updated_at')->get();
+
+        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics', 'pens', 'weeklyTasks'));
     }
 
     // Worker Action: Store weekly report
