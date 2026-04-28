@@ -52,10 +52,43 @@
             </div>
         </div>
 
+        <!-- Task Performance -->
+        <div class="px-8 py-6 border-b border-gray-100">
+            <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Weekly Task Performance</h3>
+            <div class="space-y-3">
+                @forelse($tasks as $t)
+                    <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center shrink-0 shadow-sm">
+                                <i class='bx {{ $t->status === "completed" ? "bx-check-circle text-green-500" : "bx-time text-amber-500" }} text-xl'></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-800">{{ $t->title }}</h4>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">{{ $t->status }} · Progress: {{ $t->progress }}%</p>
+                            </div>
+                        </div>
+                        
+                        @if($t->findings)
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($t->findings as $f)
+                                <div class="px-2 py-1 bg-white rounded-lg border border-gray-100 shadow-sm">
+                                    <p class="text-[8px] text-gray-400 font-black uppercase tracking-tighter">{{ Str::limit($f['text'], 15) }}</p>
+                                    <p class="text-[10px] font-medium text-gray-600 italic">"{{ $f['finding'] ?: 'No findings' }}"</p>
+                                </div>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+                @empty
+                    <p class="text-gray-400 text-sm italic">No tasks recorded for this period.</p>
+                @endforelse
+            </div>
+        </div>
+
         <!-- Report Content -->
         <div class="p-8">
-            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Detailed Report Log</h3>
-            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 min-h-[150px] leading-relaxed text-gray-700 whitespace-pre-line text-lg italic">
+            <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Worker Operational Notes</h3>
+            <div class="bg-blue-50/30 rounded-2xl p-6 border border-blue-100/50 min-h-[150px] leading-relaxed text-gray-700 whitespace-pre-line text-lg italic">
                 "{{ $report->details }}"
             </div>
         </div>
