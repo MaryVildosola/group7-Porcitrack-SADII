@@ -66,12 +66,45 @@
     </div>
 
     <div class="main-grid">
-        <!-- Recent Activity Panel -->
-        <div class="panel">
-            <div class="panel-title">
-                <span>Recent Farm Activity</span>
-                <a href="{{ route('admin.tasks.index') }}" style="font-size: 0.75rem; color: #22c55e; text-decoration: none; font-weight: 700;">VIEW ALL</a>
+        <div class="left-col space-y-6">
+            <!-- Emergency Alerts (If any) -->
+            @if($criticalAlerts->count() > 0)
+            <div class="panel" style="border: 2px solid #ef4444; background: #fff5f5;">
+                <div class="panel-title" style="color: #b91c1c;">
+                    <span class="flex items-center gap-2">
+                        <i class="bx bxs-error-circle animate-pulse text-2xl"></i>
+                        Critical Medical Alerts ({{ $criticalAlerts->count() }})
+                    </span>
+                    <span style="font-size: 0.7rem; background: #fee2e2; padding: 4px 10px; border-radius: 8px; color: #ef4444; font-weight: 800;">ACTION REQUIRED</span>
+                </div>
+                <div class="space-y-4">
+                    @foreach($criticalAlerts as $alert)
+                    <div class="flex items-start justify-between p-4 rounded-xl bg-white border border-red-100 shadow-sm">
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                <i class="bx bx-plus-medical text-red-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-slate-900">Pig #{{ $alert->pig->tag }} — {{ $alert->action }}</p>
+                                <p class="text-xs text-slate-500 mt-0.5">{{ $alert->details }}</p>
+                                <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest mt-2">{{ $alert->created_at->diffForHumans() }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.analytics') }}" class="px-4 py-2 rounded-lg bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-colors">
+                            Handle Now
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
             </div>
+            @endif
+
+            <!-- Recent Activity Panel -->
+            <div class="panel">
+                <div class="panel-title">
+                    <span>Recent Farm Activity</span>
+                    <a href="{{ route('admin.tasks.index') }}" style="font-size: 0.75rem; color: #22c55e; text-decoration: none; font-weight: 700;">VIEW ALL</a>
+                </div>
             
             <div class="task-list">
                 @forelse($recentTasks as $task)
