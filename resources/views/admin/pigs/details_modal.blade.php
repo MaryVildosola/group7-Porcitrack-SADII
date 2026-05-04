@@ -44,8 +44,10 @@
                     <p style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 8px;">Individual Record</p>
                     <h2 class="view-mode" style="font-size: 2.8rem; font-weight: 900; letter-spacing: -0.05em; margin: 0; color: #ffffff;">#{{ $pig->tag }}</h2>
                     <div class="edit-mode" style="display:none; margin-bottom: 12px;">
-                        <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">Ear Tag ID</label>
-                        <input type="text" name="tag" value="{{ $pig->tag }}" style="font-size: 1.8rem; font-weight: 900; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.2); color: white; border-radius: 14px; padding: 10px 16px; width: 85%; outline: none; transition: border-color 0.2s;">
+                        <label style="display:block; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;">
+                            <i class='bx bxs-lock-alt'></i> Ear Tag ID (System Protected)
+                        </label>
+                        <input type="text" name="tag" value="{{ $pig->tag }}" readonly style="font-size: 1.8rem; font-weight: 900; background: rgba(255,255,255,0.1) !important; border: 2px solid rgba(255,255,255,0.3); color: #ffffff !important; border-radius: 14px; padding: 10px 16px; width: 85%; outline: none; cursor: not-allowed; letter-spacing: 0.05em; opacity: 1 !important; -webkit-text-fill-color: #ffffff !important;">
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-top: 16px;">
@@ -66,9 +68,20 @@
                             </select>
                         </div>
 
+                        <span class="view-mode" style="background: rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; backdrop-filter: blur(4px);">
+                            <i class='bx bx-home-alt' style="margin-right: 4px;"></i> {{ $pig->pen->name ?? 'Unassigned' }}
+                        </span>
+                        <div class="edit-mode" style="display:none;">
+                            <select name="pen_id" style="background: #ffffff !important; color: #0f172a !important; border: none; padding: 8px 18px; border-radius: 99px; font-size: 0.8rem; font-weight: 800; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                @foreach($pens as $p)
+                                    <option value="{{ $p->id }}" {{ $pig->pen_id == $p->id ? 'selected' : '' }} style="color: #0f172a;">Pen: {{ $p->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <span class="view-mode" style="background: rgba(255, 255, 255, 0.15); color: #f8fafc; padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; backdrop-filter: blur(4px);">{{ $pig->breed ?? 'Standard' }}</span>
                         <div class="edit-mode" style="display:none;">
-                            <input type="text" name="breed" value="{{ $pig->breed }}" placeholder="Breed" style="background: rgba(255, 255, 255, 0.15); color: #f8fafc; border: 1.5px solid rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; outline: none; width: 120px;">
+                            <input type="text" name="breed" value="{{ $pig->breed }}" placeholder="Breed" style="background: #ffffff !important; color: #0f172a !important; border: none; padding: 8px 18px; border-radius: 99px; font-size: 0.8rem; font-weight: 800; outline: none; width: 140px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                         </div>
                     </div>
                 </div>
