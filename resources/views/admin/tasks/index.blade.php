@@ -23,10 +23,7 @@
     }
 
     .task-grid { 
-        display: grid; 
-        grid-template-columns: 1fr 380px; 
-        gap: 24px; 
-        align-items: start;
+        display: block; 
     }
 
     .compact-table th { 
@@ -179,11 +176,15 @@
             <h1 style="font-size: 1.8rem; font-weight: 900; color: var(--deep-slate); margin: 0; letter-spacing: -0.04em;">Task Assignment</h1>
             <p style="font-size: 0.9rem; color: #64748b; font-weight: 500; margin-top: 4px;">Deploy worker protocols and monitor farm operations.</p>
         </div>
-        <div style="display: flex; gap: 12px;">
-            <div style="background: #fff; padding: 12px 24px; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center;">
+        <div style="display: flex; gap: 12px; align-items: stretch;">
+            <div style="background: #fff; padding: 12px 24px; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center; display: flex; flex-direction: column; justify-content: center;">
                 <p style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin: 0;">Active Tasks</p>
                 <p style="font-size: 1.2rem; font-weight: 900; color: var(--deep-slate); margin: 0;">{{ $tasks->where('status', 'pending')->count() }}</p>
             </div>
+            <button onclick="openNewTaskModal()" style="background: var(--accent-green); color: #fff; padding: 0 24px; border-radius: 20px; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(34, 197, 94, 0.2);" class="hover:scale-105">
+                <i class='bx bx-plus-circle' style="font-size: 1.4rem;"></i>
+                Deploy Task
+            </button>
         </div>
     </div>
 
@@ -290,10 +291,16 @@
                 </table>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Assignment Form -->
-        <div class="premium-panel" style="position: sticky; top: 100px;">
-            <h2 style="font-size: 1.1rem; font-weight: 900; color: var(--deep-slate); margin-bottom: 24px;">New Assignment</h2>
+<!-- Assignment Form Modal -->
+<div id="newTaskModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div class="premium-panel" style="width: 100%; max-width: 500px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <button type="button" onclick="closeNewTaskModal()" style="position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748b; transition: all 0.2s;" class="hover:bg-slate-200">
+                <i class='bx bx-x' style="font-size: 1.2rem;"></i>
+            </button>
+            <h2 style="font-size: 1.3rem; font-weight: 900; color: var(--deep-slate); margin-bottom: 24px;">New Assignment</h2>
             <form action="{{ route('admin.tasks.store') }}" method="POST">
                 @csrf
                 <div class="form-group" style="position: relative;">
@@ -364,12 +371,31 @@
                 </p>
             </div>
         </div>
-    </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
+    function openNewTaskModal() {
+        const modal = document.getElementById('newTaskModal');
+        modal.style.display = 'flex';
+        // Add a small delay before fading in
+        setTimeout(() => {
+            modal.style.opacity = '1';
+        }, 10);
+    }
+
+    function closeNewTaskModal() {
+        const modal = document.getElementById('newTaskModal');
+        modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('newTaskModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeNewTaskModal();
+        }
+    });
     const taskSuggestions = [
         { title: 'Vaccination Protocol', desc: 'Administer scheduled vaccines. Verify dosage and animal ID before injection.', tag: 'MEDICAL' },
         { title: 'Deworming Session', desc: 'Apply oral deworming treatment. Ensure the animal swallows the full dose.', tag: 'HEALTH' },
@@ -400,18 +426,11 @@
         if (penId) pigSelect.value = "";
     });
 
-    titleInput.addEventListener('input', function() {
-        const value = this.value.toLowerCase();
+    function renderSuggestions(value) {
         suggestionBox.innerHTML = '';
-        
-        if (!value) {
-            suggestionBox.style.display = 'none';
-            return;
-        }
-
-        const filtered = taskSuggestions.filter(s => 
-            s.title.toLowerCase().includes(value) || s.tag.toLowerCase().includes(value)
-        );
+        const filtered = value 
+            ? taskSuggestions.filter(s => s.title.toLowerCase().includes(value) || s.tag.toLowerCase().includes(value))
+            : taskSuggestions;
 
         if (filtered.length > 0) {
             filtered.forEach(s => {
@@ -435,6 +454,14 @@
         } else {
             suggestionBox.style.display = 'none';
         }
+    }
+
+    titleInput.addEventListener('focus', function() {
+        renderSuggestions(this.value.toLowerCase());
+    });
+
+    titleInput.addEventListener('input', function() {
+        renderSuggestions(this.value.toLowerCase());
     });
 
     document.addEventListener('click', function(e) {
