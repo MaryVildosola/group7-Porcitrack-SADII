@@ -1,360 +1,322 @@
 @extends('layouts.master')
 
-@section('title')
-    User Management | Create User
-@endsection
-
 @section('contents')
-    <div class="md:flex block items-center justify-between mb-6 mt-[2rem] page-header-breadcrumb">
-        <div class="my-auto">
-            <h5 class="page-title text-[1.3125rem] font-medium text-defaulttextcolor mb-0">Create User</h5>
-            <nav>
-                <ol class="flex items-center whitespace-nowrap min-w-0">
-                    <li class="text-[12px]">
-                        <a class="flex items-center text-textmuted hover:text-primary" href="{{ route('dashboard') }}">
-                            Dashboard
-                            <i
-                                class="ti ti-chevrons-right flex-shrink-0 mx-3 overflow-visible text-textmuted rtl:rotate-180"></i>
-                        </a>
-                    </li>
-                    <li class="text-[12px]">
-                        <a class="flex items-center text-textmuted hover:text-primary" href="{{ route('users.index') }}">
-                            Users Management
-                            <i
-                                class="ti ti-chevrons-right flex-shrink-0 mx-3 overflow-visible text-textmuted rtl:rotate-180"></i>
-                        </a>
-                    </li>
-                    <li class="text-[12px]">
-                        <span class="flex items-center text-primary">Create</span>
-                    </li>
-                </ol>
-            </nav>
+<style>
+    :root {
+        --deep-slate: #0f172a;
+        --accent-green: #22c55e;
+        --soft-bg: #f8fafc;
+        --border-color: #e2e8f0;
+    }
+
+    .page-wrap { 
+        padding: 24px 32px; 
+        max-width: 1000px; 
+        margin: 0 auto; 
+    }
+
+    .premium-panel { 
+        background: #ffffff; 
+        border: 1px solid var(--border-color); 
+        border-radius: 28px; 
+        padding: 32px; 
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+    }
+
+    .form-input { 
+        width: 100%; 
+        padding: 14px 18px; 
+        border: 1.5px solid #e2e8f0; 
+        border-radius: 16px; 
+        font-size: 0.9rem; 
+        color: var(--deep-slate); 
+        font-weight: 600;
+        background-color: #f8fafc;
+        transition: all 0.2s;
+        outline: none;
+    }
+
+    .form-input:focus { 
+        border-color: var(--accent-green); 
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+    }
+
+    .form-label { 
+        display: block; 
+        font-size: 0.7rem; 
+        font-weight: 900; 
+        color: #64748b; 
+        margin-bottom: 10px; 
+        text-transform: uppercase; 
+        letter-spacing: 0.05em; 
+    }
+
+    .btn-save { 
+        padding: 16px 32px; 
+        background: var(--deep-slate); 
+        color: #fff; 
+        border: none; 
+        border-radius: 20px; 
+        font-weight: 800; 
+        font-size: 0.95rem;
+        cursor: pointer; 
+        transition: all 0.2s;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15);
+        background: #1e293b;
+    }
+
+    .btn-cancel {
+        padding: 16px 32px; 
+        background: #f1f5f9; 
+        color: #64748b; 
+        border: none; 
+        border-radius: 20px; 
+        font-weight: 800; 
+        font-size: 0.95rem;
+        cursor: pointer; 
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-cancel:hover {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--deep-slate);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-icon {
+        background: #f0fdf4;
+        color: #16a34a;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .photo-upload-box {
+        border: 2px dashed #e2e8f0;
+        border-radius: 20px;
+        padding: 32px;
+        text-align: center;
+        background: #f8fafc;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .photo-upload-box:hover {
+        border-color: var(--accent-green);
+        background: #f0fdf4;
+    }
+</style>
+
+<div class="page-wrap">
+    <div style="margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <h1 style="font-size: 1.8rem; font-weight: 900; color: var(--deep-slate); margin: 0; letter-spacing: -0.04em;">Create New User</h1>
+            <p style="font-size: 0.9rem; color: #64748b; font-weight: 500; margin-top: 4px;">Provision a new account for a worker or administrator.</p>
         </div>
+        <a href="{{ route('users.index') }}" class="btn-cancel" style="padding: 12px 24px;"><i class='bx bx-arrow-back'></i> Back</a>
     </div>
 
-    <!-- Start:: row-1 -->
-    <div class="grid grid-cols-12 gap-6 text-defaultsize">
-        <div class="xl:col-span-12 col-span-12">
-            <div class="box">
-                <div class="box-header">
-                    <div class="box-title">Create New User</div>
+    @if ($errors->any())
+        <div style="background: #fef2f2; border: 1.5px solid #fca5a5; color: #b91c1c; padding: 16px 24px; border-radius: 20px; margin-bottom: 32px; font-size: 0.9rem; font-weight: 600;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <i class='bx bxs-error-circle' style="font-size: 1.2rem;"></i>
+                <strong style="font-weight: 800;">Whoops! Something went wrong.</strong>
+            </div>
+            <ul style="margin: 0; padding-left: 24px;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form id="create-user-form" method="POST" action="{{ route('users.store') }}" enctype="multipart/form-data">
+        @csrf
+
+        <div class="premium-panel" style="margin-bottom: 24px;">
+            <div class="section-title">
+                <div class="section-icon"><i class='bx bx-user'></i></div>
+                Personal Information
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                <div>
+                    <label for="name" class="form-label">Full Name <span style="color: #ef4444;">*</span></label>
+                    <input type="text" class="form-input" id="name" name="name" value="{{ old('name') }}" placeholder="Enter full name" required>
                 </div>
-
-                <div class="box-body">
-
-                    {{-- Validation Errors --}}
-                    @if ($errors->any())
-                        <div class="bd-example">
-                            <div class="alert alert-danger !bg-danger/10 !text-danger border-0 py-3">
-                                <div class="flex items-start">
-                                    <i class="ri-error-warning-line me-2 text-lg"></i>
-                                    <div>
-                                        <strong class="block fw-semibold">Whoops! Something went wrong.</strong>
-                                        <ul class="mb-0 mt-1 ps-4 list-disc">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    <form id="create-user-form" method="POST" action="{{ route('users.store') }}"
-                        enctype="multipart/form-data" class="needs-validation" novalidate>
-                        @csrf
-
-                        <!-- Personal Information Section -->
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <h6 class="fw-semibold mb-3 text-defaulttextcolor">
-                                    <i class="ri-user-settings-line me-2"></i>Personal Information
-                                </h6>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-12 sm:gap-6">
-
-                            <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
-                                <label for="name" class="form-label">
-                                    Full Name <span class="text-danger">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text !bg-light !text-defaulttextcolor">
-                                        <i class="ri-user-line"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name') }}" placeholder="Enter full name" required>
-                                </div>
-                                <div class="invalid-feedback">Please enter the user's name.</div>
-                            </div>
-
-                            <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
-                                <label for="email" class="form-label">
-                                    Email Address <span class="text-danger">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text !bg-light !text-defaulttextcolor">
-                                        <i class="ri-mail-line"></i>
-                                    </span>
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        value="{{ old('email') }}" placeholder="name@example.com" required>
-                                </div>
-                                <div class="invalid-feedback">Please enter a valid email address.</div>
-                            </div>
-
-                            <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
-                                <label for="birthdate" class="form-label">
-                                    Birth Date
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text !bg-light !text-defaulttextcolor">
-                                        <i class="ri-calendar-line"></i>
-                                    </span>
-                                    <input type="date" class="form-control" id="birthdate" name="birthdate"
-                                        value="{{ old('birthdate') }}">
-                                </div>
-                            </div>
-
-                            <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
-                                <label for="role" class="form-label">
-                                    Account Role <span class="text-danger">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text !bg-light !text-defaulttextcolor">
-                                        <i class="ri-shield-user-line"></i>
-                                    </span>
-                                    <select class="form-control" id="role" name="role" required>
-                                        <option value="farm_worker" {{ old('role') == 'farm_worker' ? 'selected' : '' }}>Farm Worker</option>
-                                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
-                                    </select>
-                                </div>
-                                <div class="invalid-feedback">Please select an account role.</div>
-                            </div>
-
-
-                        </div>
-
-                        <!-- Profile Photo Section -->
-                        <div class="row mb-4 mt-2">
-                            <div class="col-md-12">
-                                <div class="grid grid-cols-12 sm:gap-6">
-                                    <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
-                                        <label for="photo" class="form-label">
-                                            Profile Photo
-                                        </label>
-                                        <div class="input-group">
-                                            <span class="input-group-text !bg-light !text-defaulttextcolor">
-                                                <i class="ri-image-line"></i>
-                                            </span>
-                                            <input type="file" class="form-control" id="photo" name="photo"
-                                                accept="image/jpeg,image/png,image/jpg,image/*"
-                                                onchange="previewImage(event)">
-                                        </div>
-                                        <small class="text-textmuted">Allowed formats: JPG, PNG (Max: 2MB)</small>
-
-                                        <div id="photo-preview" class="mt-3" style="display: none;">
-                                            <p class="text-sm text-defaultsize mb-2 fw-semibold">Photo Preview:</p>
-                                            <div class="position-relative d-inline-block">
-                                                <img id="preview-img" src="" alt="Photo Preview"
-                                                    class="w-24 h-24 object-cover rounded border border-defaultborder">
-                                                <button type="button"
-                                                    class="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle rounded-circle"
-                                                    onclick="removeImage()"
-                                                    style="width: 20px; height: 20px; padding: 0; line-height: 1;">
-                                                    <i class="ri-close-line"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Account Security Section -->
-                        <div class="row mb-4 mt-5">
-                            <div class="col-md-12">
-                                <h6 class="fw-semibold mb-3 text-defaulttextcolor">
-                                    <i class="ri-shield-key-line me-2"></i>Account Security
-                                </h6>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-12 sm:gap-6">
-
-                            <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
-                                <label for="password" class="form-label">
-                                    Password <span class="text-danger">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text !bg-light !text-defaulttextcolor">
-                                        <i class="ri-lock-line"></i>
-                                    </span>
-                                    <input type="password" class="form-control" id="password" name="password"
-                                        placeholder="Enter password" required>
-                                    <button class="btn btn-light !bg-light" type="button"
-                                        onclick="togglePassword('password', 'toggle-password-icon-1')">
-                                        <i class="ri-eye-off-line" id="toggle-password-icon-1"></i>
-                                    </button>
-                                </div>
-                                <small class="text-textmuted">Minimum 8 characters</small>
-                            </div>
-
-                            <div class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12 mb-4">
-                                <label for="password_confirmation" class="form-label">
-                                    Confirm Password <span class="text-danger">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text !bg-light !text-defaulttextcolor">
-                                        <i class="ri-lock-line"></i>
-                                    </span>
-                                    <input type="password" class="form-control" id="password_confirmation"
-                                        name="password_confirmation" placeholder="Confirm password" required>
-                                    <button class="btn btn-light !bg-light" type="button"
-                                        onclick="togglePassword('password_confirmation', 'toggle-password-icon-2')">
-                                        <i class="ri-eye-off-line" id="toggle-password-icon-2"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {{-- Action Buttons --}}
-                        <div class="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-defaultborder">
-                            <a href="{{ route('users.index') }}" class="ti-btn ti-btn-light !font-medium">
-                                <i class="ri-arrow-left-line me-1"></i> Cancel
-                            </a>
-                            <button type="submit" class="ti-btn ti-btn-primary-full ti-btn-wave">
-                                <i class="ri-check-line me-1"></i> Save Changes
-                            </button>
-                        </div>
-
-                    </form>
-
+                <div>
+                    <label for="email" class="form-label">Email Address <span style="color: #ef4444;">*</span></label>
+                    <input type="email" class="form-input" id="email" name="email" value="{{ old('email') }}" placeholder="name@example.com" required>
                 </div>
+            </div>
 
-                <div class="box-footer hidden border-t-0"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div>
+                    <label for="birthdate" class="form-label">Birth Date</label>
+                    <input type="date" class="form-input" id="birthdate" name="birthdate" value="{{ old('birthdate') }}">
+                </div>
+                <div>
+                    <label for="role" class="form-label">Account Role <span style="color: #ef4444;">*</span></label>
+                    <select class="form-input" id="role" name="role" required>
+                        <option value="farm_worker" {{ old('role') == 'farm_worker' ? 'selected' : '' }}>Farm Worker</option>
+                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="region" class="form-label">Farm Region</label>
+                    <input type="text" class="form-input" id="region" name="region" value="{{ old('region') }}" placeholder="e.g. Batangas, Philippines">
+                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 8px; font-weight: 600;">Used for localized AI disease intelligence</div>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- End:: row-1 -->
-    <!-- SweetAlert2 CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        // SweetAlert2 confirm before save (Valex style-2)
-        document.getElementById('save-changes-btn').addEventListener('click', function() {
-            const form = document.getElementById('create-user-form');
-            const swalWithButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'ti-btn bg-primary text-white ms-2',
-                    cancelButton: 'ti-btn bg-danger text-white'
-                },
-                buttonsStyling: false
-            });
-            swalWithButtons.fire({
-                title: 'Save Changes?',
-                text: 'Are you sure you want to update this user\'s information?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, save it!',
-                cancelButtonText: 'No, cancel',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithButtons.fire('Cancelled', 'No changes were saved.', 'error');
-                }
-            });
-        });
-        // 1. Toggle Password Visibility
-        function togglePassword(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
+        <div class="premium-panel" style="margin-bottom: 24px;">
+            <div class="section-title">
+                <div class="section-icon" style="background: #eff6ff; color: #3b82f6;"><i class='bx bx-lock-alt'></i></div>
+                Account Security
+            </div>
 
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('ri-eye-off-line');
-                icon.classList.add('ri-eye-line');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('ri-eye-line');
-                icon.classList.add('ri-eye-off-line');
-            }
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div style="position: relative;">
+                    <label for="password" class="form-label">Password <span style="color: #ef4444;">*</span></label>
+                    <input type="password" class="form-input" id="password" name="password" placeholder="Enter password" required>
+                    <i class='bx bx-hide' id="toggle-password-icon-1" onclick="togglePassword('password', 'toggle-password-icon-1')" style="position: absolute; right: 18px; top: 42px; font-size: 1.2rem; color: #94a3b8; cursor: pointer;"></i>
+                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 8px; font-weight: 600;">Minimum 8 characters</div>
+                </div>
+                <div style="position: relative;">
+                    <label for="password_confirmation" class="form-label">Confirm Password <span style="color: #ef4444;">*</span></label>
+                    <input type="password" class="form-input" id="password_confirmation" name="password_confirmation" placeholder="Confirm password" required>
+                    <i class='bx bx-hide' id="toggle-password-icon-2" onclick="togglePassword('password_confirmation', 'toggle-password-icon-2')" style="position: absolute; right: 18px; top: 42px; font-size: 1.2rem; color: #94a3b8; cursor: pointer;"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-panel" style="margin-bottom: 24px;">
+            <div class="section-title">
+                <div class="section-icon" style="background: #fdf4ff; color: #d946ef;"><i class='bx bx-image'></i></div>
+                Profile Photo (Optional)
+            </div>
+
+            <div style="display: flex; gap: 24px; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <label for="photo" class="photo-upload-box" style="display: block;">
+                        <i class='bx bx-cloud-upload' style="font-size: 3rem; color: #94a3b8; margin-bottom: 12px;"></i>
+                        <div style="font-size: 1rem; font-weight: 800; color: var(--deep-slate);">Click to upload photo</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">JPG, PNG up to 2MB</div>
+                        <input type="file" id="photo" name="photo" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                    </label>
+                </div>
+                
+                <div id="photo-preview" style="display: none; width: 140px; text-align: center;">
+                    <div style="position: relative; display: inline-block;">
+                        <img id="preview-img" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 20px; border: 2px solid var(--border-color);">
+                        <button type="button" onclick="removeImage()" style="position: absolute; top: -10px; right: -10px; background: #ef4444; color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 32px;">
+            <a href="{{ route('users.index') }}" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-save">Create User</button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bx-hide');
+            icon.classList.add('bx-show');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bx-show');
+            icon.classList.add('bx-hide');
         }
+    }
 
-        // 2. Image Preview
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const previewDiv = document.getElementById('photo-preview');
-            const previewImg = document.getElementById('preview-img');
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const previewDiv = document.getElementById('photo-preview');
+        const previewImg = document.getElementById('preview-img');
 
-            if (file) {
-                if (file.size > 2 * 1024 * 1024) {
-                    Swal.fire('Error', 'File size must be less than 2MB', 'error');
-                    event.target.value = '';
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewDiv.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewDiv.style.display = 'none';
-            }
-        }
-
-        // 3. Remove Image
-        function removeImage() {
-            const fileInput = document.getElementById('photo');
-            const previewDiv = document.getElementById('photo-preview');
-            const previewImg = document.getElementById('preview-img');
-
-            fileInput.value = '';
-            previewImg.src = '';
-            previewDiv.style.display = 'none';
-        }
-
-        // 4. SweetAlert2 & Form Submission
-        document.getElementById('create-user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const form = this;
-
-            // Check HTML5 Validation
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-
-                // Optional: Scroll to the first error
-                const firstError = form.querySelector(':invalid');
-                if (firstError) firstError.focus();
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    title: 'File too large',
+                    text: 'Please select an image smaller than 2MB',
+                    icon: 'error',
+                    confirmButtonColor: '#0f172a'
+                });
+                event.target.value = '';
                 return;
             }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewDiv.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewDiv.style.display = 'none';
+        }
+    }
 
-            const swalWithButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'ti-btn bg-primary text-white ms-2',
-                    cancelButton: 'ti-btn bg-danger text-white'
-                },
-                buttonsStyling: false
-            });
+    function removeImage() {
+        document.getElementById('photo').value = '';
+        document.getElementById('photo-preview').style.display = 'none';
+    }
 
-            swalWithButtons.fire({
-                title: 'Create New User?',
-                text: 'Are you sure you want to save this new user?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, create it!',
-                cancelButtonText: 'No, cancel',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit(); // This programmatically submits the form
-                }
-            });
+    document.getElementById('create-user-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        Swal.fire({
+            title: 'Create User?',
+            text: 'Save and provision this new account?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#22c55e',
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: 'Yes, create it!',
+            customClass: { popup: 'rounded-[28px]' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
         });
-    </script>
+    });
+</script>
 @endsection
