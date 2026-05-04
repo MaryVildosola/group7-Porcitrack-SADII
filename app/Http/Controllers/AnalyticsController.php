@@ -103,6 +103,70 @@ class AnalyticsController extends Controller
             '90kg+' => Pig::whereNotIn('status', ['Sold', 'Disposed'])->where('weight', '>', 90)->count(),
         ];
 
+        // --- DISEASE RISK PREDICTION (Smart Engine) ---
+        $regionalDiseases = \App\Models\RegionalDisease::where('is_active', true)->get();
+            
+        // Calculate base regional risk factor
+        $baseRegionalRisk = 0;
+        foreach($regionalDiseases as $rd) {
+            if ($rd->level == 'High') $baseRegionalRisk += 15;
+            elseif ($rd->level == 'Medium') $baseRegionalRisk += 5;
+        }
+        
+        // 2. Pen Risk Calculation
+        $penRisks = [];
+        $pens = Pen::withCount(['pigs as sick_count' => function($q) {
+            $q->where('health_status', 'Sick')->whereNotIn('status', ['Sold', 'Disposed']);
+        }])->get();
+
+        foreach($pens as $pen) {
+            // Count historical medical activities for pigs in this pen
+            $historicalSickness = PigActivity::where('type', 'Medical')
+                ->whereHas('pig', function($q) use ($pen) {
+                    $q->where('pen_id', $pen->id);
+                })->count();
+
+            $activeSickness = $pen->sick_count;
+
+            // Algorithm: 
+            // - Every active sick pig adds 25% risk.
+            // - Every historical sickness incident adds 5% risk.
+            // - Base regional risk factor is computed from active regional diseases.
+            $riskScore = $baseRegionalRisk + ($activeSickness * 25) + ($historicalSickness * 5);
+            $riskScore = min($riskScore, 100); // Cap at 100%
+
+            $status = 'Safe';
+            $color = 'bg-green-100 text-green-700';
+            $recommendation = 'Maintain standard biosecurity protocols.';
+
+            if ($riskScore >= 75) {
+                $status = 'Critical Risk';
+                $color = 'bg-red-100 text-red-700';
+                $recommendation = 'Immediate isolation required. High probability of ASF or severe infection spread.';
+            } elseif ($riskScore >= 40) {
+                $status = 'Elevated Risk';
+                $color = 'bg-yellow-100 text-yellow-700';
+                $recommendation = 'Increase sanitation frequency. Monitor closely for symptoms of PED or Swine Flu.';
+            }
+
+            if ($activeSickness > 0 || $riskScore > 15) {
+                $penRisks[] = (object)[
+                    'pen_name' => $pen->name,
+                    'risk_score' => $riskScore,
+                    'active_cases' => $activeSickness,
+                    'historical_cases' => $historicalSickness,
+                    'status' => $status,
+                    'color' => $color,
+                    'recommendation' => $recommendation
+                ];
+            }
+        }
+        
+        // Sort descending by risk score
+        usort($penRisks, function($a, $b) {
+            return $b->risk_score <=> $a->risk_score;
+        });
+
         return view('admin.analytics.index', compact(
             'totalPigs', 'sickPigs', 'healthyPigs', 'avgWeight',
             'totalPens', 'activePens',
@@ -110,7 +174,8 @@ class AnalyticsController extends Controller
             'totalDelivered', 'totalConsumed', 'availableStock',
             'totalRevenue', 'totalSold', 'totalDisposed', 'monthlyRevenue',
             'totalTasks', 'pendingTasks', 'completedTasks', 'overdueTasks',
-            'totalWorkers', 'penData', 'recentActivities', 'weightRanges'
+            'totalWorkers', 'penData', 'recentActivities', 'weightRanges',
+            'regionalDiseases', 'penRisks'
         ));
     }
 }
