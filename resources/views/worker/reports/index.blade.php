@@ -368,8 +368,9 @@ body.light-theme #careAlertModal .bg-slate-900\/90 {
         Weekly Task Activity
     </h2>
     <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden mb-10">
-        <div class="p-5 border-b border-white/10 bg-white/5">
+        <div class="p-5 border-b border-white/10 bg-white/5 flex justify-between items-center">
             <p class="text-white/40 text-[10px] font-black uppercase tracking-widest">Protocol Execution History</p>
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">{{ $weeklyTasks->count() }} Tasks</span>
         </div>
         <div class="divide-y divide-white/5">
             @forelse($weeklyTasks as $wTask)
@@ -408,9 +409,45 @@ body.light-theme #careAlertModal .bg-slate-900\/90 {
                     @endif
                 </div>
             @empty
+                <div class="p-8 text-center">
+                    <p class="text-white/20 text-xs italic">No protocol tasks recorded this week.</p>
+                </div>
+            @endforelse
+        </div>
+
+        <!-- NEW: General Activity Logs -->
+        <div class="p-5 border-t border-b border-white/10 bg-white/5 flex justify-between items-center">
+            <p class="text-white/40 text-[10px] font-black uppercase tracking-widest">Daily Care & Health Logs</p>
+            <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">{{ $weeklyActivities->count() }} Logs</span>
+        </div>
+        <div class="divide-y divide-white/5">
+            @forelse($weeklyActivities as $act)
+                <div class="p-5 hover:bg-white/5 transition flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <i class='bx {{ $act->type === "Medical" ? "bx-plus-medical text-red-400" : "bx-check-double text-green-400" }} text-xl'></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-2 mb-1">
+                            <div>
+                                <h4 class="text-white font-black text-sm uppercase tracking-tight">
+                                    @if($act->pig)
+                                        Pig #{{ $act->pig->tag }} · 
+                                    @endif
+                                    {{ $act->action }}
+                                </h4>
+                                <p class="text-white/30 text-[9px] font-bold uppercase tracking-widest">{{ $act->created_at->format('M d, Y · h:i A') }} ({{ $act->created_at->diffForHumans() }})</p>
+                            </div>
+                            @if($act->is_critical_alert)
+                                <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[8px] font-black uppercase rounded border border-red-500/30">Critical Alert</span>
+                            @endif
+                        </div>
+                        <p class="text-white/60 text-xs leading-relaxed italic">"{{ $act->details ?: 'No additional details provided.' }}"</p>
+                    </div>
+                </div>
+            @empty
                 <div class="p-10 text-center">
-                    <i class='bx bx-task-x text-white/10 text-5xl mb-3'></i>
-                    <p class="text-white/30 text-sm font-medium">No task activity recorded for this week.</p>
+                    <i class='bx bx-history text-white/10 text-5xl mb-3'></i>
+                    <p class="text-white/30 text-sm font-medium">No general care activities recorded yet.</p>
                 </div>
             @endforelse
         </div>
