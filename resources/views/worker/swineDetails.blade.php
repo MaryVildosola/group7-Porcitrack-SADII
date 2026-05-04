@@ -2,23 +2,16 @@
 
 @section('content')
 <style>
-    /* Clean white/slate field-grade background */
-    .worker-dash { background: #f8fafc; }
+    /* Use global theme classes */
 </style>
 
-<div class="worker-dash min-h-screen">
-<div class="p-6 md:p-12 mt-16 md:mt-0">
+<div class="worker-dash">
+    <div class="p-6 md:p-12 mt-16 md:mt-0">
     
-    <!-- HEADER -->
     <div class="mb-10 flex items-start justify-between gap-4 flex-wrap">
         <div>
-            <h1 class="text-4xl font-black tracking-tight text-slate-900">Animal <span class="text-green-600">Registry</span></h1>
-            <p class="text-slate-400 font-medium mt-2 text-sm uppercase tracking-wide">Select a pen to manage individual animals.</p>
-        </div>
-        <!-- CONNECTION STATUS -->
-        <div id="conn-status" class="flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest bg-green-50 text-green-700 border border-green-200">
-            <span id="conn-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            <span id="conn-label">Online</span>
+            <h1 class="text-4xl font-black tracking-tight text-slate-900">Livestock <span class="text-green-600">Registry</span></h1>
+            <p class="text-slate-400 font-medium mt-2 text-sm uppercase tracking-wide">Select a pen to view and manage your assigned animals.</p>
         </div>
     </div>
 
@@ -38,15 +31,27 @@
     <!-- PEN GRID -->
     <div id="penGridView" class="animate-fade-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($pens as $pen)
-        <div onclick="enterPen({{ $pen->id }}, '{{ $pen->name }}', {{ json_encode($pen->pigs) }})"
-            class="dash-card backdrop-blur-2xl bg-white/80 border border-slate-100 p-8 rounded-[2.5rem] hover:border-green-500/50 hover:shadow-xl transition-all cursor-pointer">
+        <div data-pigs='@json($pen->pigs)' onclick="enterPen({{ $pen->id }}, '{{ addslashes($pen->name) }}', JSON.parse(this.dataset.pigs))"
+            class="dash-card glass-panel p-8 rounded-[2.5rem] hover:border-green-500/50 hover:shadow-xl transition-all cursor-pointer">
             
             <div class="w-16 h-16 rounded-3xl bg-green-600 text-white flex items-center justify-center mb-6 shadow-xl">
                 <i class='bx bxs-grid-alt text-3xl'></i>
             </div>
 
-            <h3 class="text-3xl font-black text-slate-900 tracking-tighter mb-1">{{ $pen->name }}</h3>
-            <p class="text-[10px] font-black text-green-500 uppercase tracking-[0.2em]">{{ count($pen->pigs) }} Animals Active</p>
+            <div class="flex justify-between items-end">
+                <div>
+                    <h3 class="text-3xl font-black text-slate-900 tracking-tighter mb-1">{{ $pen->name }}</h3>
+                    <p class="text-[10px] font-black text-green-500 uppercase tracking-[0.2em]">{{ count($pen->pigs) }} Animals Active</p>
+                </div>
+                
+                @php $sickCount = collect($pen->pigs)->where('health_status', 'Sick')->count(); @endphp
+                @if($sickCount > 0)
+                <div class="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-100 flex items-center gap-1.5 animate-pulse">
+                    <i class='bx bxs-virus text-sm'></i>
+                    <span class="text-[10px] font-black uppercase tracking-wider">{{ $sickCount }} Sick</span>
+                </div>
+                @endif
+            </div>
         </div>
         @endforeach
     </div>
@@ -69,21 +74,6 @@
 </div>
 </div>
 
-<!-- PIG RECORD MODAL (LARGER FORMAT) -->
-<div id="pigModalOverlay" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 md:p-8">
-    <div onclick="hidePigModal()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
-
-    <div id="modalLoader" class="absolute inset-0 z-[110] hidden flex flex-col items-center justify-center gap-6 animate-fade-in pointer-events-none">
-        <div class="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin shadow-[0_0_50px_rgba(34,197,94,0.3)]"></div>
-        <p class="text-[10px] font-black text-white uppercase tracking-[0.5em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Loading...</p>
-    </div>
-
-    <div id="pigModalContent" class="relative z-10 w-full max-w-5xl animate-fade-in shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
-        {{-- Injected via JS --}}
-    </div>
-</div>
-
-
 <script>
 
 // ═══════════════════════════════════════════════
@@ -93,22 +83,22 @@ function updateOfflineUI() {
     const q = getQueue();
     const banner  = document.getElementById('offline-banner');
     const pending = document.getElementById('pending-count');
-    const dot     = document.getElementById('conn-dot');
-    const label   = document.getElementById('conn-label');
-    const status  = document.getElementById('conn-status');
+    const dot     = document.getElementById('globalSyncDot');
+    const label   = document.getElementById('globalSyncLabel');
+    const status  = document.getElementById('globalSyncStatus');
 
     if(!banner) return;
     const online = navigator.onLine;
 
-    // Status pill
-    if (online) {
-        status.className = 'flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest bg-green-50 text-green-700 border border-green-200';
-        dot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
-        label.textContent = 'Online';
-    } else {
-        status.className = 'flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest bg-amber-50 text-amber-700 border border-amber-200';
-        dot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
-        label.textContent = 'Offline';
+    // Global Status Update
+    if (dot && label) {
+        if (online) {
+            dot.className = 'w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse';
+            label.textContent = 'Online';
+        } else {
+            dot.className = 'w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.6)] animate-pulse';
+            label.textContent = 'Offline';
+        }
     }
 
     // Banner
@@ -171,7 +161,7 @@ function enterPen(id, name, pigs) {
 
         return `
         <div onclick="showFloatingCard(${p.id}, '${name}')"
-            class="dash-card backdrop-blur-2xl bg-white/80 p-6 rounded-[2rem] flex justify-between items-center cursor-pointer hover:border-green-500/50 transition">
+            class="dash-card glass-panel p-6 rounded-[2rem] flex justify-between items-center cursor-pointer hover:border-green-500/50 transition">
 
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl dash-inner flex items-center justify-center">
@@ -191,11 +181,30 @@ function enterPen(id, name, pigs) {
 function exitPen() {
     document.getElementById('penGridView').classList.remove('hidden');
     document.getElementById('pigListView').classList.add('hidden');
+    // Clean up the URL param
+    window.history.replaceState({}, '', window.location.pathname);
 }
 
-function showFloatingCard(id, penName) {
+// Auto-enter pen if ?pen= param is present (e.g. returning from pig detail page)
+document.addEventListener('DOMContentLoaded', () => {
+    const penId = new URLSearchParams(window.location.search).get('pen');
+    if (!penId) return;
+    // Find the matching pen card and trigger it
+    const penCards = document.querySelectorAll('#penGridView [data-pigs]');
+    penCards.forEach(card => {
+        const onclick = card.getAttribute('onclick') || '';
+        // Extract the pen id from the onclick attribute: enterPen(ID, ...)
+        const match = onclick.match(/enterPen\((\d+),/);
+        if (match && match[1] === penId) {
+            // Small delay to let the page render first
+            setTimeout(() => card.click(), 100);
+        }
+    });
+});
+
+function showFloatingCard(id, penName, activityId = null) {
     activePigId = id;
-    const pig = activePigsData.find(p => p.id === id);
+    const pig = activePigsData.find(p => p.id == id);
     const overlay = document.getElementById('pigModalOverlay');
     const content = document.getElementById('pigModalContent');
     const loader = document.getElementById('modalLoader');
@@ -207,7 +216,7 @@ function showFloatingCard(id, penName) {
     content.innerHTML = `
         <div id="pig-record-card" class="bg-white w-full flex flex-col overflow-hidden" style="border-radius:2rem; box-shadow: 0 32px 80px rgba(0,0,0,0.25); max-height:88vh;">
             <div class="h-2 w-full shrink-0" style="background:#16a34a;"></div>
-            <div class="flex-1 flex flex-col">
+            <div class="flex flex-col">
                 <div class="px-8 pt-8 pb-4">
                     <p class="text-xs font-black uppercase tracking-[0.3em] mb-2" style="color:#16a34a">Animal Record</p>
                     <h1 class="font-black leading-none text-slate-900 mb-1" style="font-size:3.5rem;letter-spacing:-0.04em">#${pig.tag}</h1>
@@ -223,23 +232,41 @@ function showFloatingCard(id, penName) {
         </div>
     `;
 
-    fetch(`/worker/pigs/${id}`)
+    let url = `/worker/pigs/${id}`;
+    if (activityId) url += `?activity=${activityId}`;
+
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(res => res.text())
         .then(html => {
             // pigCard is a pure fragment — inject directly, no parsing needed
             content.innerHTML = html;
+
+            // If an activityId was passed, highlight and scroll it into view after a short delay
+            if (activityId) {
+                setTimeout(() => {
+                    const targetEl = document.getElementById(`act-${activityId}`);
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 400);
+            }
         })
         .catch(() => {
             content.innerHTML = '<div class="p-8 text-center text-red-500 font-black">Could not load record. Please try again.</div>';
         });
 }
 
-function hidePigModal() {
-    document.getElementById('pigModalOverlay').classList.add('hidden');
-    activePigId = null;
-}
+function openDailyCheckIn(pigInput) {
+    // Robustly handle both a full object or just an ID
+    let pig = (typeof pigInput === 'object' && pigInput !== null) 
+              ? pigInput 
+              : activePigsData.find(p => p.id === parseInt(pigInput));
+              
+    if (!pig) {
+        console.error("Pig data not found for:", pigInput);
+        return;
+    }
 
-function openDailyCheckIn(pig) {
     Swal.fire({
         title: `<div class="text-left">
             <p class="text-[10px] font-black uppercase tracking-[0.3em] text-green-600 mb-1">Daily Operations</p>
@@ -260,6 +287,32 @@ function openDailyCheckIn(pig) {
                     </button>
                     <p class="text-[9px] text-red-400 font-bold mt-2 text-center uppercase tracking-wider">Does NOT wait for weekly report · Sends critical alert immediately</p>
                 </div>
+
+                <!-- PIG TASKS -->
+                ${pig.tasks && pig.tasks.length > 0 ? `
+                <div class="bg-amber-50 p-6 rounded-[2.5rem] border border-amber-200 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-amber-700 mb-4 flex items-center gap-2">
+                        <i class='bx bx-task text-base'></i> Pending Animal Tasks &mdash; Check if Completed
+                    </p>
+                    <div class="space-y-3">
+                        ${pig.tasks.map(t => {
+                            const isMine = t.assigned_to == {{ Auth::id() }};
+                            return `
+                            <div class="flex items-center gap-3 p-4 ${isMine ? 'bg-amber-100/50 border-amber-300' : 'bg-white border-amber-100'} border rounded-2xl hover:border-amber-400 transition cursor-pointer group shadow-sm" onclick="const cb = this.querySelector('input'); cb.checked = !cb.checked;">
+                                <input type="checkbox" class="swal-task-checkbox w-6 h-6 rounded-lg border-amber-200 text-amber-600 focus:ring-amber-500" value="${t.id}">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <p class="text-slate-900 font-black text-sm tracking-tight truncate">${t.title}</p>
+                                        ${isMine ? '<span class="px-2 py-0.5 bg-amber-200 text-amber-800 text-[8px] font-black rounded-full uppercase tracking-widest">Given to you</span>' : ''}
+                                    </div>
+                                    <p class="text-slate-500 text-[10px] font-bold truncate">${t.description || 'Special care required'}</p>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+                ` : ''}
 
                 <!-- 1. FEEDING -->
                 <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
@@ -377,6 +430,12 @@ function openDailyCheckIn(pig) {
             const symptoms = document.getElementById('val-symptoms')?.value || '';
             const notes    = document.getElementById('val-notes').value;
 
+            // Collect checked tasks
+            const completedTasks = [];
+            document.querySelectorAll('.swal-task-checkbox:checked').forEach(cb => {
+                completedTasks.push(cb.value);
+            });
+
             const isCritical = health === 'Sick';
 
             const details = [
@@ -394,6 +453,8 @@ function openDailyCheckIn(pig) {
                 remarks: `Daily Check-In · ${details}`,
                 bcs_score: pig.bcs_score ?? 3,
                 symptoms: symptoms || null,
+                water_intake: water,
+                completed_tasks: completedTasks
             };
 
             return offlineSafeFetch(
@@ -580,6 +641,61 @@ function openMedicalLogger(id) {
             .catch(error => Swal.showValidationMessage(`Sync Error: ${error}`));
         }
     }).then((result) => { if (result.isConfirmed) showFloatingCard(id); });
+}
+
+window.gotoPig = function(pigId, activityId = null) {
+    console.info("Navigating to Pig ID:", pigId, "Activity:", activityId);
+    const targetPigId = parseInt(pigId);
+    let targetPen = null;
+    const allPens = @json($pens);
+
+    // Find which pen this pig belongs to
+    allPens.forEach(pen => {
+        if (pen.pigs.find(pig => pig.id == targetPigId)) {
+            targetPen = pen;
+        }
+    });
+
+    if (targetPen) {
+        // Switch to the correct pen first
+        enterPen(targetPen.id, targetPen.name, targetPen.pigs);
+        
+        // Then open the modal
+        setTimeout(() => {
+            showFloatingCard(targetPigId, targetPen.name, activityId);
+        }, 150);
+    } else {
+        console.error("Pig not found in any pen:", pigId);
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Check for pending modal from dashboard redirect
+    const pendingPigId = sessionStorage.getItem('pending_pig_modal');
+    const pendingActivityId = sessionStorage.getItem('pending_activity_id');
+    
+    if (pendingPigId) {
+        sessionStorage.removeItem('pending_pig_modal');
+        sessionStorage.removeItem('pending_pen_name');
+        sessionStorage.removeItem('pending_activity_id');
+        window.gotoPig(pendingPigId, pendingActivityId);
+    }
+});
+
+// Manual Scan Handler for this page
+function onScanSuccess(tag) {
+    // 1. Check if we're inside a pen and the pig is here
+    if (activePigsData && activePigsData.length > 0) {
+        const pig = activePigsData.find(p => p.tag === tag || p.id == tag);
+        if (pig) {
+            // Open the assessment form immediately
+            openDailyCheckIn(pig);
+            return;
+        }
+    }
+    
+    // 2. Not in current view? Let the dashboard handle it (it knows how to find the pen)
+    window.location.href = "{{ route('worker.dashboard') }}?manual_scan=" + encodeURIComponent(tag);
 }
 </script>
 

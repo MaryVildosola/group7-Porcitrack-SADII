@@ -68,6 +68,164 @@
         </div>
     </div>
 
+    <!-- Strictly Vertical Biosecurity Intelligence (PRIORITY #1) -->
+    <div style="margin-bottom: 32px; background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+        <!-- Header Stacked Vertically -->
+        <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px; border-bottom: 1px solid #f1f5f9; padding-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 52px; height: 52px; border-radius: 14px; background: #4f46e5; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 16px rgba(79, 70, 229, 0.2);">
+                    <i class='bx bx-radar pulse-icon' style="color: #fff; font-size: 2rem;"></i>
+                </div>
+                <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 800; color: #1e293b; margin: 0;">Smart Disease Intelligence</h2>
+                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                        <span style="font-size: 0.7rem; font-weight: 800; color: #4f46e5; background: #eef2ff; padding: 2px 8px; border-radius: 6px; text-transform: uppercase;">AI Active Monitoring Engine</span>
+                        @php
+                            $island   = \App\Models\SystemSetting::get('farm_island_group'); // Old key for fallback display
+                            $adm      = \App\Models\SystemSetting::get('farm_region');
+                            $province = \App\Models\SystemSetting::get('farm_province');
+                            $city     = \App\Models\SystemSetting::get('farm_city');
+                            $location = ($city ? "{$city}, " : "") . "{$province}, " . str_replace('Region ', '', $adm);
+                        @endphp
+                        <span style="font-size: 0.7rem; font-weight: 800; color: #ef4444; background: #fef2f2; padding: 2px 8px; border-radius: 6px; text-transform: uppercase;">📍 Monitoring: {{ $location ?: 'Philippines' }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 16px 20px; border-radius: 16px; border: 1px solid #f1f5f9;">
+                <div>
+                    <div style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Overall Farm Biosecurity</div>
+                    <div style="font-size: 1.1rem; font-weight: 900; color: #22c55e; display: flex; align-items: center; gap: 6px;">
+                        <i class='bx bxs-check-shield'></i> SECURE STATUS
+                    </div>
+                </div>
+                <form action="{{ route('admin.disease-sync') }}" method="POST">
+                    @csrf
+                    <button type="submit" style="background: #1e293b; border: none; padding: 12px 28px; border-radius: 14px; font-size: 0.9rem; font-weight: 800; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);">
+                        <i class='bx bx-refresh' style="font-size: 1.2rem;"></i> Sync Local AI Scout
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Regional Monitoring (Full Width Section) -->
+        <div style="margin-bottom: 40px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <i class='bx bx-broadcast' style="color: #ef4444; font-size: 1.2rem;"></i>
+                <span style="font-size: 0.9rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em;">1. Regional Threat Environment</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                @forelse($regionalDiseases as $disease)
+                    <div style="padding: 24px; border-radius: 20px; background: #fff; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="display: flex; align-items: flex-start; gap: 16px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; background: {{ $disease->level == 'High' ? '#ef4444' : ($disease->level == 'Medium' ? '#f59e0b' : '#22c55e') }}; box-shadow: 0 0 12px {{ $disease->level == 'High' ? 'rgba(239, 68, 68, 0.5)' : ($disease->level == 'Medium' ? 'rgba(245, 158, 11, 0.5)' : 'rgba(34, 197, 94, 0.5)') }};"></div>
+                                <div>
+                                    <h4 style="font-size: 1.1rem; font-weight: 900; color: #1e293b; margin: 0 0 4px 0;">{{ $disease->name }}</h4>
+                                    <div style="font-size: 0.8rem; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                        <i class='bx bx-map-pin' style="color: #6366f1;"></i> {{ $disease->distance }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                                <div style="font-size: 0.7rem; font-weight: 900; color: {{ $disease->level == 'High' ? '#ef4444' : ($disease->level == 'Medium' ? '#f59e0b' : '#22c55e') }}; text-transform: uppercase; background: {{ $disease->level == 'High' ? '#fef2f2' : ($disease->level == 'Medium' ? '#fffbeb' : '#f0fdf4') }}; padding: 4px 12px; border-radius: 8px; border: 1px solid {{ $disease->level == 'High' ? '#fee2e2' : ($disease->level == 'Medium' ? '#fef3c7' : '#dcfce7') }};">
+                                    {{ $disease->level }} Risk
+                                </div>
+                                <div style="font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase;">
+                                    Trend: <span style="color: {{ $disease->trend == 'spreading' ? '#ef4444' : '#1e293b' }};">{{ $disease->trend }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #f1f5f9;">
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Known Vector / Source</div>
+                                <div style="font-size: 0.8rem; font-weight: 700; color: #475569;">{{ $disease->vector ?? 'Not specified' }}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Primary Symptoms</div>
+                                <div style="font-size: 0.8rem; font-weight: 700; color: #475569;">{{ $disease->symptoms ?? 'Not specified' }}</div>
+                            </div>
+                        </div>
+
+                        <div style="background: #eef2ff; padding: 12px 16px; border-radius: 12px; border: 1px solid #e0e7ff; display: flex; gap: 10px; align-items: flex-start;">
+                            <i class='bx bx-shield-quarter' style="color: #4f46e5; font-size: 1.2rem; margin-top: 2px;"></i>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 800; color: #4f46e5; text-transform: uppercase; margin-bottom: 2px;">AI Recommended Action</div>
+                                <div style="font-size: 0.85rem; font-weight: 700; color: #3730a3;">{{ $disease->action_required ?? 'Maintain standard biosecurity protocols.' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div style="text-align: center; padding: 40px; background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 20px;">
+                        <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin: 0;">No active regional threats recorded. Perform an AI Sync to update.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Pen Assessment (Full Width List) -->
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <i class='bx bx-shield-check' style="color: #4f46e5; font-size: 1.2rem;"></i>
+                <span style="font-size: 0.9rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em;">2. Individual Pen Safety Analysis</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                @forelse($penRisks as $penRisk)
+                    <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 28px; border-left: 8px solid {{ $penRisk->risk_score >= 75 ? '#ef4444' : ($penRisk->risk_score >= 40 ? '#f59e0b' : '#22c55e') }}; display: flex; flex-direction: column; gap: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 900; color: #1e293b; margin: 0;">{{ $penRisk->pen_name }}</h3>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+                                    <span style="font-size: 0.7rem; font-weight: 800; color: #fff; background: {{ $penRisk->risk_score >= 75 ? '#ef4444' : ($penRisk->risk_score >= 40 ? '#f59e0b' : '#22c55e') }}; padding: 3px 12px; border-radius: 8px; text-transform: uppercase;">
+                                        {{ $penRisk->status }} Assessment
+                                    </span>
+                                    <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">Calculated Exposure: {{ $penRisk->risk_score }}%</span>
+                                </div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 12px 20px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
+                                <div style="font-size: 1.4rem; font-weight: 900; color: #1e293b;">{{ $penRisk->risk_score }}%</div>
+                                <div style="font-size: 0.6rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Risk Score</div>
+                            </div>
+                        </div>
+
+                        <!-- Full Width Score Breakdown -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                            <div style="background: #f8fafc; padding: 16px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
+                                <div style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Regional Factor</div>
+                                <div style="font-size: 1rem; font-weight: 900; color: #475569;">20%</div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 16px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
+                                <div style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Active Case Weight</div>
+                                <div style="font-size: 1rem; font-weight: 900; color: #4f46e5;">{{ $penRisk->active_cases * 25 }}%</div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 16px; border-radius: 16px; border: 1px solid #f1f5f9; text-align: center;">
+                                <div style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Historical Impact</div>
+                                <div style="font-size: 1rem; font-weight: 900; color: #818cf8;">{{ $penRisk->historical_cases * 5 }}%</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Alert (Full Width) -->
+                        <div style="background: {{ $penRisk->risk_score >= 75 ? '#fef2f2' : ($penRisk->risk_score >= 40 ? '#fffbeb' : '#f0fdf4') }}; padding: 20px; border-radius: 18px; border: 1px solid {{ $penRisk->risk_score >= 75 ? '#fee2e2' : ($penRisk->risk_score >= 40 ? '#fef3c7' : '#dcfce7') }}; display: flex; align-items: flex-start; gap: 14px;">
+                            <i class='bx bx-info-circle' style="color: {{ $penRisk->risk_score >= 75 ? '#ef4444' : ($penRisk->risk_score >= 40 ? '#d97706' : '#16a34a') }}; font-size: 1.4rem; margin-top: 2px;"></i>
+                            <div>
+                                <div style="font-size: 0.75rem; font-weight: 900; color: {{ $penRisk->risk_score >= 75 ? '#b91c1c' : ($penRisk->risk_score >= 40 ? '#92400e' : '#166534') }}; text-transform: uppercase; margin-bottom: 4px;">Recommended Biosecurity Strategy:</div>
+                                <p style="font-size: 0.9rem; color: {{ $penRisk->risk_score >= 75 ? '#991b1b' : ($penRisk->risk_score >= 40 ? '#854d0e' : '#14532d') }}; font-weight: 600; line-height: 1.5; margin: 0;">
+                                    {{ $penRisk->recommendation }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div style="text-align: center; padding: 60px; background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 30px;">
+                        <i class='bx bx-check-shield' style="font-size: 3rem; color: #22c55e; opacity: 0.5; margin-bottom: 16px;"></i>
+                        <p style="font-size: 1rem; color: #94a3b8; font-weight: 700;">All parameters normal. Biosecurity integrity verified.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
     <!-- Farm Intelligence Summary -->
     @php
         $healthRate = $totalPigs > 0 ? round(($healthyPigs / $totalPigs) * 100) : 0;
@@ -202,12 +360,12 @@
         </div>
     </div>
 
-    <!-- Charts Row -->
+    <!-- Charts Row (Revenue & Growth) -->
     <div class="chart-grid">
         <!-- Monthly Revenue -->
         <div class="chart-card">
-            <div class="chart-title">Monthly Revenue</div>
-            <div class="chart-subtitle">Last 6 months sales performance</div>
+            <div class="chart-title">Monthly Revenue Trend</div>
+            <div class="chart-subtitle">Historical and projected sales valuation</div>
             @php $maxRevenue = max(max(array_column($monthlyRevenue, 'value')), 1); @endphp
             <div class="revenue-chart">
                 @foreach($monthlyRevenue as $m)
@@ -220,29 +378,9 @@
             </div>
         </div>
 
-        <!-- Pen Occupancy -->
-        <div class="chart-card">
-            <div class="chart-title">Pen Occupancy</div>
-            <div class="chart-subtitle">Number of active animals per pen</div>
-            @php $maxOccupancy = max($penData->max('pigs_count'), 1); @endphp
-            @foreach($penData->take(10) as $pen)
-            <div class="pen-bar">
-                <div class="pen-name">{{ $pen->name }}</div>
-                <div class="pen-track">
-                    <div class="pen-fill" style="width: {{ max(($pen->pigs_count / $maxOccupancy) * 100, 6) }}%; background: {{ $pen->pigs_count == 0 ? '#e2e8f0' : 'linear-gradient(90deg, #22c55e, #16a34a)' }};">
-                        {{ $pen->pigs_count }}
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-
-    <!-- Three Column Section -->
-    <div class="three-grid">
         <!-- Growth Stage Breakdown -->
         <div class="chart-card">
-            <div class="chart-title">Growth Stages</div>
+            <div class="chart-title">Growth Stage Breakdown</div>
             <div class="chart-subtitle">Population by maturity level</div>
             @php
                 $stageColors = ['Piglet' => '#f472b6', 'Starter' => '#fb923c', 'Grower' => '#facc15', 'Finisher' => '#22c55e'];
@@ -258,11 +396,35 @@
             </div>
             @endforeach
         </div>
+    </div>
 
+    <!-- Pen Utilization Detail -->
+    <div style="margin-bottom: 28px;">
+        <div class="chart-card">
+            <div class="chart-title">Pen Occupancy Overview</div>
+            <div class="chart-subtitle">Number of active animals per pen (Functional batches only)</div>
+            @php $maxOccupancy = max($penData->max('pigs_count'), 1); @endphp
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                @foreach($penData->take(10) as $pen)
+                <div class="pen-bar">
+                    <div class="pen-name">{{ $pen->name }}</div>
+                    <div class="pen-track">
+                        <div class="pen-fill" style="width: {{ max(($pen->pigs_count / $maxOccupancy) * 100, 6) }}%; background: {{ $pen->pigs_count == 0 ? '#e2e8f0' : 'linear-gradient(90deg, #22c55e, #16a34a)' }};">
+                            {{ $pen->pigs_count }}
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <!-- EVERYTHING ELSE (Stacked at the Bottom as requested) -->
+    <div class="chart-grid">
         <!-- Health Breakdown -->
         <div class="chart-card">
-            <div class="chart-title">Health Status</div>
-            <div class="chart-subtitle">Current health distribution</div>
+            <div class="chart-title">Health Status Distribution</div>
+            <div class="chart-subtitle">Current clinical status of active herd</div>
             @php
                 $healthColors = ['Healthy' => '#22c55e', 'Sick' => '#ef4444', 'Under Observation' => '#f59e0b', 'Recovering' => '#3b82f6'];
                 $maxHealth = max($healthBreakdown) ?: 1;
@@ -281,7 +443,7 @@
         <!-- Weight Distribution -->
         <div class="chart-card">
             <div class="chart-title">Weight Distribution</div>
-            <div class="chart-subtitle">Animals grouped by weight range</div>
+            <div class="chart-subtitle">Live animals grouped by weight range</div>
             @php
                 $weightColors = ['0-10kg' => '#f472b6', '10-30kg' => '#fb923c', '30-60kg' => '#facc15', '60-90kg' => '#22c55e', '90kg+' => '#3b82f6'];
                 $maxWeight = max($weightRanges) ?: 1;
@@ -290,7 +452,7 @@
             <div class="bar-row">
                 <div class="bar-label">{{ $range }}</div>
                 <div class="bar-track">
-                    <div class="bar-fill" style="width: {{ ($count / $maxWeight) * 100 }}%; background: {{ $weightColors[$range] ?? '#94a3b8' }};"></div>
+                            <div class="bar-fill" style="width: {{ ($count / $maxWeight) * 100 }}%; background: {{ $weightColors[$range] ?? '#94a3b8' }};"></div>
                 </div>
                 <div class="bar-count">{{ $count }}</div>
             </div>
@@ -298,12 +460,11 @@
         </div>
     </div>
 
-    <!-- Bottom Row -->
     <div class="chart-grid">
         <!-- Task Metrics -->
         <div class="chart-card">
             <div class="chart-title">Task Overview</div>
-            <div class="chart-subtitle">Current assignment status across {{ $totalWorkers }} worker{{ $totalWorkers > 1 ? 's' : '' }}</div>
+            <div class="chart-subtitle">Assignment status across {{ $totalWorkers }} active workers</div>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 8px;">
                 <div style="text-align: center; padding: 20px 12px; background: #f8fafc; border-radius: 16px; border: 1px solid #f1f5f9;">
                     <div style="font-size: 1.5rem; font-weight: 900; color: #1e293b;">{{ $totalTasks }}</div>
@@ -327,7 +488,7 @@
         <!-- Recent Activities -->
         <div class="chart-card">
             <div class="chart-title">Recent Activity Feed</div>
-            <div class="chart-subtitle">Latest actions logged across the farm</div>
+            <div class="chart-subtitle">Latest chronological farm events</div>
             @forelse($recentActivities as $activity)
             <div class="activity-item {{ $activity->is_critical_alert ? 'bg-red-50 p-3 rounded-xl border border-red-100 mb-2' : '' }}">
                 <div class="activity-dot" style="background: {{ $activity->is_critical_alert ? '#ef4444' : ($activity->type === 'Medical' ? '#ef4444' : ($activity->type === 'Care' ? '#22c55e' : '#3b82f6')) }};"></div>

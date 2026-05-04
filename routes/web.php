@@ -34,8 +34,8 @@ Route::get('/dashboard', function (Request $request) {
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
             $pendingTasks = \App\Models\Task::where('status', 'pending')->count();
-            $totalPigs = \App\Models\Pig::where('status', 'active')->count();
-            $sickPigs = \App\Models\Pen::sum('sick_pigs');
+            $totalPigs = \App\Models\Pig::whereNotIn('status', ['Sold', 'Disposed'])->count();
+            $sickPigs = \App\Models\Pig::whereNotIn('status', ['Sold', 'Disposed'])->where('health_status', 'Sick')->count();
 
             $totalDelivered = \App\Models\FeedDelivery::sum('quantity');
             $totalConsumed = \App\Models\FeedConsumption::sum('quantity');
@@ -49,8 +49,61 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
                 ->latest()
                 ->get();
 
+            // --- DISEASE RISK PREDICTION (Smart Engine) ---
+            $regionalDiseases = \App\Models\RegionalDisease::where('is_active', true)->get();
+            
+            // Calculate base regional risk factor
+            $baseRegionalRisk = 0;
+            foreach($regionalDiseases as $rd) {
+                if ($rd->level == 'High') $baseRegionalRisk += 15;
+                elseif ($rd->level == 'Medium') $baseRegionalRisk += 5;
+            }
+            
+            $penRisks = [];
+            $pens = \App\Models\Pen::withCount(['pigs as sick_count' => function($q) {
+                $q->where('health_status', 'Sick')->whereNotIn('status', ['Sold', 'Disposed']);
+            }])->get();
+
+            foreach($pens as $pen) {
+                $historicalSickness = \App\Models\PigActivity::where('type', 'Medical')
+                    ->whereHas('pig', function($q) use ($pen) {
+                        $q->where('pen_id', $pen->id);
+                    })->count();
+
+                $activeSickness = $pen->sick_count;
+                $riskScore = min($baseRegionalRisk + ($activeSickness * 25) + ($historicalSickness * 5), 100);
+
+                $status = 'Safe';
+                $color = 'bg-green-100 text-green-700';
+                $recommendation = 'Maintain standard biosecurity protocols.';
+
+                if ($riskScore >= 75) {
+                    $status = 'Critical Risk';
+                    $color = 'bg-red-100 text-red-700';
+                    $recommendation = 'Immediate isolation required. High probability of ASF or severe infection spread.';
+                } elseif ($riskScore >= 40) {
+                    $status = 'Elevated Risk';
+                    $color = 'bg-yellow-100 text-yellow-700';
+                    $recommendation = 'Increase sanitation frequency. Monitor closely for symptoms.';
+                }
+
+                if ($activeSickness > 0 || $riskScore > 15) {
+                    $penRisks[] = (object)[
+                        'pen_name' => $pen->name,
+                        'risk_score' => $riskScore,
+                        'active_cases' => $activeSickness,
+                        'historical_cases' => $historicalSickness,
+                        'status' => $status,
+                        'color' => $color,
+                        'recommendation' => $recommendation
+                    ];
+                }
+            }
+            
+            usort($penRisks, function($a, $b) { return $b->risk_score <=> $a->risk_score; });
+
             return view('users.dashboard', compact(
-                'pendingTasks', 'totalPigs', 'sickPigs', 'availableStock', 'recentTasks', 'criticalAlerts'
+                'pendingTasks', 'totalPigs', 'sickPigs', 'availableStock', 'recentTasks', 'criticalAlerts', 'regionalDiseases', 'penRisks'
             ));
         }
         )->name('admin.dashboard');
@@ -85,6 +138,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::post('/admin/feed-stock', [InventoryController::class, 'store'])->name('admin.feed-stock.store');
         Route::get('/admin/qr-labels', [InventoryController::class, 'qrGenerator'])->name('admin.qr.index');
 
+
         Route::resource('admin/feed-mix', FeedMixController::class)->names('admin.feed-mix');
         Route::resource('admin/feed-ingredients', FeedIngredientController::class)->names('admin.feed-ingredients');
 
@@ -100,6 +154,15 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::get('/admin/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');
 
         Route::post('/admin/pigs/activities/{activity}/acknowledge', [PigController::class, 'acknowledgeActivity'])->name('admin.pigs.activities.acknowledge');
+        Route::get('/admin/api/unacknowledged-alerts', function() {
+            return response()->json(\App\Models\PigActivity::unacknowledgedAlerts()->with('pig.pen')->latest()->get());
+        })->name('admin.api.alerts');
+
+        Route::post('/admin/disease-sync', [App\Http\Controllers\DiseaseSyncController::class, 'sync'])->name('admin.disease-sync');
+
+        // System Settings
+        Route::get('/admin/settings', [App\Http\Controllers\SystemSettingsController::class, 'index'])->name('admin.settings.index');
+        Route::post('/admin/settings', [App\Http\Controllers\SystemSettingsController::class, 'update'])->name('admin.settings.update');
     });
 
 // --- WORKER ZONE ---
@@ -124,7 +187,9 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
 
         // Health & Monitoring API (Used by QR Scanner)
         Route::get('/api/health/pig/{tag}', [HealthController::class, 'getPigData'])->name('api.health.pig');
+        Route::get('/api/health/pen/{id}', [HealthController::class, 'getPenData'])->name('api.health.pen');
         Route::post('/api/health/report', [HealthController::class, 'saveHealthReport'])->name('api.health.report');
+        Route::post('/api/health/pen/log', [HealthController::class, 'savePenLog'])->name('api.health.pen.log');
         Route::get('/api/health/history/{pigId}', [HealthController::class, 'getPigHealthHistory'])->name('api.health.history');
         Route::post('/worker/settings/update', [ProfileController::class, 'updateWorkerSettings'])->name('worker.settings.update');
 
@@ -139,9 +204,13 @@ Route::middleware(['auth', 'verified', 'role:farm_worker'])->group(function () {
             // Get only pens assigned to this worker
             $pens = \App\Models\Pen::where('assigned_to', $user->id)
                 ->with(['pigs' => function($q) {
-                    $q->whereNotIn('status', ['Sold', 'Disposed'])->with(['activities' => function($aq) {
-                        $aq->latest()->limit(1);
-                    }]);
+                    $q->whereNotIn('status', ['Sold', 'Disposed'])
+                        ->with(['tasks' => function($tq) {
+                            $tq->where('status', '!=', 'completed');
+                        }])
+                        ->with(['activities' => function($aq) {
+                            $aq->latest()->limit(1);
+                        }]);
                 }])->get();
 
             // Transform pigs for instant UI

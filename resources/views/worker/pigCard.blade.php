@@ -1,28 +1,50 @@
-{{-- pigCard.blade.php — NO LAYOUT. Pure fragment returned for AJAX injection. --}}
 @php
+    $targetActivityId = request('activity');
+
     $health  = $pig->health_status ?? 'Healthy';
     $hColor  = match($health) { 'Sick' => '#ef4444', 'Warning' => '#f59e0b', default => '#16a34a' };
     $hLight  = match($health) { 'Sick' => '#fef2f2', 'Warning' => '#fffbeb', default => '#f0fdf4' };
     $hText   = match($health) { 'Sick' => '#dc2626', 'Warning' => '#d97706', default => '#15803d' };
     $hBorder = match($health) { 'Sick' => '#fecaca', 'Warning' => '#fde68a', default => '#bbf7d0' };
+    
     $ageMonths  = $pig->birth_date ? round(\Carbon\Carbon::parse($pig->birth_date)->diffInMonths()) : 0;
-    $ageLabel   = $ageMonths >= 12 ? round($ageMonths/12, 1).' yrs' : ($ageMonths > 0 ? $ageMonths.' mo.' : '—');
+    $ageLabel   = $ageMonths >= 12 ? round($ageMonths/12, 1).' yrs' : ($ageMonths > 0 ? $ageMonths.' mo.' : '&mdash;');
+    
     $feedSt     = $pig->feeding_status ?? 'Normal';
-    $lastActiv  = $pig->activities->first();
     $todayCount = $pig->activities->filter(fn($a) => $a->created_at >= now()->startOfDay())->count();
     $feedColor  = match($feedSt) { 'Active' => '#16a34a', 'Poor' => '#ef4444', default => '#2563eb' };
 @endphp
 
+<style>
+    #pig-record-card .text-slate-900 { color: #0f172a !important; }
+    #pig-record-card .text-slate-500 { color: #64748b !important; }
+    .activity-highlight {
+        animation: highlight-pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        border: 2px solid #22c55e !important;
+        background: #f0fdf4 !important;
+        transform: scale(1.02);
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15) !important;
+    }
+    @keyframes highlight-pulse {
+        0%, 100% { border-color: #22c55e; }
+        50% { border-color: #86efac; }
+    }
+</style>
+
 <div id="pig-record-card"
-     class="bg-white w-full max-h-[88vh] flex flex-col overflow-hidden"
-     style="border-radius:2rem; box-shadow:0 32px 80px rgba(0,0,0,0.22);">
+     class="relative bg-white w-full flex flex-col overflow-hidden"
+     style="border-radius:2rem; box-shadow:0 8px 40px rgba(0,0,0,0.10); max-height:88vh;">
+
+    <button onclick="hidePigModal()" class="absolute top-6 right-6 z-50 w-10 h-10 rounded-xl bg-slate-50 text-slate-300 hover:bg-red-50 hover:text-red-500 transition-all flex items-center justify-center border border-slate-100/50">
+        <i class='bx bx-x text-2xl'></i>
+    </button>
 
     {{-- ACCENT LINE --}}
     <div class="h-1.5 w-full shrink-0" style="background:linear-gradient(to right,{{ $hColor }},{{ $hColor }}80);"></div>
 
-    <div class="flex-1 overflow-y-auto" style="scrollbar-width:thin; scrollbar-color:#e2e8f0 transparent;">
+    <div class="overflow-y-auto" style="scrollbar-width:thin; scrollbar-color:#e2e8f0 transparent;">
 
-        {{-- ── HERO ── --}}
+        {{-- HERO --}}
         <div class="px-8 pt-7 pb-0">
             <div class="flex items-start justify-between gap-4">
                 <div>
@@ -46,10 +68,10 @@
                 </div>
             </div>
 
-            {{-- QUICK STATS 4-COL --}}
+            {{-- QUICK STATS --}}
             <div class="grid grid-cols-4 gap-2.5 mt-5">
                 @php $qstats = [
-                    ['bx-home-alt-2',  $pig->pen->name,                 'Pen'],
+                    ['bx-home-alt-2',  $pig->pen->name ?? 'N/A',       'Pen'],
                     ['bx-time-five',   $ageLabel,                       'Age'],
                     ['bx-dumbbell',    ($pig->weight ?? '—').' kg',     'Weight'],
                     ['bx-trending-up', $pig->growth_stage,              'Stage'],
@@ -64,7 +86,7 @@
             </div>
         </div>
 
-        {{-- ── VITALS BAND ── --}}
+        {{-- VITALS BAND --}}
         <div class="mx-8 mt-4 rounded-2xl overflow-hidden" style="border:1px solid #e2e8f0;">
             <div class="grid grid-cols-3 divide-x divide-slate-100">
                 <div class="p-4">
@@ -75,194 +97,44 @@
                     </div>
                 </div>
                 <div class="p-4">
-                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">Body Condition</p>
-                    <div class="flex items-center gap-1.5">
-                        @for($i=1;$i<=5;$i++)<div class="w-4 h-3.5 rounded" style="background:{{ $i<=($pig->bcs_score??0) ? $hColor : '#e2e8f0' }}"></div>@endfor
-                        <span class="font-black text-xs text-slate-500 ml-1">{{ $pig->bcs_score??'—' }}/5</span>
-                    </div>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Body Condition</p>
+                    <span class="font-black text-sm text-slate-900">{{ $pig->bcs_score ?? 3 }}/5</span>
                 </div>
                 <div class="p-4">
-                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Last Check-In</p>
-                    <p class="font-black text-sm text-slate-900">{{ $lastActiv ? $lastActiv->created_at->diffForHumans() : 'Never' }}</p>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Growth Target</p>
+                    <span class="font-black text-sm text-slate-900">{{ round(($pig->weight / ($pig->target_weight ?: 110)) * 100) }}%</span>
                 </div>
-            </div>
-            @if($pig->remarks)
-            <div class="px-4 py-3 border-t border-slate-100 flex items-start gap-2.5" style="background:#fffbeb;">
-                <i class='bx bxs-info-circle text-amber-500 text-base shrink-0 mt-0.5'></i>
-                <p class="text-xs font-bold text-amber-800 leading-snug">{{ $pig->remarks }}</p>
-            </div>
-            @endif
-        </div>
-
-        {{-- ── ANIMAL PARTICULARS ── --}}
-        <div class="mx-8 mt-4">
-            <p class="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-3">Animal Particulars</p>
-            <div class="grid grid-cols-2 gap-2">
-                @php $details = [
-                    ['Birth Date',    $pig->birth_date ? \Carbon\Carbon::parse($pig->birth_date)->format('M d, Y') : '—'],
-                    ['Target Weight', ($pig->target_weight ?? '—').' kg'],
-                    ['Pen Location',  $pig->pen->name],
-                    ['Diet Formula',  $pig->feed_formula_name ?? 'Standard Mix'],
-                    ['Pen Section',   $pig->pen->section ?? '—'],
-                    ['Record Status', $pig->status ?? 'Active'],
-                ]; @endphp
-                @foreach($details as [$lbl,$val])
-                <div class="flex items-center justify-between px-4 py-3 rounded-xl" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">{{ $lbl }}</span>
-                    <span class="text-xs font-black text-slate-900">{{ $val }}</span>
-                </div>
-                @endforeach
             </div>
         </div>
 
-        @if($pig->symptoms)
-        <div class="mx-8 mt-4 p-4 rounded-2xl flex gap-3" style="background:#fef2f2;border:1px solid #fecaca;">
-            <i class='bx bxs-error-circle text-red-500 text-xl shrink-0 mt-0.5'></i>
-            <div>
-                <p class="text-[9px] font-black uppercase tracking-widest text-red-500 mb-1">Reported Symptoms</p>
-                <p class="text-sm font-bold text-red-800">{{ $pig->symptoms }}</p>
-            </div>
-        </div>
-        @endif
-
-        <div class="mx-8 mt-5 border-t border-slate-100"></div>
-
-        {{-- ── TABS ── --}}
-        <div class="flex gap-2 px-8 py-4">
-            <button onclick="switchPigTab('activity')" id="tab-btn-activity"
-                class="flex-1 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest"
-                style="background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0;">
-                <i class='bx bx-calendar-check mr-1.5'></i>Daily Operations
-            </button>
-            <button onclick="switchPigTab('medical')" id="tab-btn-medical"
-                class="flex-1 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest"
-                style="background:#f1f5f9;color:#94a3b8;border:1.5px solid #e2e8f0;">
-                <i class='bx bx-plus-medical mr-1.5'></i>Medical History
-            </button>
-        </div>
-
-        {{-- ── DAILY OPERATIONS ── --}}
-        <div id="pig-tab-activity" class="px-8 pb-6 space-y-4">
-
-            {{-- CTA --}}
-            <button onclick="openDailyCheckIn({{ json_encode($pig) }})"
-                class="w-full text-left rounded-2xl p-6 flex items-center gap-5 group transition-all active:scale-[0.99]"
-                style="background:{{ $hColor }};box-shadow:0 14px 40px {{ $hColor }}35;">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(255,255,255,0.2);">
-                    <i class='bx bx-edit-alt text-white text-2xl'></i>
-                </div>
-                <div class="flex-1">
-                    <p class="text-white/70 text-[10px] font-black uppercase tracking-[0.3em] mb-0.5">Mandatory · Every Shift</p>
-                    <p class="text-white font-black text-lg uppercase tracking-tight">Start Daily Check-In</p>
-                    <p class="text-white/60 text-[11px] font-bold mt-0.5">Feed · Water · Skin · Behavior · Weight</p>
-                </div>
-                <i class='bx bx-chevron-right text-white/40 text-2xl'></i>
-            </button>
-
-            {{-- FEED --}}
-            @php
-                $combined = collect();
-                foreach($pig->activities as $a) $combined->push(['type'=>'log','title'=>$a->action,'desc'=>$a->details,'date'=>$a->created_at,'subtype'=>$a->type ?? 'Care']);
-                foreach($pig->tasks as $t) $combined->push(['type'=>'task','title'=>$t->title,'desc'=>$t->description,'date'=>$t->created_at,'priority'=>$t->priority]);
-                $combined = $combined->sortByDesc('date');
-            @endphp
-
-            <div class="flex items-center justify-between">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Activity & Admin Tasks</p>
-                <span class="text-[10px] font-bold text-slate-300 uppercase">{{ $combined->count() }} entries</span>
+        {{-- ACTIVITY HISTORY --}}
+        <div class="px-8 mt-8 mb-8">
+            <div class="flex items-center justify-between mb-5">
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Activity History</p>
+                <span class="text-[9px] font-bold text-slate-300 uppercase">Latest 15 Events</span>
             </div>
 
-            <div class="space-y-2">
-            @forelse($combined as $item)
-                @php
-                    $isTask = $item['type']==='task';
-                    $isMed  = !$isTask && ($item['subtype']??'')==='Medical';
-                    $bg     = $isTask ? '#fffbeb' : ($isMed ? '#fef2f2' : '#f8fafc');
-                    $bd     = $isTask ? '#fde68a' : ($isMed ? '#fecaca' : '#e2e8f0');
-                    $ibg    = $isTask ? '#fef3c7' : ($isMed ? '#fee2e2' : '#f0fdf4');
-                    $ic     = $isTask ? '#d97706' : ($isMed ? '#dc2626' : '#16a34a');
-                    $bxi    = $isTask ? 'bx-task'  : ($isMed ? 'bx-plus-medical' : 'bx-check-double');
-                @endphp
-                <div class="flex gap-4 p-4 rounded-2xl" style="background:{{ $bg }};border:1px solid {{ $bd }};">
-                    <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style="background:{{ $ibg }};">
-                        <i class='bx {{ $bxi }} text-sm' style="color:{{ $ic }}"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between gap-2 mb-0.5">
-                            <p class="text-slate-900 font-black text-xs uppercase tracking-tight leading-tight">{{ $item['title'] }}</p>
-                            <span class="text-slate-300 text-[9px] font-bold uppercase shrink-0">{{ $item['date']->format('M d · h:i A') }}</span>
+            <div class="space-y-3">
+                @forelse($pig->activities as $act)
+                    <div id="act-{{ $act->id }}" class="p-4 rounded-2xl border border-slate-100 flex gap-4 transition-all @if($targetActivityId == $act->id) activity-highlight @endif" style="background:#fcfdfe;">
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                            <i class='bx {{ $act->type === "Medical" ? "bx-plus-medical text-red-500" : ($act->type === "Growth" ? "bx-trending-up text-blue-500" : "bx-check text-green-500") }} text-lg'></i>
                         </div>
-                        @if(!empty($item['desc']))<p class="text-slate-500 text-xs leading-snug">{{ Str::limit($item['desc'], 100) }}</p>@endif
-                        <div class="flex gap-1.5 mt-1.5 flex-wrap">
-                            @if($isTask)
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-700">Admin Task</span>
-                                @if(!empty($item['priority']))<span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-500">{{ $item['priority'] }}</span>@endif
-                            @elseif($isMed)
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-red-100 text-red-600">Medical</span>
-                            @else
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-green-50 text-green-700">{{ $item['subtype']??'Care' }}</span>
-                            @endif
-                            <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-slate-50 text-slate-400">{{ $item['date']->diffForHumans() }}</span>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-2 mb-0.5">
+                                <p class="text-slate-900 font-black text-sm tracking-tight">{{ $act->action }}</p>
+                                <span class="text-slate-300 text-[9px] font-bold uppercase">{{ $act->created_at->diffForHumans() }}</span>
+                            </div>
+                            <p class="text-slate-500 text-xs leading-relaxed font-medium">{{ $act->details }}</p>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="text-center py-14 rounded-2xl" style="background:#f8fafc;border:1px dashed #e2e8f0;">
-                    <i class='bx bx-history text-4xl text-slate-200 block mb-2'></i>
-                    <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">No activity yet</p>
-                </div>
-            @endforelse
-            </div>
-        </div>
-
-        {{-- ── MEDICAL ── --}}
-        <div id="pig-tab-medical" class="hidden px-8 pb-6 space-y-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Full Medical Log</p>
-                    <p class="text-[9px] font-bold text-slate-300 mt-0.5">Vaccinations, medications & interventions</p>
-                </div>
-                <button onclick="openMedicalLogger({{ $pig->id }})"
-                    class="px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-white"
-                    style="background:#ef4444;box-shadow:0 6px 20px rgba(239,68,68,0.3);">+ Log Entry</button>
-            </div>
-
-            @foreach($pig->healthReports as $hr)
-            <div class="p-4 rounded-2xl" style="background:#f0fdf4;border:1px solid #bbf7d0;">
-                <div class="flex justify-between mb-2">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-green-600">Health Report</span>
-                    <span class="text-[9px] font-bold text-slate-300 uppercase">{{ $hr->created_at->format('M d, Y') }}</span>
-                </div>
-                <p class="text-xs font-bold text-slate-700">{{ Str::limit($hr->findings ?? 'No additional notes.', 120) }}</p>
-            </div>
-            @endforeach
-
-            @forelse($pig->activities->where('type','Medical') as $med)
-                <div class="flex gap-4 p-4 rounded-2xl" style="background:#fef2f2;border:1px solid #fecaca;">
-                    <div class="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
-                        <i class='bx bx-plus-medical text-red-500 text-sm'></i>
+                @empty
+                    <div class="text-center py-10 rounded-2xl border-2 border-dashed border-slate-100 bg-slate-50">
+                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">No activities recorded</p>
                     </div>
-                    <div class="flex-1">
-                        <div class="flex items-center justify-between gap-2 mb-0.5">
-                            <p class="text-red-700 font-black text-sm uppercase tracking-tight">{{ $med->action }}</p>
-                            <span class="text-slate-300 text-[9px] font-bold uppercase">{{ $med->created_at->format('M d, Y') }}</span>
-                        </div>
-                        <p class="text-slate-600 text-xs leading-snug">{{ $med->details }}</p>
-                    </div>
-                </div>
-            @empty
-                <div class="text-center py-16 rounded-2xl" style="background:#f8fafc;border:2px dashed #e2e8f0;">
-                    <i class='bx bxs-heart text-4xl text-slate-200 block mb-2'></i>
-                    <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Clean medical history</p>
-                </div>
-            @endforelse
+                @endforelse
+            </div>
         </div>
     </div>
 
-    {{-- FOOTER --}}
-    <div class="px-8 py-5 shrink-0" style="border-top:1px solid #f1f5f9;">
-        <button onclick="hidePigModal()"
-            class="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-[0.3em] text-slate-500 transition-all hover:bg-slate-100"
-            style="background:#f8fafc;border:1px solid #e2e8f0;">Close</button>
-    </div>
 </div>
