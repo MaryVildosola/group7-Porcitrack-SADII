@@ -1,4 +1,4 @@
-const CACHE_NAME = 'porcitrack-cache-v2';
+const CACHE_NAME = 'porcitrack-cache-v3';
 const STATIC_ASSETS = [
     '/',
     '/login',
