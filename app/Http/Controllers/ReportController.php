@@ -67,12 +67,14 @@ class ReportController extends Controller
         });
 
         // Recent Activity
-        $recentActivities = PigActivity::with(['pig', 'user'])
+        $recentActivities = PigActivity::with(['pig.pen', 'user'])
             ->latest()
             ->limit(5)
             ->get();
+        // Regional Diseases
+        $regionalDiseases = \App\Models\RegionalDisease::where('is_active', true)->get();
 
-        return view('worker.dashboard', compact('stats', 'criticalAlerts', 'pens', 'recentActivities'));
+        return view('worker.dashboard', compact('stats', 'criticalAlerts', 'pens', 'recentActivities', 'regionalDiseases'));
     }
 
     // Admin View: List all workers and their submission status
@@ -151,7 +153,14 @@ class ReportController extends Controller
 
         $weeklyTasks = (clone $tasksThisWeek)->latest('updated_at')->get();
 
-        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics', 'pens', 'weeklyTasks'));
+        // Get all general activities logged by this worker this week
+        $weeklyActivities = PigActivity::where('user_id', $user->id)
+            ->whereBetween('created_at', [$thisWeekStart, Carbon::now()->endOfWeek()])
+            ->with('pig')
+            ->latest()
+            ->get();
+
+        return view('worker.reports.index', compact('user', 'existingReport', 'thisWeek', 'analytics', 'pens', 'weeklyTasks', 'weeklyActivities'));
     }
 
     // Worker Action: Store weekly report
