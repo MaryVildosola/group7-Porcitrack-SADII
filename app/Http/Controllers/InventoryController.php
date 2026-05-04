@@ -86,9 +86,11 @@ class InventoryController extends Controller
     public function qrGenerator()
     {
         $pens = Pen::orderBy('name')->get();
+        $pigs = \App\Models\Pig::with('pen')->whereNotIn('status', ['Sold', 'Disposed'])->orderBy('tag')->get();
 
         return view('admin.qr.index', [
             'pens' => $pens,
+            'pigs' => $pigs,
         ]);
     }
 }
