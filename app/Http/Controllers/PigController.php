@@ -81,18 +81,50 @@ class PigController extends Controller
             'bcs_score' => 'required|integer|min:1|max:5',
             'feeding_status' => 'required|in:Active,Normal,Poor',
             'symptoms' => 'nullable|string|max:255',
+            'pen_id' => 'sometimes|required|exists:pens,id',
+            'water_intake' => 'nullable|numeric'
         ]);
 
+        $oldPenId = $pig->pen_id;
         $pig->update($validated);
+        
+        // Handle Task Completion
+        if ($request->has('completed_tasks') && is_array($request->input('completed_tasks'))) {
+            \App\Models\Task::whereIn('id', $request->input('completed_tasks'))
+                ->update([
+                    'status' => 'completed',
+                    'completed_at' => now(),
+                    'findings' => ['log' => 'Completed via Registry Assessment']
+                ]);
+        }
+
+        // Log movement if pen changed
+        if ($oldPenId != $pig->pen_id) {
+            $oldPenName = \App\Models\Pen::find($oldPenId)->name ?? 'Unknown';
+            $newPenName = $pig->fresh()->pen->name ?? 'Unknown';
+            
+            \App\Models\PigActivity::create([
+                'pig_id' => $pig->id,
+                'user_id' => auth()->id(),
+                'type' => 'Movement',
+                'action' => 'Pen Relocation (Admin)',
+                'details' => "Animal relocated from $oldPenName to $newPenName.",
+                'created_at' => now()
+            ]);
+        }
+        $remarks = $request->input('remarks', '');
 
         // CREATE LOG FOR HISTORY (NEW)
-        $action = ($request->has('remarks') && str_contains($request->remarks, 'Daily Check')) ? 'Daily Assessment' : 'Weekly Metric Update';
+        $isEmergency = $remarks && str_contains($remarks, 'EMERGENCY');
+        $action = ($remarks && str_contains($remarks, 'Daily Check')) ? 'Daily Assessment' : ($isEmergency ? 'Emergency Report' : 'Weekly Metric Update');
+        
         \App\Models\PigActivity::create([
             'pig_id' => $pig->id,
             'user_id' => auth()->id(),
             'type' => str_contains($action, 'Metric') ? 'Growth' : 'Care',
             'action' => $action,
-            'details' => $request->remarks ?: 'Record updated by worker.',
+            'details' => $remarks ?: 'Record updated by worker.',
+            'is_critical_alert' => $isEmergency || ($request->health_status === 'Sick'),
             'created_at' => now()
         ]);
 
